@@ -1,0 +1,39 @@
+[
+    {
+      "name": "Recharge",
+      "icon": "plus"
+    },
+    {
+      "name": "Withdrawal",
+      "icon": "get-pocket"
+    },
+    {
+      "name": "Transfer",
+      "icon": "money-bill-transfer"
+    },
+    {
+      "name": "Official Exchange",
+      "icon": "scale-balanced"
+    },
+    {
+      "name": "Currency Market",
+      "icon": "store"
+    },
+    {
+      "name": "Phone Top",
+      "icon": "mobile-screen"
+    },
+    {
+      "name": "Financial",
+      "icon": "coins"
+    },
+    {
+      "name": "Exchange Rate",
+      "icon": "money-check-dollar"
+    },
+    {
+      "name": "Bill",
+      "icon": "file-invoice-dollar"
+    }
+  ]
+  
