@@ -5,6 +5,7 @@ import {
   Dimensions,
   View,
   Text,
+  Pressable,
 } from "react-native";
 
 import { HelloWave, ParallaxScrollView, ThemedText, ThemedView} from "@/components"
@@ -12,9 +13,15 @@ import { HelloWave, ParallaxScrollView, ThemedText, ThemedView} from "@/componen
 import { Ionicons, FontAwesome6, AntDesign } from "@expo/vector-icons";
 
 import middleMenuData from '../../../constants/MiddleMenu.json'
+import { useRouter } from "expo-router";
 
 
 export default function HomeScreen() {
+  const router = useRouter();
+
+  const handleMiddleMenu = (route) => {
+    router.push(route); // Programmatically navigate to the (app) route
+  }
   return (
     <View style={styles.outlineContainer}>
       <View style={styles.topContainer}>
@@ -38,10 +45,10 @@ export default function HomeScreen() {
 
       <View style={styles.middleContainer}>
         {middleMenuData.map((item, index) => (
-          <View key={index} style={styles.imageContainerMiddle}>
-            <FontAwesome6 name={item.icon} size={25} style={[{ marginBottom: -3 }]} />
-            <Text style={styles.middleText}>{item.name}</Text>
-          </View>
+          <Pressable  key={index} style={styles.imageContainerMiddle}  onPress={()=>handleMiddleMenu(item.navigation)}>
+              <FontAwesome6 name={item.icon} size={25} style={[{ marginBottom: -3 }]} />
+              <ThemedText style={styles.middleText}>{item.name}</ThemedText>
+          </Pressable>
         ))}
       </View>
     </View>

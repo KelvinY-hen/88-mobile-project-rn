@@ -1,39 +1,48 @@
 [
     {
       "name": "Recharge",
-      "icon": "plus"
+      "icon": "plus",
+      "navigation": "/(app)/(tabs)"
     },
     {
       "name": "Withdrawal",
-      "icon": "get-pocket"
+      "icon": "get-pocket",
+      "navigation": "/(app)/withdraw"
     },
     {
       "name": "Transfer",
-      "icon": "money-bill-transfer"
+      "icon": "money-bill-transfer",
+      "navigation": "/(app)/(tabs)"
     },
     {
       "name": "Official Exchange",
-      "icon": "scale-balanced"
+      "icon": "scale-balanced",
+      "navigation": "/(app)/(tabs)"
     },
     {
       "name": "Currency Market",
-      "icon": "store"
+      "icon": "store",
+      "navigation": "/(app)/(tabs)"
     },
     {
       "name": "Phone Top",
-      "icon": "mobile-screen"
+      "icon": "mobile-screen",
+      "navigation": "(app)/(tabs)"
     },
     {
       "name": "Financial",
-      "icon": "coins"
+      "icon": "coins",
+      "navigation": "(app)/(tabs)"
     },
     {
       "name": "Exchange Rate",
-      "icon": "money-check-dollar"
+      "icon": "money-check-dollar",
+      "navigation": "(app)/(tabs)"
     },
     {
       "name": "Bill",
-      "icon": "file-invoice-dollar"
+      "icon": "file-invoice-dollar",
+      "navigation": "(app)/(tabs)"
     }
   ]
   

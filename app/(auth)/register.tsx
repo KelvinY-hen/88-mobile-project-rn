@@ -1,7 +1,14 @@
+import { ThemedButton } from "@/components/ThemedButton";
+import { ThemedInput } from "@/components/ThemedInput";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { gql, useMutation } from '@apollo/client';
+
 import { Link } from "expo-router";
+
 import { useState } from "react";
+
 import {
+  ActivityIndicator,
   Button,
   KeyboardAvoidingView,
   StyleSheet,
@@ -9,7 +16,10 @@ import {
   TextInput,
   View,
 } from "react-native";
+// import { TouchableOpacity } from "react-native-gesture-handler";
 import { TouchableOpacity } from "react-native";
+import { GraphQLError } from "graphql";
+// TouchableOpacity
 
 export default function Register() {
   const [phone, setPhone] = useState("");
@@ -17,13 +27,101 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const signUp = () => {
+  // const signUp = () => {
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     try {
+  //       alert("Check Your Emails!");
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }, 3000);
+  
+  // };
+//   const REGISTER_MUTATION = gql`
+//   mutation Register($mobile_number: String!, $password: String!, $password_confirmation: String!) {
+//     register(input: {
+//       mobile_number: $mobile_number,
+//       password: $password,
+//       password_confirmation: $password_confirmation
+//     }) {
+//       token
+//       status
+//     }
+//   }
+// `;
+
+// const REGISTER_MUTATION = gql`
+//   mutation Mutation($mobile_number: String!, $password: String!, $password_confirmation: String!){
+//       register(mobile_number: $mobile_number, password: $password, password_confirmation: $password_confirmation) {
+//           token
+//       }
+//   }
+// `
+
+const REGISTER_MUTATION = gql`
+  mutation Register($input: RegisterInput!) {
+    register(input: $input) {
+      token
+      status
+    }
+  }
+`;
+
+const [registerMutation] = useMutation(REGISTER_MUTATION);
+
+  const signUp = async () => {
     setLoading(true);
     try {
-      alert("Check Your Emails!");
-    } catch {
+      // const response = await register({
+      //   variables: {
+      //     mobile_number: phone,
+      //     password: password,
+      //     password_confirmation: password,
+      //   },
+      // });
+
+      // if (response?.data?.register?.status) {
+      //   alert("Check Your Emails! Token: " + response.data.register.token);
+      // } else {
+      //   alert("Registration failed. Please try again.");
+      // }
+
+      // registerMutation({
+      //   variables: {
+      //     mobile_number: phone,
+      //     password: password,
+      //     password_confirmation: password,
+      //   },
+      // registerMutation({
+      //   variables: {
+      //     input: {
+      //       mobile_number: phone,
+      //       password: password,
+      //       password_confirmation: password,
+      //     },
+      //   },
+      //   onCompleted: infoData =>{
+      //     console.log(infoData);
+      //     setLoading(false);
+      //   },
+      //   onError: ({graphQLErrors, networkError}) => {
+      //     if(graphQLErrors){
+      //       graphQLErrors.forEach(({message, locations, path}) => {
+      //         alert("Registration failed. Please try again. /n" + message);
+      //       });
+      //     }if(networkError) console.log(networkError);
+      //     setLoading(false);
+      //   },
+      // })
+
+    } catch (err) {
+      console.log(err);
+      alert("An error occurred. Please try again.");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -50,35 +148,57 @@ export default function Register() {
           </TouchableOpacity>
 
           {/* Phone Number */}
-          <TextInput
+          <ThemedInput
             style={styles.inputPhone}
             onChangeText={setPhone}
             value={phone}
             autoCapitalize="none"
             keyboardType="phone-pad"
             placeholder="Your Phone Number"
-          ></TextInput>
+          ></ThemedInput>
         </View>
 
         {/* Input Password */}
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
-          <TextInput
+          <ThemedInput
             style={styles.inputPhone}
             onChangeText={setPassword}
             value={password}
             autoCapitalize="none"
             placeholder="Your Password"
-            secureTextEntry
-          ></TextInput>
-          <TouchableOpacity style={styles.eyeContainer}>
-            <FontAwesome6
-              name={"eye"}
-              size={10}
-            />
+            secureTextEntry={!showPassword}
+          ></ThemedInput>
+          <TouchableOpacity
+            style={styles.eyeContainer}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <FontAwesome6 name={showPassword ? "eye-slash" : "eye"} size={15} />
           </TouchableOpacity>
         </View>
+
         <View style={styles.action}>
-          <Button onPress={signIn} title="Register" />
+          <ThemedButton
+            title="Sign Up"
+            onPress={signUp}
+            disabled={loading} // Disable button when loading
+            loading={loading}
+            // style={[styles.button, loading && styles.disabledButton]} // Add different style when disabled
+          >
+          </ThemedButton>
+
+          {/* <TouchableOpacity
+            onPress={signUp}
+            disabled={loading} // Disable button when loading
+            style={[styles.button, loading && styles.disabledButton]} // Add different style when disabled
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Sign Up</Text>
+            )}
+          </TouchableOpacity> */}
+
+          {/* <Button onPress={signUp} title={loading ? "Loading..." : "Sign Up"} disabled={loading}/> */}
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -146,10 +266,26 @@ const styles = StyleSheet.create({
   eyeContainer: {
     // width: 25,
     // height: 40,
-    position:'absolute',
-    right: 0,
+    position: "absolute",
+    right: 5,
     bottom: 10,
-    height: 15,
-    width: 25
+    height: 20,
+    width: 25,
+  },
+  button: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 8,
+    borderRadius: 3,
+    justifyContent: "center",
+    alignItems: "center",
+    // width: 200,
+  },
+  disabledButton: {
+    backgroundColor: "#8BC34A", // Lighter color for disabled stater
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 14,
+    textTransform: "uppercase",
   },
 });
