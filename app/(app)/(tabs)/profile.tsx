@@ -1,14 +1,59 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Image, Platform } from 'react-native';
+import { ThemedButton, ThemedView, ThemedText, Collapsible, ExternalLink, ParallaxScrollView } from '@/components';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import { RowBar } from '@/components/base/RowBar';
+import { gql, useMutation } from '@apollo/client';
+import { useState } from 'react';
+import { router } from 'expo-router';
+import { useDispatch } from 'react-redux';
+import { logoutSuccess } from '@/redux/actions/auth';
 
 export default function TabTwoScreen() {
+  const dispatch = useDispatch();
+  
+  const [loading, setLoading] = useState(false);
+
+  const LOGOUT_MUTATION = gql`
+    mutation {
+    logout {
+      status
+      message
+    }
+  }
+  `;
+
+  const [logoutMutation] = useMutation(LOGOUT_MUTATION);
+
+  const logout = () => {
+    setLoading(true);
+    try {
+      logoutMutation({
+        onCompleted: (infoData : Object) => {
+          console.log(infoData);
+          // setLoading(false);
+          dispatch(logoutSuccess());
+
+          router.replace('/');
+        },
+        onError: ({ graphQLErrors, networkError }) => {
+          if (graphQLErrors) {
+            graphQLErrors.forEach(({ message, locations, path }) => {
+              console.log(graphQLErrors);
+            });
+          }
+          if (networkError) console.log(networkError);
+          // setLoading(false);
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -16,6 +61,12 @@ export default function TabTwoScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
+      <ThemedButton
+            title="Logout"
+            onPress={logout}
+            loading={loading}
+            disabled={loading} // Disable button when loadingent style when disabled
+      ></ThemedButton>
       <RowBar>
         <ThemedText>This app includes example code to help you get started.</ThemedText>
       </RowBar>

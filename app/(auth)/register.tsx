@@ -75,53 +75,33 @@ const [registerMutation] = useMutation(REGISTER_MUTATION);
   const signUp = async () => {
     setLoading(true);
     try {
-      // const response = await register({
-      //   variables: {
-      //     mobile_number: phone,
-      //     password: password,
-      //     password_confirmation: password,
-      //   },
-      // });
-
-      // if (response?.data?.register?.status) {
-      //   alert("Check Your Emails! Token: " + response.data.register.token);
-      // } else {
-      //   alert("Registration failed. Please try again.");
-      // }
-
-      // registerMutation({
-      //   variables: {
-      //     mobile_number: phone,
-      //     password: password,
-      //     password_confirmation: password,
-      //   },
-      // registerMutation({
-      //   variables: {
-      //     input: {
-      //       mobile_number: phone,
-      //       password: password,
-      //       password_confirmation: password,
-      //     },
-      //   },
-      //   onCompleted: infoData =>{
-      //     console.log(infoData);
-      //     setLoading(false);
-      //   },
-      //   onError: ({graphQLErrors, networkError}) => {
-      //     if(graphQLErrors){
-      //       graphQLErrors.forEach(({message, locations, path}) => {
-      //         alert("Registration failed. Please try again. /n" + message);
-      //       });
-      //     }if(networkError) console.log(networkError);
-      //     setLoading(false);
-      //   },
-      // })
+      registerMutation({
+        variables: {
+          input: {
+            mobile_number: phone,
+            password: password,
+            password_confirmation: password,
+          },
+        },
+        onCompleted: infoData =>{
+          console.log(infoData);
+          setLoading(false);
+        },
+        onError: ({graphQLErrors, networkError}) => {
+          if(graphQLErrors){
+            graphQLErrors.forEach(({message, locations, path}) => {
+              alert("Registration failed. Please try again. /n" + message);
+            });
+          }if(networkError) console.log(networkError);
+          setLoading(false);
+        },
+      })
 
     } catch (err) {
       console.log(err);
       alert("An error occurred. Please try again.");
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -182,23 +162,8 @@ const [registerMutation] = useMutation(REGISTER_MUTATION);
             onPress={signUp}
             disabled={loading} // Disable button when loading
             loading={loading}
-            // style={[styles.button, loading && styles.disabledButton]} // Add different style when disabled
           >
           </ThemedButton>
-
-          {/* <TouchableOpacity
-            onPress={signUp}
-            disabled={loading} // Disable button when loading
-            style={[styles.button, loading && styles.disabledButton]} // Add different style when disabled
-          >
-            {loading ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Sign Up</Text>
-            )}
-          </TouchableOpacity> */}
-
-          {/* <Button onPress={signUp} title={loading ? "Loading..." : "Sign Up"} disabled={loading}/> */}
         </View>
       </KeyboardAvoidingView>
     </View>

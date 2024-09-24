@@ -12,17 +12,45 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
-// import { GestureHandlerRootView } from "react-native-gesture-handler";
-// import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+} from "@apollo/client";
+import {setContext} from '@apollo/client/link/context'
+import { Provider, useSelector } from "react-redux";
+import { RootState, store } from "@/redux/store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // const client = new ApolloClient({
-  //   uri: "http://47.129.200.19/graphiql",
-  //   cache: new InMemoryCache(),
-  // });
+
+  const httpLink = new HttpLink({
+    uri: "http://47.129.200.19/graphql",
+  });
+
+  const authLink = setContext(async(_, {headers}) => {
+
+    const token = await AsyncStorage.getItem('token');
+    
+
+    console.log(token)
+    return{
+      headers: {
+        ...headers,
+        Authorization: token ? `Bearer ${token}` : "",
+      }
+    }
+  })
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
+
   const colorScheme = useColorScheme();
 
   const [loaded] = useFonts({
@@ -52,7 +80,8 @@ export default function RootLayout() {
 
   return (
     // <GestureHandlerRootView>
-      // <ApolloProvider client={client}>
+    <ApolloProvider client={client}>
+      <Provider store={store}>
         <ThemeProvider value={colorScheme == "dark" ? DarkTheme : DefaultTheme}>
           <Stack initialRouteName="(auth)">
             <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -77,7 +106,8 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
         </ThemeProvider>
-      // </ApolloProvider>
+      </Provider>
+    </ApolloProvider>
     // </GestureHandlerRootView>
   );
 }

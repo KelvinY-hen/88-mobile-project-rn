@@ -14,10 +14,13 @@ import { Ionicons, FontAwesome6, AntDesign } from "@expo/vector-icons";
 
 import middleMenuData from '../../../constants/MiddleMenu.json'
 import { useRouter } from "expo-router";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 
 export default function HomeScreen() {
   const router = useRouter();
+  const token = useSelector((state: RootState) => state.auth.Token);
 
   const handleMiddleMenu = (route) => {
     router.push(route); // Programmatically navigate to the (app) route
@@ -31,7 +34,7 @@ export default function HomeScreen() {
             style={[{ marginBottom: -3 }]}
             name="scan"
           />
-          <Text style={styles.topText}>Scan Code</Text>
+          <Text style={styles.topText}>Scan Code {token}</Text>
         </View>
         <View style={styles.imageContainer}>
           <Ionicons

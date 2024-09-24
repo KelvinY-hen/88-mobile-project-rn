@@ -11,31 +11,70 @@ import {
 } from "react-native";
 
 import { useState } from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { images } from "../constants";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { ThemedInput } from "@/components/ThemedInput";
 import { ThemedText } from "@/components";
 import { ThemedButton } from "@/components/ThemedButton";
+import { gql, useMutation } from "@apollo/client";
+
+import { loginSuccess, toggleIsLoggedIn } from '../redux/actions/auth'; 
+
+
+import { useDispatch } from "react-redux";
 
 export default function LoginScreen() {
+  const dispatch = useDispatch()
+
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const signUp = () => {
+  const LOGIN_MUTATION = gql`
+    mutation Login($input: LoginInput!) {
+      login(input: $input) {
+        token
+      }
+    }
+  `;
+
+  const [loginMutation] = useMutation(LOGIN_MUTATION);
+
+  const signIn = () => {
     setLoading(true);
     try {
-      alert("Check Your Emails!");
-    } catch (error) {
-      console.log(error);
+      loginMutation({
+        variables: {
+          input: {
+            mobile_number: phone,
+            password: password,
+          },
+        },
+        onCompleted: (infoData) => {
+          console.log(infoData.login.token);
+          // setLoading(false);
+          dispatch(loginSuccess(infoData.login));
+          router.replace('/(app)/(tabs)/home')
+        },
+        onError: ({ graphQLErrors, networkError }) => {
+          if (graphQLErrors) {
+            graphQLErrors.forEach(({ message, locations, path }) => {
+              console.log(graphQLErrors);
+            });
+          }
+          if (networkError) console.log(networkError);
+          // setLoading(false);
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      alert("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
-  const signIn = () => {};
 
   return (
     <View style={styles.container}>
@@ -98,7 +137,7 @@ export default function LoginScreen() {
         <View style={styles.action}>
           <ThemedButton
             title="Login"
-            onPress={signUp}
+            onPress={signIn}
             loading={loading}
             disabled={loading} // Disable button when loadingent style when disabled
           ></ThemedButton>
