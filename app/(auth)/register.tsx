@@ -1,9 +1,9 @@
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedInput } from "@/components/ThemedInput";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation } from "@apollo/client";
 
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 import { useState } from "react";
 
@@ -19,6 +19,7 @@ import {
 // import { TouchableOpacity } from "react-native-gesture-handler";
 import { TouchableOpacity } from "react-native";
 import { GraphQLError } from "graphql";
+import Toast from "react-native-toast-message";
 // TouchableOpacity
 
 export default function Register() {
@@ -38,39 +39,39 @@ export default function Register() {
   //       setLoading(false);
   //     }
   //   }, 3000);
-  
+
   // };
-//   const REGISTER_MUTATION = gql`
-//   mutation Register($mobile_number: String!, $password: String!, $password_confirmation: String!) {
-//     register(input: {
-//       mobile_number: $mobile_number,
-//       password: $password,
-//       password_confirmation: $password_confirmation
-//     }) {
-//       token
-//       status
-//     }
-//   }
-// `;
+  //   const REGISTER_MUTATION = gql`
+  //   mutation Register($mobile_number: String!, $password: String!, $password_confirmation: String!) {
+  //     register(input: {
+  //       mobile_number: $mobile_number,
+  //       password: $password,
+  //       password_confirmation: $password_confirmation
+  //     }) {
+  //       token
+  //       status
+  //     }
+  //   }
+  // `;
 
-// const REGISTER_MUTATION = gql`
-//   mutation Mutation($mobile_number: String!, $password: String!, $password_confirmation: String!){
-//       register(mobile_number: $mobile_number, password: $password, password_confirmation: $password_confirmation) {
-//           token
-//       }
-//   }
-// `
+  // const REGISTER_MUTATION = gql`
+  //   mutation Mutation($mobile_number: String!, $password: String!, $password_confirmation: String!){
+  //       register(mobile_number: $mobile_number, password: $password, password_confirmation: $password_confirmation) {
+  //           token
+  //       }
+  //   }
+  // `
 
-const REGISTER_MUTATION = gql`
-  mutation Register($input: RegisterInput!) {
-    register(input: $input) {
-      token
-      status
+  const REGISTER_MUTATION = gql`
+    mutation Register($input: RegisterInput!) {
+      register(input: $input) {
+        token
+        status
+      }
     }
-  }
-`;
+  `;
 
-const [registerMutation] = useMutation(REGISTER_MUTATION);
+  const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const signUp = async () => {
     setLoading(true);
@@ -83,23 +84,47 @@ const [registerMutation] = useMutation(REGISTER_MUTATION);
             password_confirmation: password,
           },
         },
-        onCompleted: infoData =>{
+        onCompleted: (infoData) => {
           console.log(infoData);
-          setLoading(false);
+          Toast.show({
+            type: "success",
+            text1: "Registered Succesfully",
+            visibilityTime: 3000,
+          });
+          router.replace("/");
+          // setLoading(false);
         },
-        onError: ({graphQLErrors, networkError}) => {
-          if(graphQLErrors){
-            graphQLErrors.forEach(({message, locations, path}) => {
-              alert("Registration failed. Please try again. /n" + message);
+        onError: ({ graphQLErrors, networkError }) => {
+          if (graphQLErrors) {
+            graphQLErrors.forEach(({ message, locations, path }) => {
+              // alert("Registration failed. Please try again. /n" + message);
+              console.log(message);
+              Toast.show({
+                type: "error",
+                text1: "Registration failed. Please try again later",
+                visibilityTime: 3000,
+              });
             });
-          }if(networkError) console.log(networkError);
-          setLoading(false);
+          }
+          if (networkError) {
+            console.log(networkError);
+            // console.log(message);
+            Toast.show({
+              type: "error",
+              text1: "Network error. Please try again later",
+              visibilityTime: 3000,
+            });
+          }
+          // setLoading(false);
         },
-      })
-
+      });
     } catch (err) {
-      console.log(err);
-      alert("An error occurred. Please try again.");
+      console.log("functionerror, ", err);
+      Toast.show({
+        type: "error",
+        text1: "An Error occuered. Please try again later",
+        visibilityTime: 3000,
+      });
     } finally {
       setLoading(false);
     }
@@ -162,8 +187,7 @@ const [registerMutation] = useMutation(REGISTER_MUTATION);
             onPress={signUp}
             disabled={loading} // Disable button when loading
             loading={loading}
-          >
-          </ThemedButton>
+          ></ThemedButton>
         </View>
       </KeyboardAvoidingView>
     </View>

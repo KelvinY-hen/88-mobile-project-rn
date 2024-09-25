@@ -1,13 +1,34 @@
 import { router, Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Pressable } from "react-native";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { gql, useQuery } from "@apollo/client";
+// import { useDispatch } from "react-redux";
 
 export default function TabLayout() {
+
+  // const dispatch = useDispatch()
+
   const colorScheme = useColorScheme();
+
+  const GET_USER_DATA = gql`
+  query Query{
+      me{
+        id
+        mobile_number
+        agent_linked_code
+      }
+    }
+  `
+
+  // useEffect(() => {
+  //   const {loading, data, error, refetch} = useQuery(GET_USER_DATA);
+  //   console.log(data)
+  //   // dispatch((infoData));
+  // },[])
 
   return (
     <Tabs

@@ -17,12 +17,13 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { ThemedInput } from "@/components/ThemedInput";
 import { ThemedText } from "@/components";
 import { ThemedButton } from "@/components/ThemedButton";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 
 import { loginSuccess, toggleIsLoggedIn } from '../redux/actions/auth'; 
 
 
 import { useDispatch } from "react-redux";
+import Toast from "react-native-toast-message";
 
 export default function LoginScreen() {
   const dispatch = useDispatch()
@@ -40,6 +41,17 @@ export default function LoginScreen() {
     }
   `;
 
+  const GET_USER_DATA = gql`
+  query Query{
+      me{
+        id
+        mobile_number
+        agent_linked_code
+      }
+    }
+  `
+
+
   const [loginMutation] = useMutation(LOGIN_MUTATION);
 
   const signIn = () => {
@@ -55,22 +67,44 @@ export default function LoginScreen() {
         onCompleted: (infoData) => {
           console.log(infoData.login.token);
           // setLoading(false);
+          Toast.show({
+            type: 'success',
+            text1: 'Login Succesful',
+            visibilityTime: 3000
+          });
+
           dispatch(loginSuccess(infoData.login));
           router.replace('/(app)/(tabs)/home')
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
             graphQLErrors.forEach(({ message, locations, path }) => {
-              console.log(graphQLErrors);
+              console.log(message);
+              Toast.show({
+                type: 'error',
+                text1: 'Login failed. Please try again later',
+                visibilityTime: 3000
+              });
             });
           }
-          if (networkError) console.log(networkError);
+          if (networkError) {
+            Toast.show({
+              type: 'error',
+              text1: 'Network error. Please try again later',
+              visibilityTime: 3000
+            });
+          }
           // setLoading(false);
+
         },
       });
     } catch (err) {
-      console.log(err);
-      alert("An error occurred. Please try again.");
+      console.log('functionerror, ',err);
+      Toast.show({
+        type: 'error',
+        text1: 'An Error occuered. Please try again later',
+        visibilityTime: 3000
+      });
     } finally {
       setLoading(false);
     }

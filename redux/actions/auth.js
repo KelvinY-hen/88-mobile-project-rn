@@ -45,6 +45,19 @@ export const toggleIsLoggedIn = value => async dispatch => {
   }
 };
 
+
+export const getUserData = data => async dispatch => {
+  try {
+    dispatch({
+      type: Types.UPDATE_USER_DATA,
+      payload: data,
+    });
+  } catch (error) {
+    console.log('Error saving data to AsyncStorage:', error);
+  }
+};
+
+
 // Action for successful logout
 export const logoutSuccess = () => async dispatch => {
   try {

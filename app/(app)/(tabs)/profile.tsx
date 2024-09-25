@@ -1,26 +1,61 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
-import { ThemedButton, ThemedView, ThemedText, Collapsible, ExternalLink, ParallaxScrollView } from '@/components';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import {
+  StyleSheet,
+  Image,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  Switch,
+  View,
+  ScrollView,
+} from "react-native";
+import {
+  ThemedButton,
+  ThemedView,
+  ThemedText,
+  Collapsible,
+  ExternalLink,
+  ParallaxScrollView,
+} from "@/components";
 
-import { RowBar } from '@/components/base/RowBar';
-import { gql, useMutation } from '@apollo/client';
-import { useState } from 'react';
-import { router } from 'expo-router';
-import { useDispatch } from 'react-redux';
-import { logoutSuccess } from '@/redux/actions/auth';
+import { RowBar } from "@/components/base/RowBar";
+import { gql, useMutation } from "@apollo/client";
+import { useState } from "react";
+import { router } from "expo-router";
+import { useDispatch } from "react-redux";
+import { logoutSuccess } from "@/redux/actions/auth";
+import Toast from "react-native-toast-message";
+import { FontAwesome6 } from "@expo/vector-icons";
+// import { View } from "react-native-reanimated/lib/typescript/Animated";
+
+const PROFILE_SECTIONS = [
+  {
+    header: "Account",
+    items: [
+      { id: "profile", icon: "user", label: "Profile", type: "link", link:'/(settings)/profile/profile'  },
+      {
+        id: "logout",
+        icon: "arrow-right-from-bracket",
+        label: "Logout",
+        type: "logout",
+      },
+    ],
+  },
+];
 
 export default function TabTwoScreen() {
   const dispatch = useDispatch();
-  
+
   const [loading, setLoading] = useState(false);
 
   const LOGOUT_MUTATION = gql`
     mutation {
-    logout {
-      status
-      message
+      logout {
+        status
+        message
+      }
     }
-  }
   `;
 
   const [logoutMutation] = useMutation(LOGOUT_MUTATION);
@@ -29,129 +64,307 @@ export default function TabTwoScreen() {
     setLoading(true);
     try {
       logoutMutation({
-        onCompleted: (infoData : Object) => {
+        onCompleted: (infoData: Object) => {
           console.log(infoData);
           // setLoading(false);
+          Toast.show({
+            type: "success",
+            text1: "Logout Succesfully",
+            visibilityTime: 3000,
+          });
           dispatch(logoutSuccess());
-
-          router.replace('/');
+          router.replace("/");
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
             graphQLErrors.forEach(({ message, locations, path }) => {
-              console.log(graphQLErrors);
+              // alert("Registration failed. Please try again. /n" + message);
+              console.log(message);
+              Toast.show({
+                type: "error",
+                text1: "Logout failed. Please try again later",
+                visibilityTime: 3000,
+              });
             });
           }
-          if (networkError) console.log(networkError);
-          // setLoading(false);
+          if (networkError) {
+            console.log(networkError);
+            // console.log(message);
+            Toast.show({
+              type: "error",
+              text1: "Network error. Please try again later",
+              visibilityTime: 3000,
+            });
+          }
         },
       });
     } catch (err) {
-      console.log(err);
-      alert("An error occurred. Please try again.");
+      console.log("functionerror, ", err);
+      Toast.show({
+        type: "error",
+        text1: "An Error occuered. Please try again later",
+        visibilityTime: 3000,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedButton
-            title="Logout"
-            onPress={logout}
-            loading={loading}
-            disabled={loading} // Disable button when loadingent style when disabled
-      ></ThemedButton>
-      <RowBar>
-        <ThemedText>This app includes example code to help you get started.</ThemedText>
-      </RowBar>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText> library
-          to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    // <ParallaxScrollView
+    //   headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+    //   headerImage={
+    //     <Ionicons size={310} name="code-slash" style={styles.headerImage} />
+    //   }
+    // >
+    //   <ThemedView style={styles.titleContainer}>
+    //     <ThemedText type="title">Explore</ThemedText>
+    //   </ThemedView>
+    //   <ThemedButton
+    //     title="Logout"
+    //     onPress={logout}
+    //     loading={loading}
+    //     disabled={loading} // Disable button when loadingent style when disabled
+    //   ></ThemedButton>
+    //   <RowBar>
+    //     <ThemedText>
+    //       This app includes example code to help you get started.
+    //     </ThemedText>
+    //   </RowBar>
+    //   <ThemedText>
+    //     This app includes example code to help you get started.
+    //   </ThemedText>
+
+    // </ParallaxScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+        headerImage={
+          <Ionicons size={310} name="code-slash" style={styles.headerImage} />
+        }
+      >
+        <ThemedView style={styles.header}>
+          <ThemedText style={styles.title}>Profile</ThemedText>
+        </ThemedView>
+        {PROFILE_SECTIONS.map(({ header, items }) => (
+          <ThemedView style={styles.section} key={header}>
+            <ThemedView style={styles.sectionHeader}>
+              <ThemedText style={styles.sectionTitle}>{header}</ThemedText>
+            </ThemedView>
+
+            <ThemedView style={styles.sectionBody}>
+              {items.map(({ label, id, type, icon, link }, index) => (
+                <ThemedView
+                  style={[
+                    styles.rowWrapper,
+                    index === 0 && { borderTopWidth: 0 },
+                  ]}
+                  key={id}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      if(type == 'link' && link){
+                        router.push(link);
+                      }else if(type == 'logout'){
+                        logout();
+                      }
+                    }}
+                  >
+                    <ThemedView style={styles.row}>
+                      <FontAwesome6
+                        name={icon}
+                        size={20}
+                        style={{ marginRight: 32 }}
+                      />
+                      <ThemedText style={styles.rowLabel}>{label}</ThemedText>
+                      <ThemedView style={styles.rowSpacer} />
+                      {/* {
+                          type === 'select' && (
+                            <ThemedText style={styles.rowValue}>
+                              {
+                                form[id]
+                              }
+                            </ThemedText>
+                          )
+                        } */}
+                      {["select", "link"].includes(type) && (
+                        <FontAwesome6
+                          name={"chevron-right"}
+                          size={20}
+                          color="#ababab"
+                        />
+                      )}
+                    </ThemedView>
+                  </TouchableOpacity>
+                </ThemedView>
+              ))}
+            </ThemedView>
+          </ThemedView>
+        ))}
+      </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 24,
+  },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 10,
+    marginBottom: 12,
+  },
+  outlineContainer: {
+    padding: 50,
+  },
   headerImage: {
-    color: '#808080',
+    color: "#808080",
     bottom: -90,
     left: -35,
-    position: 'absolute',
+    position: "absolute",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#1d1d1d",
+    marginBottom: 6,
+    paddingTop: 10,
   },
   titleContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
+  },
+  // container: {
+  //   paddingVertical: 24,
+  //   paddingHorizontal: 0,
+  //   flexGrow: 1,
+  //   flexShrink: 1,
+  //   flexBasis: 0,
+  // },
+  contentFooter: {
+    marginTop: 24,
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#929292",
+    textAlign: "center",
+  },
+  /** Header */
+  sectionHeader: {
+    paddingHorizontal: 24,
+    paddingBottom: 12,
+  },
+  headerTitle: {
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#1d1d1d",
+  },
+  headerSubtitle: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#929292",
+    marginTop: 6,
+  },
+  /** Profile */
+  profile: {
+    padding: 16,
+    flexDirection: "column",
+    alignItems: "center",
+    // backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#e3e3e3",
+  },
+  profileAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 9999,
+  },
+  profileName: {
+    marginTop: 12,
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#090909",
+  },
+  profileEmail: {
+    marginTop: 6,
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#848484",
+  },
+  profileAction: {
+    marginTop: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    // backgroundColor: '#007bff',
+    borderRadius: 12,
+  },
+  profileActionText: {
+    marginRight: 8,
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  /** Section */
+  section: {
+    paddingTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#a7a7a7",
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
+  },
+  sectionBody: {
+    // paddingLeft: 20,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#e3e3e3",
+  },
+  /** Row */
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingRight: 16,
+    height: 50,
+  },
+  rowWrapper: {
+    paddingLeft: 20,
+    borderTopWidth: 1,
+    borderColor: "#e3e3e3",
+    backgroundColor: "#fff",
+  },
+  rowFirst: {
+    borderTopWidth: 0,
+  },
+  rowIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  rowLabel: {
+    fontSize: 17,
+    fontWeight: "500",
+    color: "#000",
+  },
+  rowSpacer: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+  },
+  rowValue: {
+    fontSize: 17,
+    fontWeight: "500",
+    color: "#8B8B8B",
+    marginRight: 4,
   },
 });

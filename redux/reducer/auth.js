@@ -15,6 +15,11 @@ export default function auth(state = initialState, action) {
                 Token: action.payload.token,
                 isLoggedIn: true
             };
+        case Types.UPDATE_USER_DATA:
+            return {
+                ...state,
+                user: action.payload
+            };
         case Types.LOGOUT:
             return {
                 user: {},

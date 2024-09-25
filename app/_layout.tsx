@@ -22,6 +22,8 @@ import {setContext} from '@apollo/client/link/context'
 import { Provider, useSelector } from "react-redux";
 import { RootState, store } from "@/redux/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from 'react-native-toast-message';
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -105,9 +107,11 @@ export default function RootLayout() {
             />
             <Stack.Screen name="+not-found" />
           </Stack>
+          <Toast />
         </ThemeProvider>
       </Provider>
     </ApolloProvider>
+    
     // </GestureHandlerRootView>
   );
 }

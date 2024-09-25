@@ -8,15 +8,19 @@ import {
   Pressable,
 } from "react-native";
 
-import { HelloWave, ParallaxScrollView, ThemedText, ThemedView} from "@/components"
+import {
+  HelloWave,
+  ParallaxScrollView,
+  ThemedText,
+  ThemedView,
+} from "@/components";
 
 import { Ionicons, FontAwesome6, AntDesign } from "@expo/vector-icons";
 
-import middleMenuData from '../../../constants/MiddleMenu.json'
+import middleMenuData from "../../../constants/MiddleMenu.json";
 import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -24,40 +28,70 @@ export default function HomeScreen() {
 
   const handleMiddleMenu = (route) => {
     router.push(route); // Programmatically navigate to the (app) route
-  }
+  };
   return (
     <View style={styles.outlineContainer}>
       <View style={styles.topContainer}>
         <View style={styles.imageContainer}>
-          <Ionicons
-            size={40}
-            style={[{ marginBottom: -3 }]}
-            name="scan"
-          />
-          <Text style={styles.topText}>Scan Code {token}</Text>
+          <Ionicons size={40} style={[{ marginBottom: -3 }]} name="scan" />
+          <Text style={styles.topText}>Scan Code</Text>
         </View>
         <View style={styles.imageContainer}>
-          <Ionicons
-            size={40}
-            style={[{ marginBottom: -3 }]}
-            name="qr-code"
-          />
+          <Ionicons size={40} style={[{ marginBottom: -3 }]} name="qr-code" />
           <Text style={styles.topText}>Receive Code</Text>
         </View>
       </View>
 
       <View style={styles.middleContainer}>
-        {middleMenuData.map((item, index) => (
+        {/* {middleMenuData.map((item, index) => (
           <Pressable  key={index} style={styles.imageContainerMiddle}  onPress={()=>handleMiddleMenu(item.navigation)}>
               <FontAwesome6 name={item.icon} size={25} style={[{ marginBottom: -3 }]} />
               <ThemedText style={styles.middleText}>{item.name}</ThemedText>
           </Pressable>
-        ))}
+        ))} */}
+        {middleMenuData.map((item, index) => {
+          const isMaintenance = item.status === "maintenance";
+
+          return (
+            <Pressable
+              key={index}
+              style={[
+                styles.imageContainerMiddle,
+                isMaintenance && styles.maintenanceContainer,
+              ]}
+              onPress={() => {
+                if (!isMaintenance) {
+                  handleMiddleMenu(item.navigation);
+                }
+              }}
+              disabled={isMaintenance}
+            >
+              <FontAwesome6
+                name={item.icon}
+                size={25}
+                style={[
+                  { marginBottom: -3 },
+                  // isMaintenance && styles.maintenanceIcon,
+                ]}
+              />
+              <ThemedText
+                style={[
+                  styles.middleText,
+                  // isMaintenance && styles.maintenanceText,
+                ]}
+              >
+                {item.name}
+              </ThemedText>
+
+              {/* Diagonal stripe for maintenance indicator */}
+              {/* {isMaintenance && <ThemedView style={styles.diagonalStripe} />} */}
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
 }
-
 
 const screenWidth = Dimensions.get("window").width; // Get the screen width
 
@@ -71,6 +105,26 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
+  maintenanceContainer: {
+    backgroundColor: "#A52A2A", // Brown color for maintenance state
+    opacity: 0.6, // Reduced opacity to indicate it is disabled
+  },
+  maintenanceIcon: {
+    color: "#A52A2A", // Brown color for the icon
+  },
+  maintenanceText: {
+    color: "#A52A2A", // Brown color for the text
+  },
+  diagonalStripe: {
+    position: "absolute",
+    width: "100%", // Width limited to the container
+    height: 10, // Thickness of the stripe
+    backgroundColor: "red", // Color of the stripe
+    top: "50%", // Vertically center the stripe
+    left: 0, // Start from the left edge
+    transform: [{ rotate: "45deg" }], // Rotate to create the diagonal effect
+    zIndex: 1, // Ensure the stripe stays above other elements
+  },
   topContainer: {
     backgroundColor: "#14437C",
     flexDirection: "row",
@@ -79,7 +133,7 @@ const styles = StyleSheet.create({
   middleContainer: {
     backgroundColor: "#19559E",
     flexDirection: "row",
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     marginTop: 16,
     borderRadius: 10,
     padding: 10, // Add padding to avoid items sticking to the border
@@ -91,13 +145,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageContainerMiddle: {
-    flexBasis: '33.333%', // Adjust the basis to create more space
+    flexBasis: "33.333%", // Adjust the basis to create more space
     alignItems: "center",
     paddingVertical: 15,
     borderWidth: 1, // Create thin lines between items
-    borderColor: 'transparent', // Set the border to transparent
-    borderBottomColor: '#14437C', // Set the color for bottom separation
-    borderRightColor: '#14437C', // Set the color for right-side separation
+    borderColor: "transparent", // Set the border to transparent
+    borderBottomColor: "#14437C", // Set the color for bottom separation
+    borderRightColor: "#14437C", // Set the color for right-side separation
+    position: "relative",
   },
   topText: {
     marginTop: 10,
