@@ -20,7 +20,6 @@ import {
 import { TouchableOpacity } from "react-native";
 import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
-import { ThemedFA6 } from "@/components/ThemedFA6";
 // TouchableOpacity
 
 export default function Register() {
@@ -113,15 +112,14 @@ export default function Register() {
             onChangeText={setOldPassword}
             value={oldPassword}
             autoCapitalize="none"
-            placeholder="Amount"
+            placeholder="Old Password"
             secureTextEntry={!showPassword}
           ></ThemedInput>
           <TouchableOpacity
             style={styles.eyeContainer}
             onPress={() => setShowPassword(!showPassword)}
           >
-            <FontAwesome6  name={showPassword ? "eye-slash" : "eye"} size={15} />
-            {/* <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} /> */}
+            <FontAwesome6 name={showPassword ? "eye-slash" : "eye"} size={15} />
           </TouchableOpacity>
         </View>
 
@@ -132,15 +130,39 @@ export default function Register() {
             onChangeText={setPassword}
             value={password}
             autoCapitalize="none"
-            placeholder="Description (Optional)"
+            placeholder="New Password"
+            secureTextEntry={!showPassword}
           ></ThemedInput>
+          <TouchableOpacity
+            style={styles.eyeContainer}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <FontAwesome6 name={showPassword ? "eye-slash" : "eye"} size={15} />
+          </TouchableOpacity>
         </View>
 
         
+        {/* Input Password */}
+        <View style={{ flexDirection: "row", marginVertical: 4 }}>
+          <ThemedInput
+            style={styles.inputPhone}
+            onChangeText={setConfirmPassword}
+            value={ConfirmPassword}
+            autoCapitalize="none"
+            placeholder="Re-enter New Password"
+            secureTextEntry={!showPassword}
+          ></ThemedInput>
+          <TouchableOpacity
+            style={styles.eyeContainer}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <FontAwesome6 name={showPassword ? "eye-slash" : "eye"} size={15} />
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.action}>
           <ThemedButton
-            title="Submit Withdrawal Request"
+            title="Update Password"
             onPress={signUp}
             disabled={loading} // Disable button when loading
             loading={loading}

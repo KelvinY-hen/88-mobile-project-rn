@@ -13,9 +13,9 @@ import {
 import { useState } from "react";
 import { Link, router } from "expo-router";
 import { images } from "../constants";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { ThemedInput } from "@/components/ThemedInput";
-import { ThemedText } from "@/components";
+import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { ThemedButton } from "@/components/ThemedButton";
 import { gql, useMutation, useQuery } from "@apollo/client";
 
@@ -24,6 +24,8 @@ import { loginSuccess, toggleIsLoggedIn } from '../redux/actions/auth';
 
 import { useDispatch } from "react-redux";
 import Toast from "react-native-toast-message";
+import { ThemedLink } from "@/components/ThemedLink";
+import { ThemedFA6 } from "@/components/ThemedFA6";
 
 export default function LoginScreen() {
   const dispatch = useDispatch()
@@ -111,16 +113,22 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.topSection}>
+    <ParallaxScrollView 
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+      headerImage={
+        <Ionicons size={310} name="code-slash"  />
+      }
+    style={styles.container}
+    >
+      <ThemedView style={styles.topSection}>
         <TouchableOpacity>
           <Image
             source={images.logo} // Replace with your image path
             style={styles.logo}
           />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Payment APP</Text>
-      </View>
+        <ThemedText style={styles.headerText}>Payment APP</ThemedText>
+      </ThemedView>
       <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
         {/* Input Phone Number */}
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
@@ -131,7 +139,7 @@ export default function LoginScreen() {
                 justifyContent: "center",
               }}
             >
-              <FontAwesome6
+              <ThemedFA6
                 name={"angle-down"}
                 // size={25}
                 style={[{ marginBottom: -3 }]}
@@ -164,7 +172,9 @@ export default function LoginScreen() {
             style={styles.eyeContainer}
             onPress={() => setShowPassword(!showPassword)}
           >
-            <FontAwesome6 name={showPassword ? "eye-slash" : "eye"} size={15} />
+            {/* <FontAwesome6  name={showPassword ? "eye-slash" : "eye"} size={15} /> */}
+                <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} />
+
           </TouchableOpacity>
         </View>
 
@@ -175,28 +185,28 @@ export default function LoginScreen() {
             loading={loading}
             disabled={loading} // Disable button when loadingent style when disabled
           ></ThemedButton>
-          <View style={styles.option}>
-            <Link style={styles.link} push href="/">
+          <ThemedView style={styles.option}>
+            <ThemedLink style={styles.link} push href="/">
               Forget?
-            </Link>
-            <Link
+            </ThemedLink>
+            <ThemedLink
               style={[styles.link, { textAlign: "center" }]}
               push
               href="/(app)/(tabs)/home"
             >
               E-Rate
-            </Link>
-            <Link
+            </ThemedLink>
+            <ThemedLink
               style={[styles.link, { textAlign: "right" }]}
               push={true}
               href="/(auth)/register"
             >
               Sign Up
-            </Link>
-          </View>
+            </ThemedLink>
+          </ThemedView>
         </View>
       </KeyboardAvoidingView>
-    </View>
+    </ParallaxScrollView>
   );
 }
 
@@ -210,7 +220,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 20, // Adjust space between image and input fields
+    paddingTop: 70, // Adjust space between image and input fields
+    paddingBottom: 70 , // Adjust space between image and input fields
   },
   logo: {
     width: 120, // Set the size of the image

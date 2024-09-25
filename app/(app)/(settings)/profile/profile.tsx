@@ -70,7 +70,7 @@ export default function Register() {
             ></ThemedInput> */}
             <ThemedButton
               title="Update Password"
-              onPress={refetch}
+              onPress={() => router.push('/(app)/(settings)/profile/updatePassword')}
               loading={loading}
               disabled={loading} // Dis
             />
