@@ -5,7 +5,7 @@ import { gql, useMutation } from "@apollo/client";
 
 import { Link, router } from "expo-router";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -24,13 +24,40 @@ import { ParallaxScrollView } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
 import { useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
+import BottomSheetComponent from "@/components/base/bottomSheet";
+import { confirm } from "@/components/base/confirm";
 // TouchableOpacity
+
+const countries = [
+  { id: 0, label: '🇺🇸 United States', value: 'US' },
+  { id: 1, label: '🇨🇦 Canada', value: 'CA' },
+  { id: 2, label: '🇬🇧 United Kingdom', value: 'UK' },
+];
+
+const banks = [
+  { id: 0, label: 'Maybank', value: 'maybank' },
+  { id: 1, label: 'CIMB Bank', value: 'cimb' },
+  { id: 2, label: 'Public Bank', value: 'public' },
+  { id: 3, label: 'RHB Bank', value: 'rhb' },
+  { id: 4, label: 'Hong Leong Bank', value: 'hong_leong' },
+  { id: 5, label: 'AmBank', value: 'ambank' },
+  { id: 6, label: 'Bank Islam', value: 'bank_islam' },
+  { id: 7, label: 'UOB Bank', value: 'uob' },
+  { id: 8, label: 'HSBC Bank', value: 'hsbc' },
+];
+
 
 export default function updateUsername() {
   const [username, setUserName] = useState(
-    useSelector((state) => state.auth.user.agent_linked_code)
+    useSelector((state) => state.user.user.agent_linked_code)
   );
   const [loading, setLoading] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedBank, setSelectedBank] = useState(null);
+
+  const countrySheetRef = useRef(null);
+  const bankSheetRef = useRef(null);
+
 
   const REGISTER_MUTATION = gql`
     mutation Register($input: RegisterInput!) {
@@ -43,20 +70,64 @@ export default function updateUsername() {
 
   const [registerMutation] = useMutation(REGISTER_MUTATION);
 
-  const signUp = async () => {
+  const addBank = async () => {
     setLoading(true);
-    try {
-    } catch (err) {
-      console.log("functionerror, ", err);
-      Toast.show({
-        type: "error",
-        text1: "An Error occuered. Please try again later",
-        visibilityTime: 3000,
-      });
-    } finally {
-      setLoading(false);
+    const confirmed = await confirm(
+      "Do you want to proceed with adding the bank?"
+    );
+
+    if(confirmed){
+      try {
+  
+        console.log("Bank Added successfully!");
+      } catch (err) {
+        console.log("functionerror, ", err);
+        Toast.show({
+          type: "error",
+          text1: "An Error occuered. Please try again later",
+          visibilityTime: 3000,
+        });
+      } finally {
+      }
+    }else{
+      console.log("Bank Cancelled to be add!");
     }
+    setLoading(false);
   };
+
+  const handleExpandCountry = () => countrySheetRef.current?.present();
+  const handleExpandBank = () => bankSheetRef.current?.present();
+  const handleDismissCountry = () => countrySheetRef.current?.close();
+  const handleDismissBank = () => bankSheetRef.current?.close();
+
+  const handleCountryPress = (item) => {
+    setSelectedCountry(item); // or item.value
+    handleDismissCountry();
+  };
+
+  const handleBankPress = (item) => {
+    setSelectedBank(item); // or item.value
+    handleDismissBank();
+  };
+
+
+  const renderCountryItem = (item) => (
+    <TouchableOpacity
+      style={{ alignItems: "center", padding:10 }}
+      onPress={() => handleCountryPress(item)}
+    >
+      <Text style={{ fontSize: 18 }}>{item.label}</Text>
+    </TouchableOpacity>
+  );
+
+  const renderBankItem = (item) => (
+    <TouchableOpacity
+      style={{ alignItems: "center", padding:10 }}
+      onPress={() => handleBankPress(item)}
+    >
+      <Text style={{ fontSize: 18 }}>{item.label}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <ParallaxScrollView
@@ -67,10 +138,10 @@ export default function updateUsername() {
         {/* Input Password */}
         <ThemedRow
           type="select"
-          label="Potrait"
+          label="Currency"
           style={{borderBottomWidth:1}} 
-
-          // optional=""
+          optional={selectedCountry?.label}
+          handleFunction={handleExpandCountry}
         ></ThemedRow>
         
         <ThemedRow
@@ -88,11 +159,14 @@ export default function updateUsername() {
           type="select"
           label="Bank"
           optional="Please Select a Bank"
+          optional={selectedBank?.label}
+          handleFunction={handleExpandBank}
         ></ThemedRow>
         <ThemedRow
           type="input"
           label="Branch"
           optional="Account branch"
+          style={{borderBottomWidth:1}}
         ></ThemedRow>
 
         {/* <View style={{ flexDirection: "row", marginVertical: 4 }}>
@@ -108,12 +182,35 @@ export default function updateUsername() {
         <View style={styles.action}>
           <ThemedButton
             title="Submit"
-            onPress={signUp}
+            onPress={addBank}
             disabled={loading} // Disable button when loading
             loading={loading}
           ></ThemedButton>
         </View>
       </KeyboardAvoidingView>
+      <BottomSheetComponent
+        data={countries}
+        bottomSheetRef={countrySheetRef}
+        onDismiss={handleDismissCountry}
+        onItemPress={handleCountryPress} 
+        renderCustomItem={renderCountryItem} 
+        title="Select a Country"
+        multiple={false} 
+
+        lock={false}
+      />
+
+      <BottomSheetComponent
+        data={banks}
+        bottomSheetRef={bankSheetRef}
+        onDismiss={handleDismissBank}
+        onItemPress={handleBankPress} 
+        renderCustomItem={renderBankItem} 
+        title="Select a Bank"
+        multiple={false} 
+
+        lock={false}
+      />
     </ParallaxScrollView>
   );
 }

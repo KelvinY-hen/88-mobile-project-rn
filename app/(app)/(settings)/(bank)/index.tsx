@@ -1,70 +1,17 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   StyleSheet,
-  Image,
-  Platform,
   SafeAreaView,
-  Text,
   TouchableOpacity,
-  Switch,
-  View,
   ScrollView,
-  Pressable,
+  Alert,
 } from "react-native";
-import {
-  ThemedButton,
-  ThemedView,
-  ThemedText,
-  Collapsible,
-  ExternalLink,
-  ParallaxScrollView,
-} from "@/components";
+import { ThemedView, ThemedText, ParallaxScrollView } from "@/components";
 
-import ThemedRow, { RowBar } from "@/components/base/RowBar";
 import { gql, useMutation } from "@apollo/client";
 import { useState } from "react";
-import { router } from "expo-router";
 import { useDispatch } from "react-redux";
-import { logoutSuccess } from "@/redux/actions/auth";
-import Toast from "react-native-toast-message";
-import { FontAwesome6 } from "@expo/vector-icons";
 import { ThemedFA6 } from "@/components/ThemedFA6";
-// import { View } from "react-native-reanimated/lib/typescript/Animated";
-
-const PROFILE_SECTIONS = [
-  {
-    header: "Account",
-    items: [
-      {
-        id: "profile",
-        icon: "user",
-        label: "Profile",
-        type: "link",
-        link: "/(settings)/profile/profile",
-      },
-      {
-        id: "Bank",
-        icon: "building-columns",
-        label: "Bank",
-        type: "link",
-        link: "/(settings)/bank",
-      },
-      {
-        id: "acc_sec",
-        icon: "shield-heart",
-        label: "Account Security",
-        type: "link",
-        link: "/(settings)/bank",
-      },
-      {
-        id: "logout",
-        icon: "arrow-right-from-bracket",
-        label: "Logout",
-        type: "logout",
-      },
-    ],
-  },
-];
+import { confirm } from "@/components/base/confirm";
 
 const BANK_SECTIONS = [
   {
@@ -104,7 +51,7 @@ export default function TabTwoScreen() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [showBalance, setShowBalance] = useState(false);
+  // const [selectedBank, setSelectedBank] = useState(null);
 
   const LOGOUT_MUTATION = gql`
     mutation {
@@ -117,55 +64,31 @@ export default function TabTwoScreen() {
 
   const [logoutMutation] = useMutation(LOGOUT_MUTATION);
 
-  const logout = () => {
+  const deleteImage = async (selectedBank:string) => {
+    // Set loading state to true
     setLoading(true);
-    try {
-      logoutMutation({
-        onCompleted: (infoData: Object) => {
-          console.log(infoData);
-          // setLoading(false);
-          Toast.show({
-            type: "success",
-            text1: "Logout Succesfully",
-            visibilityTime: 3000,
-          });
-          dispatch(logoutSuccess());
-          router.replace("/");
-        },
-        onError: ({ graphQLErrors, networkError }) => {
-          if (graphQLErrors) {
-            graphQLErrors.forEach(({ message, locations, path }) => {
-              // alert("Registration failed. Please try again. /n" + message);
-              console.log(message);
-              Toast.show({
-                type: "error",
-                text1: "Logout failed. Please try again later",
-                visibilityTime: 3000,
-              });
-            });
-          }
-          if (networkError) {
-            console.log(networkError);
-            // console.log(message);
-            Toast.show({
-              type: "error",
-              text1: "Network error. Please try again later",
-              visibilityTime: 3000,
-            });
-          }
-        },
-      });
-    } catch (err) {
-      console.log("functionerror, ", err);
-      Toast.show({
-        type: "error",
-        text1: "An Error occuered. Please try again later",
-        visibilityTime: 3000,
-      });
-    } finally {
-      setLoading(false);
+
+    // Show confirmation dialog
+    const confirmed = await confirm(
+      "Do you want to proceed with deleting the image?"
+    );
+
+    if (confirmed) {
+      try {
+        // Call your GraphQL API to delete the image
+        // await deleteImageMutation({ variables: { imageId } }); // Pass appropriate variables
+
+        console.log("Image deleted successfully!");
+      } catch (err) {
+        console.log("Error deleting image: ", err);
+      }
+    } else {
+      console.log("User cancelled the deletion.");
     }
+    // Set loading state to false after API call is done or cancelled
+    setLoading(false);
   };
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -197,7 +120,7 @@ export default function TabTwoScreen() {
                   }}
                 >
                   <ThemedText>{label}</ThemedText>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={deleteImage}>
                     <ThemedFA6
                       name="trash-can"
                       size={20}

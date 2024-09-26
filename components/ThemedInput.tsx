@@ -1,6 +1,8 @@
 import { StyleSheet, TextInput, useColorScheme, View, type TextInputProps } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from 'react-native-paper';
+
 
 export type ThemedInputProps = TextInputProps & {
   lightColor?: string;
@@ -9,6 +11,8 @@ export type ThemedInputProps = TextInputProps & {
 
 export function ThemedInput({ style, lightColor, darkColor, ...otherProps }: ThemedInputProps) {
     const colorScheme = useColorScheme ();
+    const theme = useTheme();
+    // const color = colorScheme == 'dark' ? '#FFFFFF' : '#000000'; // Corrected color code
     const color = colorScheme == 'dark' ? '#FFFFFF' : '#000000'; // Corrected color code
   
 
@@ -22,7 +26,7 @@ const styles = StyleSheet.create({
         color: '#0a7ea4',
       },
     input: {
-      fontSize: 18,
+      fontSize: 16,
       // letterSpacing: 1.2,
       // padding: 10,
       // paddingHorizontal: 13,

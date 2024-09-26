@@ -5,7 +5,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 
 import { Link, router } from "expo-router";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -24,27 +24,23 @@ import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
-// import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+
+import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import BottomSheetComponent from "@/components/base/bottomSheet";
+import CameraBottomSheet from "@/components/base/cameraBottomSheet";
+import { updatePotrait } from "@/redux/actions/user";
 
 // TouchableOpacity
 
-const data = [
-  { label: 'United States', value: 'US' },
-  { label: 'Canada', value: 'CA' },
-  { label: 'United Kingdom', value: 'UK' },
-  // Add more countries or data as needed
-];
 
 export default function Register() {
   const dispatch = useDispatch();
   const [authenticatedStatus, setAuthenticatedStatus] = useState(false);
   const bottomSheetRef = useRef(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
 
-  
-
-  const userData = useSelector((state) => state.auth.user); 
-
+  const userData = useSelector((state) => state.user.user);
 
   // const GET_USER_DATA = gql`
   //   query Query {
@@ -58,35 +54,52 @@ export default function Register() {
 
   // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
 
-  // const data = useMemo(
-  //   () =>
-  //     Array(50)
-  //       .fill(0)
-  //       .map((_, index) => `index-${index}`),
-  //   []
-  // );
-  // const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
+  // const pickImage = async () => {
+  //   // No permissions request is necessary for launching the image library
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
 
-  // // callbacks
-  // const handleSheetChange = useCallback((index) => {
-  //   console.log("handleSheetChange", index);
-  // }, []);
-  // const handleSnapPress = useCallback((index) => {
-  //   bottomSheetRef.current?.snapToIndex(index);
-  // }, []);
-  // const handleClosePress = useCallback(() => {
-  //   bottomSheetRef.current?.close();
-  // }, []);
+  //   console.log(result);
 
-  // // render
-  // const renderItem = useCallback(
-  //   ({ item }) => (
-  //     <View style={styles.itemContainer}>
-  //       <Text>{item}</Text>
-  //     </View>
-  //   ),
-  //   []
-  // );
+  //   if (!result.canceled) {
+  //     setImage(result.assets[0].uri);
+  //   }
+  // };
+
+  const handleImage = (image) => {
+     dispatch(updatePotrait(image.uri));
+    setImage(image)
+  }
+
+  useEffect(()=>{
+    console.log('duar memek', userData)
+  },[userData])
+
+  const handlePresentPress = useCallback(() => {
+    bottomSheetRef.current?.present();
+  }, []);
+
+  const handleDismissPress = useCallback(() => {
+    bottomSheetRef.current?.dismiss();
+  }, []);
+
+  const handleItemPress = (item) => {
+    setSelectedCountry(item.label);
+    bottomSheetRef.current?.dismiss();
+  };
+
+  const renderCustomItem = (item) => (
+    <TouchableOpacity
+      style={{ alignItems: "center", padding:10 }}
+      onPress={() => handleItemPress(item)}
+    >
+      <Text style={{ fontSize: 18 }}>{item.label}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -99,45 +112,32 @@ export default function Register() {
         <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
           <ThemedView style={styles.bodyContainer}>
             <ThemedRow
-              type="link"
+              type="potrait"
               label="Potrait"
-              // optional=""
+              handleFunction={handlePresentPress}
+              optional={userData.potrait}
             ></ThemedRow>
             <ThemedRow
               type="link"
               label="Nick Name"
               optional={userData.agent_linked_code}
               link="/(app)/(settings)/profile/updateUsername"
-              ></ThemedRow>
+            ></ThemedRow>
             <ThemedRow
               type="link"
               label="Authentication"
-              optional={authenticatedStatus ? 'Certified' : 'Uncertified'}
+              optional={authenticatedStatus ? "Certified" : "Uncertified"}
               link="/(app)/(settings)/profile/authentication"
             ></ThemedRow>
-            {/* <TouchableOpacity
-            onPress={handleSnapPress(2)}>
-              <ThemedView>
-                <ThemedText>
-                  test
-                </ThemedText>
-              </ThemedView>
-            </TouchableOpacity> */}
           </ThemedView>
         </KeyboardAvoidingView>
       </ParallaxScrollView>
-      {/* <BottomSheet
-        ref={bottomSheetRef}
-        snapPoints={snapPoints}
-        onChange={handleSheetChange}
-      >
-        <BottomSheetFlatList
-          data={data}
-          keyExtractor={(i) => i}
-          renderItem={renderItem}
-          contentContainerStyle={styles.contentContainer}
-        />
-      </BottomSheet> */}
+      <CameraBottomSheet
+        handleImage={handleImage}
+        handlePresentPress={handlePresentPress}
+        handleDismissPress={handleDismissPress}
+        bottomSheetRef={bottomSheetRef}
+      />
     </SafeAreaView>
   );
 }
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   input: {
     marginVertical: 4,
-    backgroundColor: '#ababab',
+    backgroundColor: "#ababab",
     padding: 10,
     height: 40,
     borderBottomWidth: 1,
@@ -257,5 +257,4 @@ const styles = StyleSheet.create({
   contentContainer: {
     backgroundColor: "white",
   },
-
 });

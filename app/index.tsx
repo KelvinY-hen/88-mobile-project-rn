@@ -236,8 +236,8 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   input: {
-    padding: 10,
-    height: 40,
+    // padding: 10,
+    // height: 40,
     flex: 1,
     borderBottomWidth: 1,
   },

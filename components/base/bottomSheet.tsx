@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 const BottomSheetComponent = ({
   data,
   bottomSheetRef,
   onDismiss,
   onItemPress,
-  renderCustomItem, // Custom rendering logic passed as prop
+  renderCustomItem, 
+  lock = true,
   multiple = false, // Dynamic check for footer
-  title, // Optional title for the bottom sheet
+  title = false, // Optional title for the bottom sheet
 }) => {
   // Snap points for bottom sheet
   const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
@@ -17,8 +18,9 @@ const BottomSheetComponent = ({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
-      backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
+      enableDynamicSizing={lock}
+      snapPoints={!lock && snapPoints}
+      backdropComponent={(props) => <BottomSheetBackdrop  disappearsOnIndex={-1} pressBehavior='close' {...props} />}
       enableDismissOnClose
       onDismiss={onDismiss}
       footerComponent={
@@ -39,7 +41,7 @@ const BottomSheetComponent = ({
       )}
 
       {/* Dynamic rendering of items */}
-      <FlatList
+      <BottomSheetFlatList
         data={data}
         keyExtractor={(item) => item.value}
         renderItem={({ item }) =>

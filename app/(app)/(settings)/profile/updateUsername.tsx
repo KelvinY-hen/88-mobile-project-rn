@@ -26,7 +26,7 @@ import { useSelector } from "react-redux";
 // TouchableOpacity
 
 export default function updateUsername() {
-  const [username, setUserName] = useState(useSelector((state) => state.auth.user.agent_linked_code));
+  const [username, setUserName] = useState(useSelector((state) => state.user.user.agent_linked_code));
   const [loading, setLoading] = useState(false);
 
   const REGISTER_MUTATION = gql`

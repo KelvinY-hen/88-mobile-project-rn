@@ -34,7 +34,7 @@ export default function Register() {
   const [verificationCode, setVerificationCode] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const userData = useSelector((state) => state.auth.user);
+  const userData = useSelector((state) => state.user.user);
 
   // const GET_USER_DATA = gql`
   //   query Query {

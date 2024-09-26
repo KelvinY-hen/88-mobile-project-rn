@@ -33,7 +33,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const userData = useSelector((state) => state.auth.user); 
+  const userData = useSelector((state) => state.user.user); 
 
 
   // const GET_USER_DATA = gql`
