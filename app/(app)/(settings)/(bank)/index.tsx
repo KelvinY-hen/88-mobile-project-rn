@@ -9,6 +9,7 @@ import {
   Switch,
   View,
   ScrollView,
+  Pressable,
 } from "react-native";
 import {
   ThemedButton,
@@ -46,14 +47,14 @@ const PROFILE_SECTIONS = [
         icon: "building-columns",
         label: "Bank",
         type: "link",
-        link: "/(app)/(settings)/(bank)",
+        link: "/(settings)/bank",
       },
       {
         id: "acc_sec",
         icon: "shield-heart",
         label: "Account Security",
         type: "link",
-        link: "/(settings)/(security)/",
+        link: "/(settings)/bank",
       },
       {
         id: "logout",
@@ -67,24 +68,35 @@ const PROFILE_SECTIONS = [
 
 const BANK_SECTIONS = [
   {
-    id: "myr",
-    label: "🇲🇾  MYR",
+    id: "c",
+    label: "Hong Leong Bank",
+    name: "d",
+    acc: "111",
+    country: "🇲🇾",
   },
+
   {
-    id: "sgd",
-    label: "🇸🇬  SGD",
+    id: "c2",
+    label: "Hong Leong Bank",
+    name: "m",
+    acc: "231",
+    country: "🇸🇬",
   },
+
   {
-    id: "thb",
-    label: "🇹🇭  THB",
+    id: "c3",
+    label: "Hong Leong Bank",
+    name: "t",
+    acc: "777",
+    country: "🇮🇩",
   },
+
   {
-    id: "idr",
-    label: "🇮🇩 IDR",
-  },
-  {
-    id: "hkd",
-    label: "🇭🇰  HKD",
+    id: "c4",
+    label: "Hong Leong Bank",
+    name: "a",
+    acc: "231",
+    country: "🇭🇰",
   },
 ];
 
@@ -160,121 +172,50 @@ export default function TabTwoScreen() {
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
       >
-        {/* <ThemedView style={styles.header}>
-          <ThemedText style={styles.title}>Profile</ThemedText>
-        </ThemedView> */}
-
         <ThemedView style={[styles.section]}>
-          <ThemedView
-            style={[
-              styles.sectionHeader,
-              { display: "flex", flexDirection: "row", gap: 10 },
-            ]}
-          >
-            <ThemedText style={styles.sectionTitle}>Balance</ThemedText>
-            <TouchableOpacity
-              style={{ paddingTop: 6 }}
-              onPress={() => setShowBalance(!showBalance)}
-            >
-              <ThemedFA6 name={showBalance ? "eye" : "eye-slash"} size={13} />
-            </TouchableOpacity>
-          </ThemedView>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ display: "flex", flexDirection: "row" }}
-          >
-            {BANK_SECTIONS.map(({ id, label }, index) => (
+          <ScrollView style={{ display: "flex", flexDirection: "column" }}>
+            {BANK_SECTIONS.map(({ id, label, name, acc, country }, index) => (
               <ThemedView
                 key={id}
                 style={{
                   display: "flex",
                   gap: 10,
-                  marginHorizontal: 5,
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  width: 170,
+                  margin: 5,
+                  marginHorizontal: 13,
+                  paddingHorizontal: 15,
+                  paddingVertical: 15,
                   borderRadius: 3,
                   backgroundColor: "skyblue",
-                  marginLeft: index === 0 ? 15 : 5,
-                  marginRight: index === BANK_SECTIONS.length - 1 ? 15 : 5,
                 }}
               >
-                <ThemedText>{label}</ThemedText>
-                <ThemedText style={{ textAlign: "right" }}>
-                  {" "}
-                  {showBalance ? "100" : "****"}
+                <ThemedView
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    backgroundColor: "skyblue",
+                  }}
+                >
+                  <ThemedText>{label}</ThemedText>
+                  <TouchableOpacity>
+                    <ThemedFA6
+                      name="trash-can"
+                      size={20}
+                      style={[
+                        { marginBottom: -3, textAlign: "right" },
+                        // isMaintenance && styles.maintenanceIcon,
+                      ]}
+                    ></ThemedFA6>
+                  </TouchableOpacity>
+                </ThemedView>
+                <ThemedText style={{ textAlign: "left" }}>{name}**</ThemedText>
+                <ThemedText style={{ textAlign: "left" }}>
+                  (last num{acc}) {country}
                 </ThemedText>
               </ThemedView>
             ))}
           </ScrollView>
         </ThemedView>
-
-        {PROFILE_SECTIONS.map(({ header, items }) => (
-          <ThemedView style={styles.section} key={header}>
-            <ThemedView style={styles.sectionHeader}>
-              <ThemedText style={styles.sectionTitle}>{header}</ThemedText>
-            </ThemedView>
-
-            <ThemedView style={styles.sectionBody}>
-              {items.map(({ label, id, type, icon, link }, index) => (
-                // <ThemedView
-                //   style={[
-                //     styles.rowWrapper,
-                //     index === 0 && { borderTopWidth: 0 },
-                //   ]}
-                //   key={id}
-                // >
-                //   <TouchableOpacity
-                //     onPress={() => {
-                //       if (type == "link" && link) {
-                //         router.push(link);
-                //       } else if (type == "logout") {
-                //         logout();
-                //       }
-                //     }}
-                //   >
-                //     <ThemedView style={styles.row}>
-                //       <FontAwesome6
-                //         name={icon}
-                //         size={20}
-                //         style={{ marginRight: 32 }}
-                //       />
-                //       <ThemedText style={styles.rowLabel}>{label}</ThemedText>
-                //       <ThemedView style={styles.rowSpacer} />
-                //       {/* {
-                //           type === 'select' && (
-                //             <ThemedText style={styles.rowValue}>
-                //               {
-                //                 form[id]
-                //               }
-                //             </ThemedText>
-                //           )
-                //         } */}
-                //       {["select", "link"].includes(type) && (
-                //         <FontAwesome6
-                //           name={"chevron-right"}
-                //           size={20}
-                //           color="#ababab"
-                //         />
-                //       )}
-                //     </ThemedView>
-                //   </TouchableOpacity>
-                // </ThemedView>
-                <ThemedRow
-                  key={id} // Unique key for each row
-                  id={id} // Pass the id to ThemedRow
-                  index={index} // The index of the row
-                  type={type} // The type of row, e.g., 'link' or 'logout'
-                  label={label} // The label for the row
-                  icon={icon} // The icon for the row
-                  link={link} // The link URL (only if type is 'link')
-                  logout={type === "logout" ? logout : undefined} // Pass the logout function for 'logout' type
-                />
-              ))}
-            </ThemedView>
-          </ThemedView>
-        ))}
       </ParallaxScrollView>
     </SafeAreaView>
   );
@@ -309,25 +250,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
-  // container: {
-  //   paddingVertical: 24,
-  //   paddingHorizontal: 0,
-  //   flexGrow: 1,
-  //   flexShrink: 1,
-  //   flexBasis: 0,
-  // },
-  contentFooter: {
-    marginTop: 24,
-    fontSize: 13,
-    fontWeight: "500",
-    color: "#929292",
-    textAlign: "center",
-  },
-  /** Header */
-  sectionHeader: {
-    paddingHorizontal: 15,
-    paddingBottom: 12,
-  },
   headerTitle: {
     fontSize: 32,
     fontWeight: "700",
@@ -339,31 +261,8 @@ const styles = StyleSheet.create({
     color: "#929292",
     marginTop: 6,
   },
-  profileEmail: {
-    marginTop: 6,
-    fontSize: 16,
-    fontWeight: "400",
-    color: "#848484",
-  },
-  profileAction: {
-    marginTop: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    // backgroundColor: '#007bff',
-    borderRadius: 12,
-  },
-  profileActionText: {
-    marginRight: 8,
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  /** Section */
   section: {
-    paddingTop: 24,
+    paddingTop: 13,
   },
   sectionTitle: {
     fontSize: 14,

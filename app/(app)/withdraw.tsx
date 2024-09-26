@@ -21,6 +21,7 @@ import { TouchableOpacity } from "react-native";
 import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
 import { ThemedFA6 } from "@/components/ThemedFA6";
+import { ParallaxScrollView } from "@/components";
 // TouchableOpacity
 
 export default function Register() {
@@ -30,7 +31,6 @@ export default function Register() {
   const [ConfirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
 
   const REGISTER_MUTATION = gql`
     mutation Register($input: RegisterInput!) {
@@ -103,9 +103,11 @@ export default function Register() {
   const signIn = () => {};
 
   return (
-    <View style={styles.container}>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+      style={styles.container}
+    >
       <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
-        
         {/* Input Password */}
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
           <ThemedInput
@@ -120,12 +122,44 @@ export default function Register() {
             style={styles.eyeContainer}
             onPress={() => setShowPassword(!showPassword)}
           >
-            <FontAwesome6  name={showPassword ? "eye-slash" : "eye"} size={15} />
+            <FontAwesome6 name={showPassword ? "eye-slash" : "eye"} size={15} />
             {/* <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} /> */}
           </TouchableOpacity>
         </View>
 
-        
+        <View style={{ flexDirection: "row", marginVertical: 4 }}>
+          <ThemedInput
+            style={styles.inputPhone}
+            onChangeText={setOldPassword}
+            value={oldPassword}
+            autoCapitalize="none"
+            placeholder="Name"
+            secureTextEntry={!showPassword}
+          ></ThemedInput>
+        </View>
+
+        <View style={{ flexDirection: "row", marginVertical: 4 }}>
+          <ThemedInput
+            style={styles.inputPhone}
+            onChangeText={setOldPassword}
+            value={oldPassword}
+            autoCapitalize="none"
+            placeholder="Bank"
+            secureTextEntry={!showPassword}
+          ></ThemedInput>
+        </View>
+
+        <View style={{ flexDirection: "row", marginVertical: 4 }}>
+          <ThemedInput
+            style={styles.inputPhone}
+            onChangeText={setOldPassword}
+            value={oldPassword}
+            autoCapitalize="none"
+            placeholder="Branch"
+            secureTextEntry={!showPassword}
+          ></ThemedInput>
+        </View>
+
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
           <ThemedInput
             style={styles.inputPhone}
@@ -136,8 +170,6 @@ export default function Register() {
           ></ThemedInput>
         </View>
 
-        
-
         <View style={styles.action}>
           <ThemedButton
             title="Submit Withdrawal Request"
@@ -147,7 +179,7 @@ export default function Register() {
           ></ThemedButton>
         </View>
       </KeyboardAvoidingView>
-    </View>
+    </ParallaxScrollView>
   );
 }
 

@@ -21,6 +21,7 @@ import middleMenuData from "../../../constants/MiddleMenu.json";
 import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { ThemedFA6 } from "@/components/ThemedFA6";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -30,7 +31,9 @@ export default function HomeScreen() {
     router.push(route); // Programmatically navigate to the (app) route
   };
   return (
-    <View style={styles.outlineContainer}>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+       style={styles.outlineContainer}>
       <View style={styles.topContainer}>
         <View style={styles.imageContainer}>
           <Ionicons size={40} style={[{ marginBottom: -3 }]} name="scan" />
@@ -57,7 +60,7 @@ export default function HomeScreen() {
               key={index}
               style={[
                 styles.imageContainerMiddle,
-                isMaintenance && styles.maintenanceContainer,
+                // isMaintenance && styles.maintenanceContainer,
               ]}
               onPress={() => {
                 if (!isMaintenance) {
@@ -66,7 +69,7 @@ export default function HomeScreen() {
               }}
               disabled={isMaintenance}
             >
-              <FontAwesome6
+              <ThemedFA6
                 name={item.icon}
                 size={25}
                 style={[
@@ -89,7 +92,7 @@ export default function HomeScreen() {
           );
         })}
       </View>
-    </View>
+    </ParallaxScrollView>
   );
 }
 

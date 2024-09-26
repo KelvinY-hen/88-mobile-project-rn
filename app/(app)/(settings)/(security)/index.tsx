@@ -5,7 +5,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 
 import { Link, router } from "expo-router";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 
 import {
   ActivityIndicator,
@@ -24,24 +24,14 @@ import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
-// import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-
 // TouchableOpacity
-
-const data = [
-  { label: 'United States', value: 'US' },
-  { label: 'Canada', value: 'CA' },
-  { label: 'United Kingdom', value: 'UK' },
-  // Add more countries or data as needed
-];
 
 export default function Register() {
   const dispatch = useDispatch();
-  const [authenticatedStatus, setAuthenticatedStatus] = useState(false);
-  const bottomSheetRef = useRef(null);
-  const [selectedCountry, setSelectedCountry] = useState(null);
-
-  
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const userData = useSelector((state) => state.auth.user); 
 
@@ -58,36 +48,6 @@ export default function Register() {
 
   // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
 
-  // const data = useMemo(
-  //   () =>
-  //     Array(50)
-  //       .fill(0)
-  //       .map((_, index) => `index-${index}`),
-  //   []
-  // );
-  // const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
-
-  // // callbacks
-  // const handleSheetChange = useCallback((index) => {
-  //   console.log("handleSheetChange", index);
-  // }, []);
-  // const handleSnapPress = useCallback((index) => {
-  //   bottomSheetRef.current?.snapToIndex(index);
-  // }, []);
-  // const handleClosePress = useCallback(() => {
-  //   bottomSheetRef.current?.close();
-  // }, []);
-
-  // // render
-  // const renderItem = useCallback(
-  //   ({ item }) => (
-  //     <View style={styles.itemContainer}>
-  //       <Text>{item}</Text>
-  //     </View>
-  //   ),
-  //   []
-  // );
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ParallaxScrollView
@@ -100,44 +60,34 @@ export default function Register() {
           <ThemedView style={styles.bodyContainer}>
             <ThemedRow
               type="link"
-              label="Potrait"
+              label="Login Password Setting"
               // optional=""
-            ></ThemedRow>
-            <ThemedRow
-              type="link"
-              label="Nick Name"
-              optional={userData.agent_linked_code}
-              link="/(app)/(settings)/profile/updateUsername"
+              link="/loginPasswordSetting"
               ></ThemedRow>
             <ThemedRow
               type="link"
-              label="Authentication"
-              optional={authenticatedStatus ? 'Certified' : 'Uncertified'}
-              link="/(app)/(settings)/profile/authentication"
+              label="Payment Password Setting"
+              link="/paymentPasswordSetting"
+              // optional=""
+              ></ThemedRow>
+            <ThemedRow
+              type="link"
+              label="Gesture Password Setting"
+              link="/gesturePasswordSetting"
+              style={{borderWidth: 1}}
+              // optional=""
             ></ThemedRow>
-            {/* <TouchableOpacity
-            onPress={handleSnapPress(2)}>
-              <ThemedView>
-                <ThemedText>
-                  test
-                </ThemedText>
-              </ThemedView>
-            </TouchableOpacity> */}
+            {/* <ThemedText>Id: {userData.agent_linked_code}</ThemedText>
+            <ThemedText>Mobile Number: {userData.mobile_number}</ThemedText> */}
+            {/* <ThemedButton
+              title="Update Password"
+              onPress={() => router.push('/(app)/(settings)/profile/updatePassword')}
+              loading={loading}
+              disabled={loading} // Dis
+            /> */}
           </ThemedView>
         </KeyboardAvoidingView>
       </ParallaxScrollView>
-      {/* <BottomSheet
-        ref={bottomSheetRef}
-        snapPoints={snapPoints}
-        onChange={handleSheetChange}
-      >
-        <BottomSheetFlatList
-          data={data}
-          keyExtractor={(i) => i}
-          renderItem={renderItem}
-          contentContainerStyle={styles.contentContainer}
-        />
-      </BottomSheet> */}
     </SafeAreaView>
   );
 }
@@ -249,13 +199,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textTransform: "uppercase",
   },
-  itemContainer: {
-    padding: 6,
-    margin: 6,
-    backgroundColor: "#eee",
-  },
-  contentContainer: {
-    backgroundColor: "white",
-  },
-
 });

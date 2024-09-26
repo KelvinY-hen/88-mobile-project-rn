@@ -13,7 +13,6 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 const HEADER_HEIGHT = 250;
 
 type Props = ThemedViewProps & PropsWithChildren< {
-  headerImage: ReactElement;
   headerBackgroundColor: { dark: string; light: string };
   lightColor?: string;
   darkColor?: string;

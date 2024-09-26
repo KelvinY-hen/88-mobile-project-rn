@@ -20,47 +20,16 @@ import {
 import { TouchableOpacity } from "react-native";
 import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
+import { ParallaxScrollView } from "@/components";
+import { ThemedFA6 } from "@/components/ThemedFA6";
 // TouchableOpacity
 
 export default function Register() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // const signUp = () => {
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     try {
-  //       alert("Check Your Emails!");
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }, 3000);
-
-  // };
-  //   const REGISTER_MUTATION = gql`
-  //   mutation Register($mobile_number: String!, $password: String!, $password_confirmation: String!) {
-  //     register(input: {
-  //       mobile_number: $mobile_number,
-  //       password: $password,
-  //       password_confirmation: $password_confirmation
-  //     }) {
-  //       token
-  //       status
-  //     }
-  //   }
-  // `;
-
-  // const REGISTER_MUTATION = gql`
-  //   mutation Mutation($mobile_number: String!, $password: String!, $password_confirmation: String!){
-  //       register(mobile_number: $mobile_number, password: $password, password_confirmation: $password_confirmation) {
-  //           token
-  //       }
-  //   }
-  // `
 
   const REGISTER_MUTATION = gql`
     mutation Register($input: RegisterInput!) {
@@ -133,7 +102,10 @@ export default function Register() {
   const signIn = () => {};
 
   return (
-    <View style={styles.container}>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+      style={styles.container}
+    >
       <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
         {/* Input Phone Number */}
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
@@ -144,7 +116,7 @@ export default function Register() {
                 justifyContent: "center",
               }}
             >
-              <FontAwesome6
+              <ThemedFA6
                 name={"angle-down"}
                 // size={25}
                 style={[{ marginBottom: -3 }]}
@@ -177,8 +149,19 @@ export default function Register() {
             style={styles.eyeContainer}
             onPress={() => setShowPassword(!showPassword)}
           >
-            <FontAwesome6 name={showPassword ? "eye-slash" : "eye"} size={15} />
+            <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} />
           </TouchableOpacity>
+        </View>
+
+        <View style={{ flexDirection: "row", marginVertical: 4 }}>
+          <ThemedInput
+            style={styles.inputPhone}
+            onChangeText={setConfirmPassword}
+            value={confirmPassword}
+            autoCapitalize="none"
+            placeholder="Reenter Your Password"
+            secureTextEntry={true}
+          ></ThemedInput>
         </View>
 
         <View style={styles.action}>
@@ -190,7 +173,7 @@ export default function Register() {
           ></ThemedButton>
         </View>
       </KeyboardAvoidingView>
-    </View>
+    </ParallaxScrollView>
   );
 }
 

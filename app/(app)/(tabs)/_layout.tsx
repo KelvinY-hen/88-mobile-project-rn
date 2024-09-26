@@ -6,26 +6,32 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { gql, useQuery } from "@apollo/client";
-// import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
+import { getUserData } from "@/redux/actions/auth";
 
 export default function TabLayout() {
 
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()    
 
   const colorScheme = useColorScheme();
 
   const GET_USER_DATA = gql`
-  query Query{
-      me{
-        id
-        mobile_number
-        agent_linked_code
+    query Query{
+        me{
+          id
+          mobile_number
+          agent_linked_code
+        }
       }
-    }
-  `
+    `
+  const {loading, data, error, refetch} = useQuery(GET_USER_DATA);
+
+  if(data){
+    console.log('test',data);
+    dispatch(getUserData(data?.me));
+  }
 
   // useEffect(() => {
-  //   const {loading, data, error, refetch} = useQuery(GET_USER_DATA);
   //   console.log(data)
   //   // dispatch((infoData));
   // },[])
