@@ -50,7 +50,7 @@ export default function Register() {
           input: {
             mobile_number: phone,
             password: password,
-            password_confirmation: password,
+            password_confirmation: confirmPassword,
           },
         },
         onCompleted: (infoData) => {

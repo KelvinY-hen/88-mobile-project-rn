@@ -90,6 +90,7 @@ export default function LoginScreen() {
             });
           }
           if (networkError) {
+            console.log('tetes',networkError);
             Toast.show({
               type: 'error',
               text1: 'Network error. Please try again later',

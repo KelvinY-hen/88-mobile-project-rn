@@ -55,6 +55,7 @@ export default function updateUsername() {
   );
   const [loading, setLoading] = useState(false);
   const [gender, setGender] = useState("m");
+  const [imageList, setImageList] = useState([]);
   const [docType, setDocType] = useState(DOC_TYPE_SELECT[0]);
   const bottomSheetRef = useRef(null);
 
@@ -63,10 +64,33 @@ export default function updateUsername() {
   const handlePresentDocType = () => docTypeSheetRef.current?.present();
   const handleDismissDocType = () => docTypeSheetRef.current?.close();
 
-  const handleDocTypePress = (item:DOC_TYPE_TYPE) => {
+  const handleDocTypePress = (item:DOC_TYPE_TYPE, id:string) => {
     setDocType(item); // or item.value
     handleDismissDocType();
   };
+
+  const handleImageArray = (index:string, uri:string) => {
+    // Add the new image to the imageList
+    setImageList((prevList) => {
+      // Check if the image already exists
+      const existingImageIndex = prevList.findIndex((image) => image.index === index);
+      
+      if (existingImageIndex !== -1) {
+        // Update the existing image's uri
+        const updatedList = [...prevList];
+        updatedList[existingImageIndex].uri = uri;
+        return updatedList;
+      } else {
+        // Add the new image
+        return [...prevList, { index, uri }];
+      }
+
+    });
+
+    const removeImage = (index:string) => {
+      setImageList((prevList) => prevList.filter((image) => image.index !== index));
+    };
+    
 
   const renderDocTypeItem = (item:DOC_TYPE_TYPE) => (
     <TouchableOpacity

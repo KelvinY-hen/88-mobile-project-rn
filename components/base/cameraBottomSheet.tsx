@@ -15,12 +15,13 @@ const data = [
 
 type CameraBottomSheetProps = {
   bottomSheetRef: Ref<BottomSheetModal>;
+  id?: string;
   handleImage?: () => void;
   handlePresentPress?: () => void;
   handleDismissPress?: () => void;
 };
 
-const CameraBottomSheet: React.FC<CameraBottomSheetProps> = ({ handleImage, handlePresentPress, handleDismissPress, bottomSheetRef }) => {
+const CameraBottomSheet: React.FC<CameraBottomSheetProps> = ({ handleImage, handlePresentPress, handleDismissPress, bottomSheetRef, id = null }) => {
   // const bottomSheetRef = useRef(null);
   const dispatch:AppDispatch = useDispatch();
   type ImagePickerResult = ImagePicker.ImagePickerResult;
@@ -41,7 +42,11 @@ const CameraBottomSheet: React.FC<CameraBottomSheetProps> = ({ handleImage, hand
 
     if (!result.canceled) {
       // dispatch(updatePotrait(result.assets[0].uri));
-      handleImage(result.assets[0]);
+      if(id){
+        handleImage(result.assets[0], id);
+      }else{
+        handleImage(result.assets[0]);
+      }
     }
   };
 
@@ -58,9 +63,12 @@ const CameraBottomSheet: React.FC<CameraBottomSheetProps> = ({ handleImage, hand
         aspect: [4, 3],
       });
       if (!result.canceled) {
-        console.log('simpan gambar',result);
         // dispatch(updatePotrait(result.assets[0].uri));
-        handleImage(result.assets[0]);
+        if(id){
+          handleImage(result.assets[0], id);
+        }else{
+          handleImage(result.assets[0]);
+        }
       }
     } catch (error) {
       console.log("Error occurred while launching the camera: ", error);
