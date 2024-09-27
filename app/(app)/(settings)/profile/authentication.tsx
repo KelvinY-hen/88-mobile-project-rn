@@ -4,7 +4,6 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { gql, useMutation } from "@apollo/client";
 import { images } from "../../../../constants";
 
-
 import { Link, router } from "expo-router";
 
 import { useCallback, useRef, useState } from "react";
@@ -37,10 +36,10 @@ const GENDER_RADIO = [
 ];
 
 type DOC_TYPE_TYPE = {
-  id:string;
-  label:string;
-  value:string;
-}
+  id: string;
+  label: string;
+  value: string;
+};
 
 const DOC_TYPE_SELECT = [
   { id: 1, label: "ID Card", value: "1" },
@@ -59,22 +58,23 @@ export default function updateUsername() {
   const [docType, setDocType] = useState(DOC_TYPE_SELECT[0]);
   const bottomSheetRef = useRef(null);
 
-
   const docTypeSheetRef = useRef(null);
   const handlePresentDocType = () => docTypeSheetRef.current?.present();
   const handleDismissDocType = () => docTypeSheetRef.current?.close();
 
-  const handleDocTypePress = (item:DOC_TYPE_TYPE, id:string) => {
+  const handleDocTypePress = (item: DOC_TYPE_TYPE, id: string) => {
     setDocType(item); // or item.value
     handleDismissDocType();
   };
 
-  const handleImageArray = (index:string, uri:string) => {
+  const handleImageSelect = (index: string, uri: string) => {
     // Add the new image to the imageList
     setImageList((prevList) => {
       // Check if the image already exists
-      const existingImageIndex = prevList.findIndex((image) => image.index === index);
-      
+      const existingImageIndex = prevList.findIndex(
+        (image) => image.index === index
+      );
+
       if (existingImageIndex !== -1) {
         // Update the existing image's uri
         const updatedList = [...prevList];
@@ -84,23 +84,17 @@ export default function updateUsername() {
         // Add the new image
         return [...prevList, { index, uri }];
       }
-
     });
+  };
 
-    const removeImage = (index:string) => {
-      setImageList((prevList) => prevList.filter((image) => image.index !== index));
-    };
-    
-
-  const renderDocTypeItem = (item:DOC_TYPE_TYPE) => (
+  const renderDocTypeItem = (item: DOC_TYPE_TYPE) => (
     <TouchableOpacity
-      style={{ alignItems: "center", padding:10 }}
+      style={{ alignItems: "center", padding: 10 }}
       onPress={() => handleDocTypePress(item)}
     >
       <Text style={{ fontSize: 18 }}>{item.label}</Text>
     </TouchableOpacity>
   );
-
 
   const REGISTER_MUTATION = gql`
     mutation Register($input: RegisterInput!) {
@@ -128,7 +122,6 @@ export default function updateUsername() {
     }
   };
 
-
   const handlePresentPress = useCallback(() => {
     bottomSheetRef.current?.present();
   }, []);
@@ -144,7 +137,7 @@ export default function updateUsername() {
 
   const renderCustomItem = (item) => (
     <TouchableOpacity
-      style={{ alignItems: "center", padding:10 }}
+      style={{ alignItems: "center", padding: 10 }}
       onPress={() => handleItemPress(item)}
     >
       <Text style={{ fontSize: 18 }}>{item.label}</Text>
@@ -153,7 +146,7 @@ export default function updateUsername() {
 
   const handleImage = (image) => {
     console.log(image);
- }
+  };
 
   return (
     <ParallaxScrollView
@@ -192,16 +185,27 @@ export default function updateUsername() {
             // placeholder="Username"
           ></ThemedInput>
         </View> */}
-        <ThemedView style={{display:'flex',flexDirection:'row', paddingHorizontal: 15, paddingVertical:10, borderTopWidth:1, borderBottomWidth:1, borderColor: '#e5e5e5', justifyContent:'space-between'}}>
+        <ThemedView
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            borderTopWidth: 1,
+            borderBottomWidth: 1,
+            borderColor: "#e5e5e5",
+            justifyContent: "space-between",
+          }}
+        >
           <ThemedView>
-            <ThemedText style={{fontSize:16, fontWeight: "500",}}>
+            <ThemedText style={{ fontSize: 16, fontWeight: "500" }}>
               ID Photo
             </ThemedText>
-            <ThemedText style={{fontSize:14}}>
+            <ThemedText style={{ fontSize: 14 }}>
               Upload your ID photo
             </ThemedText>
           </ThemedView>
-          <TouchableOpacity onPress={ handlePresentPress}>
+          <TouchableOpacity onPress={handlePresentPress}>
             <Image
               source={images.dummyId} // Replace with your image path
               style={styles.dummyId}
@@ -229,15 +233,14 @@ export default function updateUsername() {
         data={DOC_TYPE_SELECT}
         bottomSheetRef={docTypeSheetRef}
         onDismiss={handleDismissDocType}
-        onItemPress={handleDocTypePress} 
-        renderCustomItem={renderDocTypeItem} 
+        onItemPress={handleDocTypePress}
+        renderCustomItem={renderDocTypeItem}
         title="Certificate Type Selection"
-        multiple={false} 
-
+        multiple={false}
         lock={false}
       />
       <CameraBottomSheet
-        handleImage={handleImage}
+        handleImage={handleImageSelect}
         handlePresentPress={handlePresentPress}
         handleDismissPress={handleDismissPress}
         bottomSheetRef={bottomSheetRef}
@@ -264,7 +267,7 @@ const styles = StyleSheet.create({
   },
   action: {
     marginTop: 20,
-    gap:10,
+    gap: 10,
     paddingHorizontal: 10,
   },
   eyeContainer: {
