@@ -6,6 +6,7 @@ import {
   View,
   Text,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
 
 import {
@@ -22,19 +23,33 @@ import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ThemedFA6 } from "@/components/ThemedFA6";
+import { useState } from "react";
+import Toast from "react-native-toast-message";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [showBalance, setShowBalance] = useState(false);
   const token = useSelector((state: RootState) => state.auth.Token);
+  const userData = useSelector((state) => state.user.user);
 
   const handleMiddleMenu = (route) => {
     router.push(route); // Programmatically navigate to the (app) route
   };
+
+  const notifyNotAvailable = () => {
+    Toast.show({
+      type: "info",
+      text1: "Function is Currently Not Available 🙇🏽",
+      visibilityTime: 3000,
+    });
+  }
+  
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-       style={styles.outlineContainer}>
-      <View style={styles.topContainer}>
+      style={styles.outlineContainer}
+    >
+      {/* <View style={styles.topContainer}>
         <View style={styles.imageContainer}>
           <Ionicons size={40} style={[{ marginBottom: -3 }]} name="scan" />
           <Text style={styles.topText}>Scan Code</Text>
@@ -43,15 +58,87 @@ export default function HomeScreen() {
           <Ionicons size={40} style={[{ marginBottom: -3 }]} name="qr-code" />
           <Text style={styles.topText}>Receive Code</Text>
         </View>
-      </View>
+      </View> */}
+      <ThemedView>
+        <View style={styles.header}>
+          <View style={styles.balanceContainer}>
+            <Text style={styles.currencyText}>RM</Text>
+            <Text style={styles.balanceText}>
+              {showBalance ?  userData?.balance : "****"}
+            </Text>
+            <TouchableOpacity
+              style={{ paddingTop: 6 }}
+              onPress={() => setShowBalance(!showBalance)}
+            >
+              <ThemedFA6
+                style={styles.eyeIcon}
+                name={showBalance ? "eye" : "eye-slash"}
+                size={24}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <ThemedView style={styles.headerPadding}></ThemedView>
+        {/* <View style={styles.topMenuStyling}> */}
+        <View style={styles.topContainer}>
+          <TouchableOpacity style={styles.imageContainer2}               onPress={(() => notifyNotAvailable())}
+          >
+            <Ionicons size={30} style={[{ marginBottom: -3 }]} name="scan" />
+            <Text style={styles.topText2}>Scan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.imageContainer2}               onPress={(() => notifyNotAvailable())}
+          >
+            <Ionicons size={30} style={[{ marginBottom: -3 }]} name="qr-code" />
+            <Text style={styles.topText2}>Receive</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.imageContainer2} onPress={()=>router.push('/(app)/withdraw')}>
+            <ThemedFA6
+              size={30}
+              style={[{ marginBottom: -3 }]}
+              name="markdown"
+            />
+            <Text style={styles.topText2}>Withdraw</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.imageContainer2}               onPress={(() => notifyNotAvailable())}
+          >
+            <ThemedFA6
+              size={30}
+              style={[{ marginBottom: -3 }]}
+              name="money-bill-transfer"
+            />
+            <Text style={styles.topText2}>Transfer</Text>
+          </TouchableOpacity>
+        </View>
+        {/* </View> */}
+      </ThemedView>
 
-      <View style={styles.middleContainer}>
-        {/* {middleMenuData.map((item, index) => (
-          <Pressable  key={index} style={styles.imageContainerMiddle}  onPress={()=>handleMiddleMenu(item.navigation)}>
-              <FontAwesome6 name={item.icon} size={25} style={[{ marginBottom: -3 }]} />
-              <ThemedText style={styles.middleText}>{item.name}</ThemedText>
-          </Pressable>
-        ))} */}
+      <ThemedView style={styles.menuContainer}>
+        {middleMenuData.map((item, index) => (
+          <TouchableOpacity key={index} style={styles.menuItem}
+              onPress={() => {
+                if(item.status == 'maintenance'){
+                  notifyNotAvailable()
+                }else{
+                  router.push(item.navigation)
+                }
+              }}
+          >
+            {/* <item.iconLib name={item.icon} size={30} color="blue" /> */}
+            <ThemedFA6
+                name={item.icon}
+                size={25}
+                style={[
+                  { marginBottom: -3 },
+                  // isMaintenance && styles.maintenanceIcon,
+                ]}
+              />
+            <ThemedText style={styles.menuLabel}>{item.name}</ThemedText>
+          </TouchableOpacity>
+        ))}
+      </ThemedView>
+
+      {/* <View style={styles.middleContainer}>
+        
         {middleMenuData.map((item, index) => {
           const isMaintenance = item.status === "maintenance";
 
@@ -74,24 +161,20 @@ export default function HomeScreen() {
                 size={25}
                 style={[
                   { marginBottom: -3 },
-                  // isMaintenance && styles.maintenanceIcon,
                 ]}
               />
               <ThemedText
                 style={[
                   styles.middleText,
-                  // isMaintenance && styles.maintenanceText,
                 ]}
               >
                 {item.name}
               </ThemedText>
 
-              {/* Diagonal stripe for maintenance indicator */}
-              {/* {isMaintenance && <ThemedView style={styles.diagonalStripe} />} */}
             </Pressable>
           );
         })}
-      </View>
+      </View> */}
     </ParallaxScrollView>
   );
 }
@@ -101,7 +184,7 @@ const screenWidth = Dimensions.get("window").width; // Get the screen width
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 8,
   },
   stepContainer: {
@@ -129,11 +212,28 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensure the stripe stays above other elements
   },
   topContainer: {
-    backgroundColor: "#14437C",
+    width: "93%",
+    margin: -50,
+    marginBottom: 15,
+    justifyContent: "space-around",
+    // width: "100%",
+    alignSelf: "center",
+    // backgroundColor: "#14437C",
+    shadowColor: "#000", // Color of the shadow
+    shadowOffset: {
+      width: 0, // Horizontal offset
+      height: 1, // Vertical offset
+    },
+    shadowOpacity: 0.1, // Transparency of the shadow
+    elevation: 3, // For Android
+    shadowRadius: 2, // Blur radius
     flexDirection: "row",
-    borderRadius: 10,
+    borderRadius: 15,
+    backgroundColor: "white",
   },
   middleContainer: {
+    alignSelf: "center",
+    width: "93%",
     backgroundColor: "#19559E",
     flexDirection: "row",
     flexWrap: "wrap",
@@ -147,8 +247,13 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: "center",
   },
+  imageContainer2: {
+    // width: "25%",
+    paddingVertical: 15,
+    alignItems: "center",
+  },
   imageContainerMiddle: {
-    flexBasis: "33.333%", // Adjust the basis to create more space
+    flexBasis: "33%", // Adjust the basis to create more space
     alignItems: "center",
     paddingVertical: 15,
     borderWidth: 1, // Create thin lines between items
@@ -162,13 +267,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
   },
+  topText2: {
+    marginTop: 10,
+    fontSize: 12,
+    fontWeight: "200",
+  },
   middleText: {
     marginTop: 10,
     fontSize: 12,
     fontWeight: "500",
   },
   outlineContainer: {
-    padding: 12,
+    // padding: 12,
+    flex: 1,
   },
   reactLogo: {
     height: 178,
@@ -176,5 +287,74 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+  },
+  header: {
+    backgroundColor: "#0051BA", // Blue background
+    // backgroundColor: "rgb(176, 198, 255)", // Blue background
+    padding: 20,
+    // borderBottomLeftRadius: 100,
+    // borderBottomRightRadius: 100,
+  },
+  headerPadding: {
+    padding: 30,
+    height: 20,
+    backgroundColor: "#0051BA", // Blue background
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+  },
+  balanceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    // justifyContent: 'space-between',
+  },
+  currencyText: {
+    color: "white",
+    fontSize: 34,
+    fontWeight: "bold",
+  },
+  balanceText: {
+    color: "white",
+    fontSize: 30,
+    fontWeight: "bold",
+  },
+  eyeIcon: {
+    marginLeft: 10,
+  },
+  balanceDetailsButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  balanceDetailsText: {
+    color: "white",
+    marginRight: 5,
+  },
+  menuContainer: {
+    alignSelf: "center",
+    width: '93%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    // justifyContent: 'space-between',
+
+    // shadowColor: '#000',
+    // shadowOpacity: 0.1,
+    // shadowRadius: 10,
+    // elevation: 3,
+  },
+  menuItem: {
+    width: '25%', // Half width, adjust spacing accordingly
+    // backgroundColor: 'white',
+    paddingVertical: 8,
+    // paddingHorizontal: 10,
+    borderRadius: 10,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  menuLabel: {
+    marginTop: 10,
+    fontweight: 200,
+    fontSize: 10,
+    // color: 'black',
   },
 });

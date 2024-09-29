@@ -26,97 +26,28 @@ import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
 import { ThemedFA6 } from "@/components/ThemedFA6";
 import { ThemedLink } from "@/components/ThemedLink";
-import PinInputGrid from "@/components/ThemedPinInput";
-import { confirm } from "@/components/base/confirm";
 // TouchableOpacity
 
-export default function Register() {
+export default function NewLoginPasswordSetting() {
   const dispatch = useDispatch();
-  const [pin, setPin] = useState(Array(6).fill("")); // State to hold the PIN input
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const userData = useSelector((state) => state.user.user);
 
-  const SET_PIN_MUTATION = gql`
-    mutation SetPin($pin: String!) {
-      setPin(pin: $pin) {
-        success
-        message
-        data {
-          ... on UserPin {
-            pin
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
+  // const GET_USER_DATA = gql`
+  //   query Query {
+  //     me {
+  //       id
+  //       mobile_number
+  //       agent_linked_code
+  //     }
+  //   }
+  // `;
 
-  const [setPinMutation] = useMutation(SET_PIN_MUTATION);
-
-  const setPinFunction = async () => {
-    if( pin.join("").length != 6 ){
-      return;
-    }
-    // Set loading state to true
-
-    // setLoading(true);
-
-    // Show confirmation dialog
-    const confirmed = await confirm("Do you want to proceed with the PIN?");
-
-    if (confirmed) {
-      try {
-        const pinString = pin.join("");
-        // Call your GraphQL API to delete the image
-        await setPinMutation({
-          variables: { pin: pinString },
-          onCompleted: (infoData) => {
-            console.log(infoData);
-            Toast.show({
-              type: "success",
-              text1: "Pin Setup Successfully",
-              visibilityTime: 3000,
-            });
-            router.navigate("/(app)/profile");
-          },
-          onError: ({ graphQLErrors, networkError }) => {
-            console.log("tester erroer");
-            if (graphQLErrors) {
-              graphQLErrors.forEach(({ message, locations, path }) => {
-                // alert("Registration failed. Please try again. /n" + message);
-                console.log(message);
-                Toast.show({
-                  type: "error",
-                  text1: "Pin Setup failed. Please try again later",
-                  visibilityTime: 3000,
-                });
-              });
-            }
-            if (networkError) {
-              console.log(networkError);
-              // console.log(message);
-              Toast.show({
-                type: "error",
-                text1: "Network error. Please try again later",
-                visibilityTime: 3000,
-              });
-            }
-            // setLoading(false);
-          },
-        }); // Pass appropriate variables
-
-        console.log("User Bank deleted successfully!");
-      } catch (err) {
-        console.log("Error deleting User Bank: ", err);
-      }
-    } else {
-      console.log("User cancelled the deletion.");
-    }
-  };
+  // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -130,30 +61,32 @@ export default function Register() {
           <ThemedView style={styles.bodyContainer}>
             <ThemedView style={styles.rowWrapper}>
               <ThemedText style={styles.rowHeader}>
-                Reset payment password
+                Set new password
               </ThemedText>
-              <ThemedView
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <ThemedText style={styles.rowLabel}>
-                  please input a six-digit password
-                </ThemedText>
-                {/* <ThemedLink style={styles.rowOption} href={"/forgotPassword"}>
-                  Forget?
-                </ThemedLink> */}
-              </ThemedView>
+              <ThemedText style={styles.rowLabel}>
+                Please set 6-11 numbers or letters
+              </ThemedText>
             </ThemedView>
             <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
-              <PinInputGrid pin={pin} onChangePin={setPin} />
+            <ThemedInput
+            style={styles.inputPhone}
+            onChangeText={setPassword}
+            value={password}
+            autoCapitalize="none"
+            placeholder="Your New Password"
+            secureTextEntry={!showPassword}
+          ></ThemedInput>
+          <TouchableOpacity
+            style={styles.eyeContainer}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} />
+          </TouchableOpacity>
             </ThemedView>
             <ThemedView style={styles.action}>
               <ThemedButton
                 title="Enter"
-                onPress={setPinFunction}
+                // onPress={signUp}
                 disabled={loading} // Disable button when loading
                 loading={loading}
               ></ThemedButton>
@@ -171,7 +104,6 @@ const styles = StyleSheet.create({
     borderColor: "#e5e5e5",
     paddingVertical: 13,
     paddingHorizontal: 15,
-    borderBottomWidth: 1,
   },
   container: {
     paddingHorizontal: 20,
@@ -222,15 +154,16 @@ const styles = StyleSheet.create({
     borderColor: "#e5e5e5",
     borderTopWidth: 1,
     borderBottomWidth: 1,
+    textAlign:'center'
   },
-  //   option: {
-  //     width: 100,
-  //     paddingTop: 5,
-  //     textAlign: "center",
-  //     borderColor: "#e5e5e5",
-  //     borderTopWidth: 1,
-  //     borderBottomWidth: 1,
-  //   },
+  option: {
+    width: 100,
+    paddingTop: 5,
+    textAlign: "center",
+    borderColor: "#e5e5e5",
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
   rowHeader: {
     fontSize: 18,
     fontWeight: "500",
@@ -239,5 +172,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#8B8B8B",
+  },
+  eyeContainer: {
+    // width: 25,
+    // height: 40,
+    position: "absolute",
+    right: 5,
+    bottom: 10,
+    height: 20,
+    width: 25,
   },
 });

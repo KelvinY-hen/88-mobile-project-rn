@@ -23,7 +23,7 @@ import ThemedRow, { RowBar } from "@/components/base/RowBar";
 import { gql, useMutation } from "@apollo/client";
 import { useState } from "react";
 import { router } from "expo-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutSuccess } from "@/redux/actions/auth";
 import Toast from "react-native-toast-message";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -46,14 +46,14 @@ const PROFILE_SECTIONS = [
         icon: "building-columns",
         label: "Bank",
         type: "link",
-        link: "/(app)/(settings)/(bank)",
+        link: "/(app)/(settings)/(bank)/bank",
       },
       {
         id: "acc_sec",
         icon: "shield-heart",
         label: "Account Security",
         type: "link",
-        link: "/(settings)/(security)/",
+        link: "/(settings)/(security)/security",
       },
       {
         id: "logout",
@@ -90,7 +90,7 @@ const BANK_SECTIONS = [
 
 export default function TabTwoScreen() {
   const dispatch = useDispatch();
-
+  const userData = useSelector((state) => state.user.user);
   const [loading, setLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
 
@@ -184,29 +184,37 @@ export default function TabTwoScreen() {
             showsHorizontalScrollIndicator={false}
             style={{ display: "flex", flexDirection: "row" }}
           >
-            {BANK_SECTIONS.map(({ id, label }, index) => (
-              <ThemedView
-                key={id}
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  marginHorizontal: 5,
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  width: 170,
-                  borderRadius: 3,
-                  backgroundColor: "skyblue",
-                  marginLeft: index === 0 ? 15 : 5,
-                  marginRight: index === BANK_SECTIONS.length - 1 ? 15 : 5,
-                }}
-              >
-                <ThemedText>{label}</ThemedText>
-                <ThemedText style={{ textAlign: "right" }}>
-                  {" "}
-                  {showBalance ? "100" : "****"}
-                </ThemedText>
-              </ThemedView>
-            ))}
+            {BANK_SECTIONS.map(({ id, label }, index) => {
+              let balTemp = 0;
+              if(index == 0){
+                balTemp = userData.balance
+              }else{
+                balTemp = 0;
+              }
+              return (
+                <ThemedView
+                  key={id}
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    marginHorizontal: 5,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                    width: 170,
+                    borderRadius: 3,
+                    backgroundColor: "skyblue",
+                    marginLeft: index === 0 ? 15 : 5,
+                    marginRight: index === BANK_SECTIONS.length - 1 ? 15 : 5,
+                  }}
+                >
+                  <ThemedText>{label}</ThemedText>
+                  <ThemedText style={{ textAlign: "right" }}>
+                    {" "}
+                    {showBalance ? balTemp: "****"}
+                  </ThemedText>
+                </ThemedView>
+              );
+            })}
           </ScrollView>
         </ThemedView>
 

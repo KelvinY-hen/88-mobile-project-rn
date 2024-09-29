@@ -1,0 +1,22 @@
+
+{
+  "build": {
+    "myPhones": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "myPhones2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "myPhones3": {
+      "developmentClient": true
+    },
+    "myPhones4": {
+      "distribution": "internal"
+    },
+    "production": {}
+  }
+}

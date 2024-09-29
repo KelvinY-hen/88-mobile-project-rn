@@ -6,7 +6,7 @@ import { images } from "../../../../constants";
 
 import { Link, router } from "expo-router";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -54,9 +54,11 @@ export default function updateUsername() {
   );
   const [loading, setLoading] = useState(false);
   const [gender, setGender] = useState("m");
-  const [imageList, setImageList] = useState([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const [imageList, setImageList] = useState([{imageIndex: 1, image: {}}]);
   const [docType, setDocType] = useState(DOC_TYPE_SELECT[0]);
   const bottomSheetRef = useRef(null);
+  const [imageNumber, setImageNumber] = useState(1);
 
   const docTypeSheetRef = useRef(null);
   const handlePresentDocType = () => docTypeSheetRef.current?.present();
@@ -67,23 +69,11 @@ export default function updateUsername() {
     handleDismissDocType();
   };
 
-  const handleImageSelect = (index: string, uri: string) => {
-    // Add the new image to the imageList
-    setImageList((prevList) => {
-      // Check if the image already exists
-      const existingImageIndex = prevList.findIndex(
-        (image) => image.index === index
-      );
-
-      if (existingImageIndex !== -1) {
-        // Update the existing image's uri
-        const updatedList = [...prevList];
-        updatedList[existingImageIndex].uri = uri;
-        return updatedList;
-      } else {
-        // Add the new image
-        return [...prevList, { index, uri }];
-      }
+  const incrementImage = () => {
+    setImageNumber(prevNumber => {
+      const newNumber = prevNumber + 1;
+      setImageList([...imageList, { imageIndex: newNumber, image: {} }]);
+      return newNumber;
     });
   };
 
@@ -122,7 +112,9 @@ export default function updateUsername() {
     }
   };
 
-  const handlePresentPress = useCallback(() => {
+  const handlePresentPress = useCallback((index) => {
+    // console.log(index);
+    setSelectedImageIndex(index);
     bottomSheetRef.current?.present();
   }, []);
 
@@ -144,8 +136,14 @@ export default function updateUsername() {
     </TouchableOpacity>
   );
 
-  const handleImage = (image) => {
-    console.log(image);
+  const handleImage = (image:object) => {
+    setImageList(prevList =>
+      prevList.map(img =>
+        img.imageIndex === selectedImageIndex
+          ? { ...img, image: image }
+          : img
+      )
+    );
   };
 
   return (
@@ -174,6 +172,7 @@ export default function updateUsername() {
           type="input"
           label="ID Number"
           optional="Your ID Number"
+          style={{marginBottom:3}}
         ></ThemedRow>
 
         {/* <View style={{ flexDirection: "row", marginVertical: 4 }}>
@@ -185,38 +184,48 @@ export default function updateUsername() {
             // placeholder="Username"
           ></ThemedInput>
         </View> */}
-        <ThemedView
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-            borderTopWidth: 1,
-            borderBottomWidth: 1,
-            borderColor: "#e5e5e5",
-            justifyContent: "space-between",
-          }}
-        >
-          <ThemedView>
-            <ThemedText style={{ fontSize: 16, fontWeight: "500" }}>
-              ID Photo
-            </ThemedText>
-            <ThemedText style={{ fontSize: 14 }}>
-              Upload your ID photo
-            </ThemedText>
-          </ThemedView>
-          <TouchableOpacity onPress={handlePresentPress}>
-            <Image
-              source={images.dummyId} // Replace with your image path
-              style={styles.dummyId}
-            />
-          </TouchableOpacity>
-        </ThemedView>
 
+        {imageList.map(({imageIndex, image}, index) => {
+          // const image = imageList.find((img) => img.imageIndex === imageIndex);
+          console.log('raw',image)
+          return (
+            <ThemedView
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                paddingHorizontal: 15,
+                paddingVertical: 10,
+                borderTopWidth: 1,
+                borderBottomWidth: 1,
+                borderColor: "#e5e5e5",
+                justifyContent: "space-between",
+              }}
+              key={index}
+            >
+              <ThemedView>
+                <ThemedText style={{ fontSize: 16, fontWeight: "500" }}>
+                  ID Photo
+                </ThemedText>
+                <ThemedText style={{ fontSize: 14 }}>
+                  Upload your ID photo
+                </ThemedText>
+              </ThemedView>
+              <TouchableOpacity onPress={() => handlePresentPress(imageIndex)}>
+                <Image
+                  source={image.uri ? {uri:image.uri} : images.dummyId} // Placeholder or selected image
+                  style={styles.dummyId}
+                />
+              </TouchableOpacity>
+              {/* <TouchableOpacity onPress={() => removeImage(index)}>
+                  <ThemedText>Remove</ThemedText>
+                </TouchableOpacity> */}
+            </ThemedView>
+          );
+        })}
         <View style={styles.action}>
           <ThemedButton
             title="Add more"
-            onPress={signUp}
+            onPress={incrementImage}
             disabled={loading} // Disable button when loading
             loading={loading}
           ></ThemedButton>
@@ -240,7 +249,8 @@ export default function updateUsername() {
         lock={false}
       />
       <CameraBottomSheet
-        handleImage={handleImageSelect}
+        // index={imageIndex}
+        handleImage={handleImage}
         handlePresentPress={handlePresentPress}
         handleDismissPress={handleDismissPress}
         bottomSheetRef={bottomSheetRef}
@@ -296,8 +306,9 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   dummyId: {
-    width: 120, // Set the size of the image
-    height: 120,
-    resizeMode: "contain", // Ensures the image maintains aspect ratio
+    width: 100, // Set the size of the image
+    height: 100,
+    marginRight: 10,
+    // resizeMode: "contain", // Ensures the image maintains aspect ratio
   },
 });

@@ -6,18 +6,6 @@
       "status": "maintenance"
     },
     {
-      "name": "Withdrawal",
-      "icon": "get-pocket",
-      "navigation": "/(app)/withdraw",
-      "status": "active"
-    },
-    {
-      "name": "Transfer",
-      "icon": "money-bill-transfer",
-      "navigation": "/(app)/(tabs)",
-      "status": "maintenance"
-    },
-    {
       "name": "Official Exchange",
       "icon": "scale-balanced",
       "navigation": "/(app)/(tabs)",
@@ -50,8 +38,8 @@
     {
       "name": "Bill",
       "icon": "file-invoice-dollar",
-      "navigation": "(app)/(tabs)",
-      "status": "maintenance"
+      "navigation": "(app)/(withdraw)/withdrawHistory",
+      "status": "active"
     }
   ]
   

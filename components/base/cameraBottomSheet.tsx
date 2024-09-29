@@ -42,11 +42,11 @@ const CameraBottomSheet: React.FC<CameraBottomSheetProps> = ({ handleImage, hand
 
     if (!result.canceled) {
       // dispatch(updatePotrait(result.assets[0].uri));
-      if(id){
-        handleImage(result.assets[0], id);
-      }else{
+      // if(id){
+      //   handleImage(result.assets[0], id);
+      // }else{
         handleImage(result.assets[0]);
-      }
+      // }
     }
   };
 
@@ -63,12 +63,13 @@ const CameraBottomSheet: React.FC<CameraBottomSheetProps> = ({ handleImage, hand
         aspect: [4, 3],
       });
       if (!result.canceled) {
+
         // dispatch(updatePotrait(result.assets[0].uri));
-        if(id){
-          handleImage(result.assets[0], id);
-        }else{
+        // if(id){
+        //   handleImage(result.assets[0], id);
+        // }else{
           handleImage(result.assets[0]);
-        }
+        // }
       }
     } catch (error) {
       console.log("Error occurred while launching the camera: ", error);

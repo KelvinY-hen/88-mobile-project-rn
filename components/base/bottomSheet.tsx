@@ -43,7 +43,7 @@ const BottomSheetComponent = ({
       {/* Dynamic rendering of items */}
       <BottomSheetFlatList
         data={data}
-        keyExtractor={(item) => item.value}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) =>
           renderCustomItem ? (
             renderCustomItem(item) // Use custom rendering if provided

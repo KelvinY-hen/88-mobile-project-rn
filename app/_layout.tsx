@@ -85,172 +85,236 @@ export default function RootLayout() {
     <ApolloProvider client={client}>
       <Provider store={store}>
         <ThemeProvider value={colorScheme == "dark" ? DarkTheme : DefaultTheme}>
-        <PaperProvider>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
-              <Stack initialRouteName="(auth)">
-                <Stack.Screen
-                  name="index"
-                  options={{
-                    headerShown: false,
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
-                <Stack.Screen
-                  name="(auth)/register"
-                  options={{
-                    headerShown: true,
-                    title: "Register",
-                    headerTitleAlign: "center",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
-                <Stack.Screen
-                  name="(app)/(tabs)"
-                  options={{
-                    headerShown: true,
-                    title: "81 Pay",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                    headerRight: () => (
-                      <FontAwesome6
-                        name={"bell"}
-                        size={25}
-                        style={[{ marginHorizontal: 16 }]}
-                      />
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="(app)/withdraw"
-                  options={{
-                    headerShown: true,
-                    title: "Withdraw",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
+          <PaperProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <BottomSheetModalProvider>
+                <Stack initialRouteName="(auth)">
+                  <Stack.Screen
+                    name="index"
+                    options={{
+                      headerShown: false,
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(auth)/register"
+                    options={{
+                      headerShown: true,
+                      title: "Register",
+                      headerTitleAlign: "center",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(tabs)"
+                    options={{
+                      headerShown: true,
+                      title: "81 Pay",
+                      animation: "slide_from_right",
+                      headerTitleAlign: "center",
+                      animationDuration: 50,
+                      headerRight: () => (
+                        <FontAwesome6
+                          name={"bell"}
+                          size={25}
+                          style={[{ marginHorizontal: 16 }]}
+                        />
+                      ),
+                    }}
+                  />
 
-                {/* About Me Setting */}
-                {/* Profile */}
-                <Stack.Screen
-                  name="(app)/(settings)/profile/profile"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Edit Profile",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
+                  {/* withdraw */}
+                  <Stack.Screen
+                    name="(app)/(withdraw)/withdraw"
+                    options={{
+                      headerShown: true,
+                      title: "Withdraw",
+                      headerTitleAlign: "center",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(withdraw)/withdrawHistory"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Withdraw History",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
 
-                <Stack.Screen
-                  name="(app)/(settings)/profile/updateUsername"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Change Username",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
+                  {/* About Me Setting */}
+                  {/* Profile */}
+                  <Stack.Screen
+                    name="(app)/(settings)/profile/profile"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Edit Profile",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
 
-                {/* Bank */}
-                <Stack.Screen
-                  name="(app)/(settings)/(bank)/index"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Bank Account",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                    headerRight: () => (
-                      <ThemedLink
-                        push
-                        style={[{ marginHorizontal: 5 }]}
-                        href="(app)/(settings)/(bank)/add"
-                      >
-                        Add
-                      </ThemedLink>
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="(app)/(settings)/(bank)/add"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Add Bank Account",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
+                  <Stack.Screen
+                    name="(app)/(settings)/profile/updateUsername"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Change Username",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/profile/authentication"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Authenticate Account",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
 
-                {/* security */}
-                <Stack.Screen
-                  name="(app)/(settings)/(security)/index"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Account Security",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
-                <Stack.Screen
-                  name="(app)/(settings)/(security)/loginPasswordSetting"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Login Password Setting",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
-                <Stack.Screen
-                  name="(app)/(settings)/(security)/paymentPasswordSetting"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Payment Password Setting",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
-                <Stack.Screen
-                  name="(app)/(settings)/(security)/gesturePasswordSetting"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Gesture Password Setting",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
-                <Stack.Screen
-                  name="(app)/(settings)/(security)/forgotPassword"
-                  options={{
-                    headerShown: true,
-                    headerTitleAlign: "center",
-                    title: "Forgot Password",
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
+                  {/* Bank */}
+                  <Stack.Screen
+                    name="(app)/(settings)/(bank)/bank"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Bank Account",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                      headerRight: () => (
+                        <ThemedLink
+                          push
+                          style={[{ marginHorizontal: 5 }]}
+                          href="(app)/(settings)/(bank)/add"
+                        >
+                          Add
+                        </ThemedLink>
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(bank)/add"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Add Bank Account",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
 
-                <Stack.Screen
-                  name="+not-found"
-                  options={{
-                    animation: "slide_from_right",
-                    animationDuration: 50,
-                  }}
-                />
-              </Stack>
-              <Toast />
-            </BottomSheetModalProvider>
-          </GestureHandlerRootView>
+                  {/* security */}
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/security"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Account Security",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/loginPasswordSetting"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Login Password Setting",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/newLoginPasswordSetting"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Login Password Setting",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/paymentPasswordSetting"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "New Pin",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/reEnterPaymentPasswordSetting"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Verify Pin",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/gesturePasswordSetting"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Gesture Password Setting",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/questionAnswerSetting"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Question Answer Setting",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/questionAnswerSettingVerify"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Question Answer Setting",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/forgotPassword"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Forgot Password",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+
+                  <Stack.Screen
+                    name="+not-found"
+                    options={{
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                </Stack>
+                <Toast />
+              </BottomSheetModalProvider>
+            </GestureHandlerRootView>
           </PaperProvider>
         </ThemeProvider>
       </Provider>

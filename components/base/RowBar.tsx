@@ -21,11 +21,13 @@ type ThemedRowProps = {
   label: string;
   icon?: string;
   link?: string;
+  inputValue?:string;
   handleFunction?: () => void;
   optional?: string;
   form?: object;
   data?: Array<RADIO_OBJECT_TYPE>;
   logout?: () => void;
+  editable:boolean,
   stateValue:string;
 };
 
@@ -38,11 +40,13 @@ const ThemedRow: React.FC<ThemedRowProps> = ({
   link = null,
   optional = null,
   form = {},
+  inputValue='',
   logout,
   handleFunction,
   data,
   stateValue,
   style,
+  editable,
   ...otherProps
 }) => {
   const router = useRouter();
@@ -77,7 +81,7 @@ const ThemedRow: React.FC<ThemedRowProps> = ({
       >
         <ThemedView style={styles.row}>
           <ThemedView
-            style={[styles.rowHeader, inputType ? { flex: 0.75 } : {}]}
+            style={[styles.rowHeader, (inputType || optional || inputPotrait || inputRadio) ? { flex: 0.75 } : {}]}
           >
             {icon && (
               <ThemedFA6 name={icon} size={20} style={{ marginRight: 32 }} />
@@ -87,11 +91,15 @@ const ThemedRow: React.FC<ThemedRowProps> = ({
           </ThemedView>
 
           <ThemedView
-            style={[styles.rowContent, inputType ? { flex: 1.25 } : {}]}
+            // style={[styles.rowContent, inputType ? { flex: 1.25 } : {}]}
+            style={[styles.rowContent, (inputType || optional || inputPotrait || inputRadio) ? { flex: 1.25 } : {}]}
           >
             {inputType && (
               <ThemedInput
                 maxLength={20}
+                editable={editable}
+                value={inputValue}
+                onChangeText={handleFunction}
                 style={[styles.rowLabel, { textAlign: "right" }]}
                 placeholder={optional}
               ></ThemedInput>
@@ -143,7 +151,7 @@ const ThemedRow: React.FC<ThemedRowProps> = ({
               <ThemedText style={styles.rowLabel}>{optional} </ThemedText>
             )}
             {["select", "link", "potrait"].includes(type) && (
-              <ThemedFA6 name={"chevron-right"} size={20} color="#ababab" />
+              <ThemedFA6 name={"chevron-right"} size={20} style={{marginRight:3}} color="#ababab" />
             )}
           </ThemedView>
         </ThemedView>
@@ -179,6 +187,7 @@ const styles = StyleSheet.create({
   rowLabel: {
     fontSize: 16,
     fontWeight: "500",
+    textAlign:'right',
   },
   rowSpacer: {
     flex: 1,

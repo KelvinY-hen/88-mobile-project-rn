@@ -24,17 +24,18 @@ import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
+import { ThemedFA6 } from "@/components/ThemedFA6";
+import { ThemedLink } from "@/components/ThemedLink";
 // TouchableOpacity
 
-export default function Register() {
+export default function questionAnswerSetting() {
   const dispatch = useDispatch();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const userData = useSelector((state) => state.user.user); 
-
+  const userData = useSelector((state) => state.user.user);
 
   // const GET_USER_DATA = gql`
   //   query Query {
@@ -48,6 +49,19 @@ export default function Register() {
 
   // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
 
+  const checkPassword = () => {
+    try {
+      router.push('/questionAnswerSetting')
+    } catch (error) {
+      console.log('functionerror, ',error);
+      Toast.show({
+        type: 'error',
+        text1: 'An Error occuered. Please try again later',
+        visibilityTime: 3000
+      });
+    }
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ParallaxScrollView
@@ -58,33 +72,35 @@ export default function Register() {
       >
         <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
           <ThemedView style={styles.bodyContainer}>
-            <ThemedRow
-              type="link"
-              label="Login Password Setting"
-              // optional=""
-              link="/loginPasswordSetting"
-              ></ThemedRow>
-            <ThemedRow
-              type="link"
-              label="Payment Password Setting"
-              link="/paymentPasswordSetting"
-              // optional=""
-              ></ThemedRow>
-            <ThemedRow
-              type="link"
-              label="Gesture Password Setting"
-              link="/gesturePasswordSetting"
-              style={{borderWidth: 1}}
-              // optional=""
-            ></ThemedRow>
-            {/* <ThemedText>Id: {userData.agent_linked_code}</ThemedText>
-            <ThemedText>Mobile Number: {userData.mobile_number}</ThemedText> */}
-            {/* <ThemedButton
-              title="Update Password"
-              onPress={() => router.push('/(app)/(settings)/profile/updatePassword')}
-              loading={loading}
-              disabled={loading} // Dis
-            /> */}
+            <ThemedView style={styles.rowWrapper}>
+              <ThemedText style={styles.rowHeader}>
+                Login password modification
+              </ThemedText>
+              <ThemedText style={styles.rowLabel}>
+                account number: {userData.mobile_number}
+              </ThemedText>
+            </ThemedView>
+            <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
+              <ThemedInput
+                style={styles.inputPhone}
+                onChangeText={setPassword}
+                value={password}
+                autoCapitalize="none"
+                placeholder="Your Password"
+                secureTextEntry={!showPassword}
+              ></ThemedInput>
+              <ThemedLink style={styles.option} href={"/forgotPassword"}>
+                Forget?
+              </ThemedLink>
+            </ThemedView>
+            <ThemedView style={styles.action}>
+              <ThemedButton
+                title="Next"
+                onPress={checkPassword}
+                disabled={loading} // Disable button when loading
+                loading={loading}
+              ></ThemedButton>
+            </ThemedView>
           </ThemedView>
         </KeyboardAvoidingView>
       </ParallaxScrollView>
@@ -93,10 +109,20 @@ export default function Register() {
 }
 
 const styles = StyleSheet.create({
+  rowWrapper: {
+    borderTopWidth: 1,
+    borderColor: "#e5e5e5",
+    paddingVertical: 13,
+    paddingHorizontal: 15,
+  },
   container: {
     paddingHorizontal: 20,
     flex: 1,
     justifyContent: "center",
+  },
+  action: {
+    marginTop: 20,
+    paddingHorizontal: 10,
   },
   header: {
     paddingHorizontal: 24,
@@ -114,18 +140,6 @@ const styles = StyleSheet.create({
     left: -35,
     position: "absolute",
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
-    marginBottom: 6,
-    paddingTop: 10,
-  },
-  topSection: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: 10, // Adjust space between image and input fields
-  },
   logo: {
     width: 120, // Set the size of the image
     height: 120,
@@ -142,61 +156,30 @@ const styles = StyleSheet.create({
 
     // justifyContent: "center",
   },
-  input: {
-    marginVertical: 4,
-    backgroundColor: '#ababab',
-    padding: 10,
-    height: 40,
-    borderBottomWidth: 1,
-  },
   inputPhone: {
     padding: 10,
+    paddingHorizontal: 13,
     height: 40,
     flex: 1,
+    borderColor: "#e5e5e5",
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-  },
-  action: {
-    marginTop: 20,
   },
   option: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  link: {
-    width: "33.333%",
-    // textAlign:'center',
-    marginTop: 5,
-  },
-  countryCodeContainer: {
     width: 100,
-    height: 40,
+    paddingTop: 5,
+    textAlign: "center",
+    borderColor: "#e5e5e5",
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-    flexDirection: "row",
-    marginHorizontal: 5,
   },
-  eyeContainer: {
-    // width: 25,
-    // height: 40,
-    position: "absolute",
-    right: 5,
-    bottom: 10,
-    height: 20,
-    width: 25,
+  rowHeader: {
+    fontSize: 18,
+    fontWeight: "500",
   },
-  button: {
-    backgroundColor: "#4CAF50",
-    paddingVertical: 8,
-    borderRadius: 3,
-    justifyContent: "center",
-    alignItems: "center",
-    // width: 200,
-  },
-  disabledButton: {
-    backgroundColor: "#8BC34A", // Lighter color for disabled stater
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 14,
-    textTransform: "uppercase",
+  rowLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#8B8B8B",
   },
 });

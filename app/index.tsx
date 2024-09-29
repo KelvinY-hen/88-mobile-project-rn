@@ -44,19 +44,50 @@ export default function LoginScreen() {
   `;
 
   const GET_USER_DATA = gql`
-  query Query{
-      me{
-        id
-        mobile_number
-        agent_linked_code
+    query Query{
+        me{
+          id
+          mobile_number
+          agent_linked_code
+        }
       }
-    }
   `
+    
 
 
   const [loginMutation] = useMutation(LOGIN_MUTATION);
 
   const signIn = () => {
+    if (!phone) {
+      Toast.show({
+        type: "error",
+        text1: "Phone number is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+  
+    // Validate password
+    if (!password) {
+      Toast.show({
+        type: "error",
+        text1: "Password is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+  
+    // Optional: Phone number format validation (10-15 digits)
+    const phoneRegex = /^[0-9]{10,15}$/; 
+    // if (!phoneRegex.test(phone)) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Invalid phone number format",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
+    
     setLoading(true);
     try {
       loginMutation({
@@ -149,7 +180,8 @@ export default function LoginScreen() {
           {/* Phone Number */}
           <ThemedInput
             style={styles.input}
-            onChangeText={setPhone}
+            onChangeText={(text) => {const numericValue = text.replace(/[^0-9]/g, "");
+              setPhone(numericValue)}}
             value={phone}
             autoCapitalize="none"
             keyboardType="phone-pad"
@@ -158,7 +190,7 @@ export default function LoginScreen() {
         </View>
 
         {/* Input Password */}
-        <View style={{ flexDirection: "row", marginVertical: 4 }}>
+        <ThemedView style={{ flexDirection: "row", marginVertical: 4 }}>
           <ThemedInput
             style={styles.input}
             onChangeText={setPassword}
@@ -175,7 +207,7 @@ export default function LoginScreen() {
                 <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} />
 
           </TouchableOpacity>
-        </View>
+        </ThemedView>
 
         <View style={styles.action}>
           <ThemedButton
@@ -237,8 +269,8 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   input: {
-    // padding: 10,
-    // height: 40,
+    padding: 10,
+    height: 40,
     flex: 1,
     borderBottomWidth: 1,
   },

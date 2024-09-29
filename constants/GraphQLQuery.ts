@@ -35,3 +35,53 @@ export const ME_QUERY = gql`
     }
   }
 `;
+
+export const CREATE_WITHDRAW_REQUEST_MUTATION = gql`
+  mutation CreateWithdrawRequest(
+    $bank_account_id: ID!, 
+    $amount: Float!, 
+    $pin: String!
+  ) {
+    createWithdrawRequest(
+      bank_account_id: $bank_account_id, 
+      amount: $amount, 
+      pin: $pin
+    ) {
+      success
+      message
+      data {
+        ... on WithdrawRequest {
+          id
+          user_id
+          bank_account_id
+          amount
+          status
+          created_at
+          updated_at
+        }
+      }
+      errors {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const CHECK_PIN_QUERY = gql`
+query CheckPin($pin: String!) {
+    checkPin(pin: $pin) {
+        success
+        message
+        data {
+            ... on UserPin { 
+                pin                        
+            }
+        }
+        errors {
+            code
+            message
+        }
+    }
+}
+`;

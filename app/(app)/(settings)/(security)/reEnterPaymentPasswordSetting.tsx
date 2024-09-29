@@ -1,7 +1,7 @@
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedInput } from "@/components/ThemedInput";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 
 import { Link, router } from "expo-router";
 
@@ -28,6 +28,8 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { ThemedLink } from "@/components/ThemedLink";
 import PinInputGrid from "@/components/ThemedPinInput";
 import { confirm } from "@/components/base/confirm";
+import { CHECK_PIN_QUERY } from "../../../../constants/GraphQLQuery";
+import useMyLazyQuery from "@/hooks/useMyLazyQuery";
 // TouchableOpacity
 
 export default function Register() {
@@ -55,67 +57,133 @@ export default function Register() {
     }
   `;
 
-  const [setPinMutation] = useMutation(SET_PIN_MUTATION);
+  // const [checkPinMutation] = useMutation(CHECK_PIN_MUTATION);
+
+  const [checkPin, { data, loading: query_loading, error }] = useMyLazyQuery(
+    CHECK_PIN_QUERY,
+    {
+      variables: { pin: pin.join("") },
+      fetchPolicy:  'network-only',
+      onCompleted: (infoData) => {
+        console.log(infoData);
+        let success = infoData.checkPin.success;
+
+        if (success) {
+          router.navigate("/(app)/(security)/paymentPasswordSetting");
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Wrong PIN. ",
+            visibilityTime: 3000,
+          });
+        }
+      },
+      onError: ({ graphQLErrors, networkError }) => {
+        console.log("tester erroer");
+        if (graphQLErrors) {
+          graphQLErrors.forEach(({ message, locations, path }) => {
+            // alert("Registration failed. Please try again. /n" + message);
+            console.log(message);
+            Toast.show({
+              type: "error",
+              text1: "Failed To Send. Please Try again later",
+              visibilityTime: 3000,
+            });
+          });
+        }
+        if (networkError) {
+          console.log(networkError);
+          // console.log(message);
+          Toast.show({
+            type: "error",
+            text1: "Network error. Please try again later",
+            visibilityTime: 3000,
+          });
+        }
+        // setLoading(false);
+      },
+    }
+  );
 
   const setPinFunction = async () => {
-    if( pin.join("").length != 6 ){
+    // e.preventDefault(); // Prevent the default form submission
+    if (pin.join("").length != 6) {
       return;
     }
-    // Set loading state to true
 
+    setLoading(true)
+
+    if (pin.join("").length == 6) {
+      let temp = await checkPin(); // Execute the query to check the PIN
+      console.log(data);
+      let success = data.checkPin.success;
+      if (success) {
+        router.navigate("/(app)/(security)/paymentPasswordSetting");
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Wrong PIN. ",
+          visibilityTime: 3000,
+        });
+      }
+    }
+    // Set loading state to true
     // setLoading(true);
 
     // Show confirmation dialog
-    const confirmed = await confirm("Do you want to proceed with the PIN?");
+    // const confirmed = await confirm("Do you want to proceed with the PIN?");
 
-    if (confirmed) {
-      try {
-        const pinString = pin.join("");
-        // Call your GraphQL API to delete the image
-        await setPinMutation({
-          variables: { pin: pinString },
-          onCompleted: (infoData) => {
-            console.log(infoData);
-            Toast.show({
-              type: "success",
-              text1: "Pin Setup Successfully",
-              visibilityTime: 3000,
-            });
-            router.navigate("/(app)/profile");
-          },
-          onError: ({ graphQLErrors, networkError }) => {
-            console.log("tester erroer");
-            if (graphQLErrors) {
-              graphQLErrors.forEach(({ message, locations, path }) => {
-                // alert("Registration failed. Please try again. /n" + message);
-                console.log(message);
-                Toast.show({
-                  type: "error",
-                  text1: "Pin Setup failed. Please try again later",
-                  visibilityTime: 3000,
-                });
-              });
-            }
-            if (networkError) {
-              console.log(networkError);
-              // console.log(message);
-              Toast.show({
-                type: "error",
-                text1: "Network error. Please try again later",
-                visibilityTime: 3000,
-              });
-            }
-            // setLoading(false);
-          },
-        }); // Pass appropriate variables
+    setLoading(false)
+    const confirmed = true;
 
-        console.log("User Bank deleted successfully!");
-      } catch (err) {
-        console.log("Error deleting User Bank: ", err);
-      }
-    } else {
-      console.log("User cancelled the deletion.");
-    }
+    // if (confirmed) {
+    //   try {
+    //     const pinString = pin.join("");
+    //     // Call your GraphQL API to delete the image
+    //     await checkPinMutation({
+    //       variables: { pin: pinString },
+    //       onCompleted: (infoData) => {
+    //         console.log(infoData);
+    //         // Toast.show({
+    //         //   type: "success",
+    //         //   text1: "Pin Setup Successfully",
+    //         //   visibilityTime: 3000,
+    //         // });
+    //         router.navigate("/(app)/(security)/paymentPasswordSetting");
+    //       },
+    //       onError: ({ graphQLErrors, networkError }) => {
+    //         console.log("tester erroer");
+    //         if (graphQLErrors) {
+    //           graphQLErrors.forEach(({ message, locations, path }) => {
+    //             // alert("Registration failed. Please try again. /n" + message);
+    //             console.log(message);
+    //             Toast.show({
+    //               type: "error",
+    //               text1: "Wrong Pin",
+    //               visibilityTime: 3000,
+    //             });
+    //           });
+    //         }
+    //         if (networkError) {
+    //           console.log(networkError);
+    //           // console.log(message);
+    //           Toast.show({
+    //             type: "error",
+    //             text1: "Network error. Please try again later",
+    //             visibilityTime: 3000,
+    //           });
+    //         }
+    //         // setLoading(false);
+    //       },
+    //     }); // Pass appropriate variables
+
+    //     console.log('pin api was hit')
+    //   } catch (err) {
+    //     console.log("Error entering pin: ", err);
+    //   }
+    // } else {
+    //   console.log("User Cancel confirming pin.");
+    // }
   };
 
   return (
@@ -130,7 +198,7 @@ export default function Register() {
           <ThemedView style={styles.bodyContainer}>
             <ThemedView style={styles.rowWrapper}>
               <ThemedText style={styles.rowHeader}>
-                Reset payment password
+                Enter Current PIN
               </ThemedText>
               <ThemedView
                 style={{
@@ -140,7 +208,7 @@ export default function Register() {
                 }}
               >
                 <ThemedText style={styles.rowLabel}>
-                  please input a six-digit password
+                  please enter your pin for verification
                 </ThemedText>
                 {/* <ThemedLink style={styles.rowOption} href={"/forgotPassword"}>
                   Forget?

@@ -30,9 +30,8 @@ import { ThemedLink } from "@/components/ThemedLink";
 
 export default function loginPasswordSetting() {
   const dispatch = useDispatch();
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
 
   const userData = useSelector((state) => state.user.user);
@@ -74,24 +73,31 @@ export default function loginPasswordSetting() {
           <ThemedView style={styles.bodyContainer}>
             <ThemedView style={styles.rowWrapper}>
               <ThemedText style={styles.rowHeader}>
-                Login password modification
+                Question Answer Modification
               </ThemedText>
               <ThemedText style={styles.rowLabel}>
-                account number: {userData.mobile_number}
+                Modify The Question and Answer for Verification
               </ThemedText>
             </ThemedView>
-            <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
+            <ThemedView style={[{ flexDirection: "row", marginTop: 4 }]}>
               <ThemedInput
                 style={styles.inputPhone}
-                onChangeText={setPassword}
-                value={password}
+                onChangeText={setQuestion}
+                value={question}
                 autoCapitalize="none"
-                placeholder="Your Password"
-                secureTextEntry={!showPassword}
+                placeholder="Input Question"
+                // secureTextEntry={!showPassword}
               ></ThemedInput>
-              <ThemedLink style={styles.option} href={"/forgotPassword"}>
-                Forget?
-              </ThemedLink>
+            </ThemedView>
+            <ThemedView style={[{ flexDirection: "row", marginBottom: 4,  }]}>
+              <ThemedInput
+                style={[styles.inputPhone, {borderBottomWidth:1}]}
+                onChangeText={setAnswer}
+                value={answer}
+                autoCapitalize="none"
+                placeholder="Input the Answer"
+                // secureTextEntry={!showPassword}
+              ></ThemedInput>
             </ThemedView>
             <ThemedView style={styles.action}>
               <ThemedButton
@@ -163,7 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderColor: "#e5e5e5",
     borderTopWidth: 1,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
   },
   option: {
     width: 100,

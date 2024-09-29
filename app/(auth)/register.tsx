@@ -29,6 +29,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   const REGISTER_MUTATION = gql`
@@ -43,6 +44,45 @@ export default function Register() {
   const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const signUp = async () => {
+
+    if (!phone) {
+      Toast.show({
+        type: "error",
+        text1: "Phone number is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+    
+    if (!password || !confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Password and confirmation are required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Passwords do not match",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+  
+    // Optional: You can add further phone number validation (regex)
+    const phoneRegex = /^[0-9]{10,15}$/; // Example: Ensures phone is 10-15 digits
+    // if (!phoneRegex.test(phone)) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Invalid phone number format",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
+    
     setLoading(true);
     try {
       registerMutation({
@@ -127,7 +167,8 @@ export default function Register() {
           {/* Phone Number */}
           <ThemedInput
             style={styles.inputPhone}
-            onChangeText={setPhone}
+            onChangeText={(text) => {const numericValue = text.replace(/[^0-9]/g, "");
+              setPhone(numericValue)}}
             value={phone}
             autoCapitalize="none"
             keyboardType="phone-pad"

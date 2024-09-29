@@ -24,7 +24,7 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { ParallaxScrollView } from "@/components";
 // TouchableOpacity
 
-export default function Register() {
+export default function WithdrawDetail() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [oldPassword, setOldPassword] = useState("");
