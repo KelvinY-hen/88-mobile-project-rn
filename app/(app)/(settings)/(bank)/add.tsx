@@ -323,9 +323,10 @@ export default function updateUsername() {
         ></ThemedRow>
          */}
         <ThemedRow
-          editable={false}
+          // editable={false}
           type="input"
           label="Bank a/c"
+          keyboardType="number-pad"
           // style={{marginTop:15}}
           inputValue={accNo}
           handleFunction={(text) => {const numericValue = text.replace(/[^0-9]/g, "");

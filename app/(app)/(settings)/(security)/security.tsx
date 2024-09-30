@@ -3,9 +3,9 @@ import { ThemedInput } from "@/components/ThemedInput";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { gql, useMutation, useQuery } from "@apollo/client";
 
-import { Link, router } from "expo-router";
+import { Link, router, useFocusEffect } from "expo-router";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -24,31 +24,59 @@ import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
+import { getUserData } from "@/redux/actions/auth";
 // TouchableOpacity
 
 export default function Register() {
+
+
+  const GET_USER_DATA = gql`
+    query Query {
+      me {
+        id
+        mobile_number
+        agent_linked_code
+        balance
+        has_pin
+      }
+    }
+  `;
+  const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
+
+  useEffect(() => {
+    if (data) {
+      console.log("test", data);
+      dispatch(getUserData(data?.me));
+    }
+  }, [data]); // Empty dependency array to run on mount
+
+  useFocusEffect(
+    useCallback(() => {
+      // Refetch data when the screen is focused
+      try {
+        refetch();
+      } catch (error) {
+        console.log(error);
+      }
+      console.log("user refetch");
+
+      // Optional: If you need to do something on unmounting the focus
+      return () => {};
+    }, [refetch]) // Dependency array to ensure stable reference
+  );
+
+
   const dispatch = useDispatch();
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [paymentPasswordLink, setPaymentPasswordLink] = useState("");
 
   const userData = useSelector((state) => state.user.user); 
 
+  useEffect(() => {
+    if(userData){
+      setPaymentPasswordLink(userData.has_pin ? '/reEnterPaymentPasswordSetting' : '/paymentPasswordSetting')
+    }
+  },[userData])
 
-  // const GET_USER_DATA = gql`
-  //   query Query {
-  //     me {
-  //       id
-  //       mobile_number
-  //       agent_linked_code
-  //     }
-  //   }
-  // `;
-
-  // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
-
-    const paymentPasswordLink = userData.has_pin ? '/reEnterPaymentPasswordSetting' : '/paymentPasswordSetting'
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

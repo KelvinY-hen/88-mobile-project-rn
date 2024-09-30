@@ -5,7 +5,7 @@ import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 
 import { Link, router } from "expo-router";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -63,59 +63,12 @@ export default function Register() {
     CHECK_PIN_QUERY,
     {
       variables: { pin: pin.join("") },
-      fetchPolicy:  'network-only',
-      onCompleted: (infoData) => {
-        console.log(infoData);
-        let success = infoData.checkPin.success;
-
-        if (success) {
-          router.navigate("/(app)/(security)/paymentPasswordSetting");
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Wrong PIN. ",
-            visibilityTime: 3000,
-          });
-        }
-      },
-      onError: ({ graphQLErrors, networkError }) => {
-        console.log("tester erroer");
-        if (graphQLErrors) {
-          graphQLErrors.forEach(({ message, locations, path }) => {
-            // alert("Registration failed. Please try again. /n" + message);
-            console.log(message);
-            Toast.show({
-              type: "error",
-              text1: "Failed To Send. Please Try again later",
-              visibilityTime: 3000,
-            });
-          });
-        }
-        if (networkError) {
-          console.log(networkError);
-          // console.log(message);
-          Toast.show({
-            type: "error",
-            text1: "Network error. Please try again later",
-            visibilityTime: 3000,
-          });
-        }
-        // setLoading(false);
-      },
     }
   );
 
-  const setPinFunction = async () => {
-    // e.preventDefault(); // Prevent the default form submission
-    if (pin.join("").length != 6) {
-      return;
-    }
+  useEffect(() => {
 
-    setLoading(true)
-
-    if (pin.join("").length == 6) {
-      let temp = await checkPin(); // Execute the query to check the PIN
-      console.log(data);
+    if(data){
       let success = data.checkPin.success;
       if (success) {
         router.navigate("/(app)/(security)/paymentPasswordSetting");
@@ -126,6 +79,23 @@ export default function Register() {
           visibilityTime: 3000,
         });
       }
+    }
+
+
+  },[data])
+
+  const setPinFunction = async () => {
+    // e.preventDefault(); // Prevent the default form submission
+    if (pin.join("").length != 6) {
+      return;
+    }
+
+    setLoading(true)
+
+    if (pin.join("").length == 6) {
+       await checkPin(); 
+       console.log(data)
+      
     }
     // Set loading state to true
     // setLoading(true);

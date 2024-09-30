@@ -20,7 +20,7 @@ import {
 import { TouchableOpacity } from "react-native";
 import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
-import { ParallaxScrollView } from "@/components";
+import { ParallaxScrollView, ThemedText } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
 // TouchableOpacity
 
@@ -44,6 +44,8 @@ export default function Register() {
   const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const signUp = async () => {
+
+    router.navigate("/");
 
     if (!phone) {
       Toast.show({
@@ -100,17 +102,40 @@ export default function Register() {
             text1: "Registered Succesfully",
             visibilityTime: 3000,
           });
-          router.replace("/");
+          // router.replace("/");
+          router.navigate("/");
+
           // setLoading(false);
+
+          // let dataContainer = infoData.register;
+          // if(dataContainer.success){
+          //   console.log("withdraw success", dataContainer.data);
+          //   Toast.show({
+          //     type: "success",
+          //     text1: "Registered Succesfully",
+          //     visibilityTime: 3000,
+          //   });
+          //   router.navigate("/(tabs)/home");
+          // }else{
+          //   console.log("withdraw success", dataContainer.errors);
+          //   Toast.show({
+          //     type: "error",
+          //     text1: dataContainer.errors[0].message,
+          //     visibilityTime: 3000,
+          //   });
+          // }
+
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
             graphQLErrors.forEach(({ message, locations, path }) => {
               // alert("Registration failed. Please try again. /n" + message);
               console.log(message);
+              let temp_message = 'Registration failed. Please Try Again Later';
               Toast.show({
+                
                 type: "error",
-                text1: "Registration failed. Please try again later",
+                text1: message ?? temp_message,
                 visibilityTime: 3000,
               });
             });
@@ -162,6 +187,10 @@ export default function Register() {
                 style={[{ marginBottom: -3 }]}
               />
             </View>
+
+            <ThemedText  style={[{ marginTop: 8, marginLeft:5 }]}>
+              🇲🇾 +60 
+              </ThemedText>
           </TouchableOpacity>
 
           {/* Phone Number */}

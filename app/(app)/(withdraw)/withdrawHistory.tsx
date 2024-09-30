@@ -5,6 +5,7 @@ import {
   ScrollView,
   Alert,
   useColorScheme,
+  Text,
 } from "react-native";
 import { ThemedView, ThemedText, ParallaxScrollView } from "@/components";
 
@@ -15,40 +16,6 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { confirm } from "@/components/base/confirm";
 import Toast from "react-native-toast-message";
 import { router, useFocusEffect } from "expo-router";
-
-const BANK_SECTIONS = [
-  {
-    id: "c",
-    label: "Hong Leong Bank",
-    name: "d",
-    acc: "111",
-    country: "🇲🇾",
-  },
-
-  {
-    id: "c2",
-    label: "Hong Leong Bank",
-    name: "m",
-    acc: "231",
-    country: "🇸🇬",
-  },
-
-  {
-    id: "c3",
-    label: "Hong Leong Bank",
-    name: "t",
-    acc: "777",
-    country: "🇮🇩",
-  },
-
-  {
-    id: "c4",
-    label: "Hong Leong Bank",
-    name: "a",
-    acc: "231",
-    country: "🇭🇰",
-  },
-];
 
 export default function bankAccount() {
   const dispatch = useDispatch();
@@ -138,6 +105,7 @@ export default function bankAccount() {
             {withdrawList.map(
               ({ id, amount, created_at, status, bankAccount }, index) => {
                 const date = new Date(created_at);
+                console.log(date.toLocaleString())
 
                 // Extracting the desired parts using local timezone
                 const options = {
@@ -151,7 +119,7 @@ export default function bankAccount() {
 
                 // Convert the date to a locale string based on the user's settings
                 const localDateString = date.toLocaleString(undefined, options);
-                const [day, month, year, time] =
+                const [month, day, year, time] =
                   localDateString.split(/[\s,]+/); // Split the string into parts
 
                 const formattedAmount = amount.toLocaleString("en-US");
@@ -181,9 +149,9 @@ export default function bankAccount() {
                       }}
                     >
                       <ThemedView
-                        style={{ paddingHorizontal: 15, alignItems: "center" }}
+                        style={{ padding: 10, alignItems: "center" }}
                       >
-                        <ThemedText style={{ fontWeight: 500, fontSize: 32 }}>
+                        <ThemedText style={{ fontWeight: 500, fontSize: 32,paddingTop:7 }}>
                           {day}
                         </ThemedText>
                         <ThemedText
@@ -199,7 +167,7 @@ export default function bankAccount() {
                         {/* <ThemedText>{`${hours}:${minutes}`}</ThemedText> */}
                         <ThemedText>{time}</ThemedText>
                       </ThemedView>
-                      <ThemedView style={{ paddingLeft: 20, flex: 1 }}>
+                      <ThemedView style={{ paddingLeft: 20, flex: 1, justifyContent:'center' }}>
                         <ThemedText>{id}</ThemedText>
                         <ThemedText style={{ textAlign: "left" }}>
                           {bankAccount.account_name}
@@ -209,15 +177,17 @@ export default function bankAccount() {
                         </ThemedText>
                         <ThemedText
                           style={{
+                            fontWeight:500,
+                            fontSize:18,
                             textAlign: "left",
                             textTransform: "uppercase",
                             color:
-                              status === "success"
+                              status === "completed"
                                 ? "green"
                                 : status === "failed"
                                 ? "red"
-                                : status === "pending"
-                                ? "orange"
+                                : status === "rejected"
+                                ? "#ff9900"
                                 : "black",
                           }}
                         >
@@ -277,7 +247,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   section: {
-    paddingTop: 13,
+    // paddingTop: 13,
   },
   sectionTitle: {
     fontSize: 14,

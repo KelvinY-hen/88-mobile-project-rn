@@ -1,5 +1,5 @@
-import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
+import { useState, type PropsWithChildren, type ReactElement } from 'react';
+import { RefreshControl, StyleSheet, useColorScheme } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -16,6 +16,8 @@ type Props = ThemedViewProps & PropsWithChildren< {
   headerBackgroundColor: { dark: string; light: string };
   lightColor?: string;
   darkColor?: string;
+  allowRefresh: boolean;
+  handleReloadFuction?: () => void;
 }>;
 
 export default function ParallaxScrollView({
@@ -23,10 +25,14 @@ export default function ParallaxScrollView({
   style,
   lightColor, darkColor,
   headerBackgroundColor,
+  handleReloadFuction,
+  allowRefresh = false,
+  ...props
 }: Props) {
   const colorScheme = useColorScheme() ?? 'light';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
+  const [refreshing, setRefreshing] = useState(false);
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -55,9 +61,32 @@ export default function ParallaxScrollView({
     'text'
   );
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    
+    try {
+      console.log('refetch');
+      await handleReloadFuction();
+    } catch (err) {
+      console.log('Error during refetch: ', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  
+
+
   return (
     <ThemedView style={[{backgroundColor},styles.container, style]}>
-      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
+      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16} 
+      
+      refreshControl={
+        allowRefresh ? (
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        ) : undefined
+      }>
+
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>

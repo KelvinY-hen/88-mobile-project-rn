@@ -5,7 +5,7 @@ import {
   Dimensions,
   View,
   Text,
-  Pressable,
+  RefreshControl,
   TouchableOpacity,
 } from "react-native";
 
@@ -19,16 +19,20 @@ import {
 import { Ionicons, FontAwesome6, AntDesign } from "@expo/vector-icons";
 
 import middleMenuData from "../../../constants/MiddleMenu.json";
-import { useRouter } from "expo-router";
-import { useSelector } from "react-redux";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ThemedFA6 } from "@/components/ThemedFA6";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { getUserData, logoutSuccess } from "@/redux/actions/auth";
 
 export default function HomeScreen() {
+  const dispatch = useDispatch();
   const router = useRouter();
   const [showBalance, setShowBalance] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const token = useSelector((state: RootState) => state.auth.Token);
   const userData = useSelector((state) => state.user.user);
 
@@ -36,18 +40,141 @@ export default function HomeScreen() {
     router.push(route); // Programmatically navigate to the (app) route
   };
 
+  const LOGOUT_MUTATION = gql`
+    mutation {
+      logout {
+        status
+        message
+      }
+    }
+  `;
+
+  const [logoutMutation] = useMutation(LOGOUT_MUTATION);
+
+  const logout = () => {
+    // setLoading(true);
+    try {
+      logoutMutation({
+        onCompleted: (infoData: Object) => {
+          console.log(infoData);
+          // setLoading(false);
+          Toast.show({
+            type: "success",
+            text1: "Logged Out, Please Relogin",
+            visibilityTime: 3000,
+          });
+        },
+        onError: ({ graphQLErrors, networkError }) => {
+          if (graphQLErrors) {
+            graphQLErrors.forEach(({ message, locations, path }) => {
+              // alert("Registration failed. Please try again. /n" + message);
+              console.log(message);
+              Toast.show({
+                type: "error",
+                text1: "Logged Out with Error",
+                visibilityTime: 3000,
+              });
+            });
+          }
+          if (networkError) {
+            console.log(networkError);
+            // console.log(message);
+            Toast.show({
+              type: "error",
+              text1: "Logged Out with Network Error",
+              visibilityTime: 3000,
+            });
+          }
+        },
+      });
+    } catch (err) {
+      console.log("functionerror, ", err);
+      Toast.show({
+        type: "error",
+        text1: "An Error occuered. Please try again later",
+        visibilityTime: 3000,
+      });
+    } finally {
+      // setLoading(false);
+      dispatch(logoutSuccess());
+      router.dismissAll();
+    }
+  };
+
+  const GET_USER_DATA = gql`
+    query Query {
+      me {
+        id
+        mobile_number
+        agent_linked_code
+        balance
+        has_pin
+      }
+    }
+  `;
+  const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
+
+  // useEffect(() => {
+  //   try {
+  //     refetch();
+  //   } catch (error) {
+  //     logout();
+  //   }
+  // }, []); // Empty dependency array to run on mount
+
+  useEffect(() => {
+    if (data) {
+      console.log("test", data);
+      dispatch(getUserData(data?.me));
+    }
+  }, [data]); 
+
+  useFocusEffect(
+    useCallback(() => {
+      // Refetch data when the screen is focused
+      try {
+        refetch();
+      } catch (error) {
+        logout();
+      }
+      console.log("user refetch");
+
+      // Optional: If you need to do something on unmounting the focus
+      return () => {};
+    }, [refetch]) 
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    
+    try {
+      console.log('refetch');
+      await refetch();
+    } catch (err) {
+      console.log('Error during refetch: ', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // if(error){
+  //   logout();
+  // }
+
   const notifyNotAvailable = () => {
     Toast.show({
       type: "info",
       text1: "Function is Currently Not Available 🙇🏽",
       visibilityTime: 3000,
     });
-  }
-  
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
       style={styles.outlineContainer}
+      allowRefresh={true}
+      handleReloadFuction={refetch}
     >
       {/* <View style={styles.topContainer}>
         <View style={styles.imageContainer}>
@@ -64,7 +191,7 @@ export default function HomeScreen() {
           <View style={styles.balanceContainer}>
             <Text style={styles.currencyText}>RM</Text>
             <Text style={styles.balanceText}>
-              {showBalance ?  userData?.balance : "****"}
+              {showBalance ? userData?.balance : "****"}
             </Text>
             <TouchableOpacity
               style={{ paddingTop: 6 }}
@@ -81,17 +208,26 @@ export default function HomeScreen() {
         <ThemedView style={styles.headerPadding}></ThemedView>
         {/* <View style={styles.topMenuStyling}> */}
         <View style={styles.topContainer}>
-          <TouchableOpacity style={styles.imageContainer2}               onPress={(() => notifyNotAvailable())}
+          <TouchableOpacity
+            style={styles.imageContainer2}
+            onPress={() => notifyNotAvailable()}
           >
             <Ionicons size={30} style={[{ marginBottom: -3 }]} name="scan" />
             <Text style={styles.topText2}>Scan</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.imageContainer2}               onPress={(() => notifyNotAvailable())}
+          <TouchableOpacity
+            style={styles.imageContainer2}
+            onPress={() => {
+              true ? router.push('/qr') : notifyNotAvailable()
+            }}
           >
             <Ionicons size={30} style={[{ marginBottom: -3 }]} name="qr-code" />
             <Text style={styles.topText2}>Receive</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.imageContainer2} onPress={()=>router.push('/(app)/withdraw')}>
+          <TouchableOpacity
+            style={styles.imageContainer2}
+            onPress={() => router.push("/(app)/withdraw")}
+          >
             <ThemedFA6
               size={30}
               style={[{ marginBottom: -3 }]}
@@ -99,7 +235,9 @@ export default function HomeScreen() {
             />
             <Text style={styles.topText2}>Withdraw</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.imageContainer2}               onPress={(() => notifyNotAvailable())}
+          <TouchableOpacity
+            style={styles.imageContainer2}
+            onPress={() => notifyNotAvailable()}
           >
             <ThemedFA6
               size={30}
@@ -114,24 +252,26 @@ export default function HomeScreen() {
 
       <ThemedView style={styles.menuContainer}>
         {middleMenuData.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuItem}
-              onPress={() => {
-                if(item.status == 'maintenance'){
-                  notifyNotAvailable()
-                }else{
-                  router.push(item.navigation)
-                }
-              }}
+          <TouchableOpacity
+            key={index}
+            style={styles.menuItem}
+            onPress={() => {
+              if (item.status == "maintenance") {
+                notifyNotAvailable();
+              } else {
+                router.push(item.navigation);
+              }
+            }}
           >
             {/* <item.iconLib name={item.icon} size={30} color="blue" /> */}
             <ThemedFA6
-                name={item.icon}
-                size={25}
-                style={[
-                  { marginBottom: -3 },
-                  // isMaintenance && styles.maintenanceIcon,
-                ]}
-              />
+              name={item.icon}
+              size={25}
+              style={[
+                { marginBottom: -3 },
+                // isMaintenance && styles.maintenanceIcon,
+              ]}
+            />
             <ThemedText style={styles.menuLabel}>{item.name}</ThemedText>
           </TouchableOpacity>
         ))}
@@ -332,9 +472,9 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     alignSelf: "center",
-    width: '93%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    width: "93%",
+    flexDirection: "row",
+    flexWrap: "wrap",
     // justifyContent: 'space-between',
 
     // shadowColor: '#000',
@@ -343,13 +483,13 @@ const styles = StyleSheet.create({
     // elevation: 3,
   },
   menuItem: {
-    width: '25%', // Half width, adjust spacing accordingly
+    width: "25%", // Half width, adjust spacing accordingly
     // backgroundColor: 'white',
     paddingVertical: 8,
     // paddingHorizontal: 10,
     borderRadius: 10,
     marginVertical: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   menuLabel: {
     marginTop: 10,

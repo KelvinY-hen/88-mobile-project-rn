@@ -11,8 +11,6 @@ import { getUserData, logoutSuccess } from "@/redux/actions/auth";
 import Toast from "react-native-toast-message";
 
 export default function TabLayout() {
-  const dispatch = useDispatch();
-
   const colorScheme = useColorScheme();
 
   // id_photo
@@ -20,97 +18,6 @@ export default function TabLayout() {
   // nickname
   // name
   // gender
-
-  const LOGOUT_MUTATION = gql`
-    mutation {
-      logout {
-        status
-        message
-      }
-    }
-  `;
-
-  const [logoutMutation] = useMutation(LOGOUT_MUTATION);
-
-  const logout = () => {
-    // setLoading(true);
-    try {
-      logoutMutation({
-        onCompleted: (infoData: Object) => {
-          console.log(infoData);
-          // setLoading(false);
-          Toast.show({
-            type: "success",
-            text1: "Logged Out, Please Relogin",
-            visibilityTime: 3000,
-          });
-        },
-        onError: ({ graphQLErrors, networkError }) => {
-          if (graphQLErrors) {
-            graphQLErrors.forEach(({ message, locations, path }) => {
-              // alert("Registration failed. Please try again. /n" + message);
-              console.log(message);
-              Toast.show({
-                type: "error",
-                text1: "Logged Out with Error",
-                visibilityTime: 3000,
-              });
-            });
-          }
-          if (networkError) {
-            console.log(networkError);
-            // console.log(message);
-            Toast.show({
-              type: "error",
-              text1: "Logged Out with Network Error",
-              visibilityTime: 3000,
-            });
-          }
-        },
-      });
-    } catch (err) {
-      console.log("functionerror, ", err);
-      Toast.show({
-        type: "error",
-        text1: "An Error occuered. Please try again later",
-        visibilityTime: 3000,
-      });
-    } finally {
-      // setLoading(false);
-      dispatch(logoutSuccess());
-      router.replace("/");
-    }
-  };
-
-  const GET_USER_DATA = gql`
-    query Query {
-      me {
-        id
-        mobile_number
-        agent_linked_code
-        balance
-        has_pin
-      }
-    }
-  `;
-  const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
-
-  // useEffect(() => {X
-  //   try {
-  //     refetch();
-  //   } catch (error) {
-  //     logout();
-  //   }
-  // }, []); // Empty dependency array to run on mount
-
-  if (data) {
-    console.log("test", data);
-    dispatch(getUserData(data?.me));
-  }
-
-  if(error){
-    logout();
-  }
 
   // useEffect(() => {
   //   console.log(data)

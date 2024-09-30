@@ -202,7 +202,7 @@ export default function Withdraw() {
       return;
     }
 
-    if ( parseInt(amount) <  20) {
+    if ( parseInt(amount) <  20 || !amount) {
       Toast.show({
         type: "error",
         text1: "Minimum Withdrawal is 20",
@@ -222,7 +222,7 @@ export default function Withdraw() {
     //   return;
     // }
 
-    const confirmed = await confirm("Do you want to proceed with request?");
+    // const confirmed = await confirm("Do you want to proceed with request?");
 
     handlePinPresentPress();
     
@@ -530,6 +530,8 @@ export default function Withdraw() {
           type="input"
           label="Bank a/c"
           // style={{marginTop:15}}
+          keyboardType="number-pad"
+
           inputValue={accNo}
           handleFunction={(text) => {
             const numericValue = text.replace(/[^0-9]/g, "");

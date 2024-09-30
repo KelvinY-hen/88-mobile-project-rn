@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 
 export type MyLazyQueryResult<T> = Omit<ApolloQueryResult<T>, 'networkStatus' | 'data'> & { data: T | undefined };
 
-export default function useMyLazyQuery<T = any, TVariables = OperationVariables>(
+export default  function useMyLazyQuery<T = any, TVariables = OperationVariables>(
   query: TypedDocumentNode<T, TVariables>,
   options: Omit<QueryOptions<TVariables, T>, 'query'>
 ): [() => Promise<void>, MyLazyQueryResult<T>] {

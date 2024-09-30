@@ -115,7 +115,7 @@ export default function LoginScreen() {
               console.log(message);
               Toast.show({
                 type: 'error',
-                text1: 'Login failed. Please try again later',
+                text1: 'Wrong Credentials',
                 visibilityTime: 3000
               });
             });
@@ -153,11 +153,11 @@ export default function LoginScreen() {
       <ThemedView style={styles.topSection}>
         <TouchableOpacity>
           <Image
-            source={images.logo} // Replace with your image path
+            source={images.temp_icon} // Replace with your image path
             style={styles.logo}
           />
         </TouchableOpacity>
-        <ThemedText style={styles.headerText}>Payment APP</ThemedText>
+        <ThemedText style={styles.headerText}>EWALLET</ThemedText>
       </ThemedView>
       <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
         {/* Input Phone Number */}
@@ -175,6 +175,9 @@ export default function LoginScreen() {
                 style={[{ marginBottom: -3 }]}
               />
             </View>
+              <ThemedText  style={[{ marginTop: 8, marginLeft:5 }]}>
+              🇲🇾 +60 
+              </ThemedText>
           </TouchableOpacity>
 
           {/* Phone Number */}
@@ -223,7 +226,7 @@ export default function LoginScreen() {
             <ThemedLink
               style={[styles.link, { textAlign: "center" }]}
               push
-              href="/(app)/(tabs)/home"
+              href= {false ? "/(app)/(tabs)/home" : '/'}
             >
               E-Rate
             </ThemedLink>

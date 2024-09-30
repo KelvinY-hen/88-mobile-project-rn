@@ -36,7 +36,7 @@
       "status": "maintenance"
     },
     {
-      "name": "Bill",
+      "name": "History",
       "icon": "file-invoice-dollar",
       "navigation": "(app)/(withdraw)/withdrawHistory",
       "status": "active"

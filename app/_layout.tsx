@@ -27,9 +27,13 @@ import { ThemedLink } from "@/components/ThemedLink";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
+import { toastConfig } from "@/constants/ToastConfig";
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+
 
 export default function RootLayout() {
   const httpLink = new HttpLink({
@@ -312,7 +316,7 @@ export default function RootLayout() {
                     }}
                   />
                 </Stack>
-                <Toast />
+                <Toast config={toastConfig}/>
               </BottomSheetModalProvider>
             </GestureHandlerRootView>
           </PaperProvider>

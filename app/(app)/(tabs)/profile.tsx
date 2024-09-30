@@ -20,11 +20,11 @@ import {
 } from "@/components";
 
 import ThemedRow, { RowBar } from "@/components/base/RowBar";
-import { gql, useMutation } from "@apollo/client";
-import { useState } from "react";
-import { router } from "expo-router";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutSuccess } from "@/redux/actions/auth";
+import { getUserData, logoutSuccess } from "@/redux/actions/auth";
 import Toast from "react-native-toast-message";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { ThemedFA6 } from "@/components/ThemedFA6";
@@ -105,6 +105,43 @@ export default function TabTwoScreen() {
 
   const [logoutMutation] = useMutation(LOGOUT_MUTATION);
 
+  const GET_USER_DATA = gql`
+    query Query {
+      me {
+        id
+        mobile_number
+        agent_linked_code
+        balance
+        has_pin
+      }
+    }
+  `;
+  const { loading:user_data_loading, data, error, refetch } = useQuery(GET_USER_DATA);
+
+
+  useEffect(() => {
+    if (data) {
+      console.log("test", data);
+      dispatch(getUserData(data?.me));
+    }
+  }, [data]); 
+
+
+  useFocusEffect(
+    useCallback(() => {
+      // Refetch data when the screen is focused
+      try {
+        refetch();
+      } catch (error) {
+        logout();
+      }
+      console.log("user refetch");
+
+      // Optional: If you need to do something on unmounting the focus
+      return () => {};
+    }, [refetch]) 
+  );
+
   const logout = () => {
     setLoading(true);
     try {
@@ -118,7 +155,7 @@ export default function TabTwoScreen() {
             visibilityTime: 3000,
           });
           dispatch(logoutSuccess());
-          router.replace("/");
+          router.replace('/');
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
@@ -159,6 +196,8 @@ export default function TabTwoScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+        allowRefresh={true}
+        handleReloadFuction={refetch}
       >
         {/* <ThemedView style={styles.header}>
           <ThemedText style={styles.title}>Profile</ThemedText>
