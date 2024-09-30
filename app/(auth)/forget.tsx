@@ -44,113 +44,22 @@ export default function Register() {
   const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const signUp = async () => {
+    // router.navigate("/");
 
-    router.navigate("/");
+    // if (!phone) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Phone number is required",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
 
-    if (!phone) {
-      Toast.show({
-        type: "error",
-        text1: "Phone number is required",
-        visibilityTime: 3000,
-      });
-      return;
-    }
-    
-    if (!password || !confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: "Password and confirmation are required",
-        visibilityTime: 3000,
-      });
-      return;
-    }
-  
-    if (password !== confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: "Passwords do not match",
-        visibilityTime: 3000,
-      });
-      return;
-    }
-  
-    // Optional: You can add further phone number validation (regex)
-    const phoneRegex = /^[0-9]{9,16}$/; // Example: Ensures phone is 10-15 digits
-    if (!phoneRegex.test(phone)) {
-      Toast.show({
-        type: "error",
-        text1: "Invalid phone number format",
-        visibilityTime: 3000,
-      });
-      return;
-    }
-    
-    setLoading(true);
     try {
-      registerMutation({
-        variables: {
-          input: {
-            mobile_number: phone,
-            password: password,
-            password_confirmation: confirmPassword,
-          },
-        },
-        onCompleted: (infoData) => {
-          console.log(infoData);
-          Toast.show({
-            type: "success",
-            text1: "Registered Succesfully",
-            visibilityTime: 3000,
-          });
-          // router.replace("/");
-          router.navigate("/");
-
-          // setLoading(false);
-
-          // let dataContainer = infoData.register;
-          // if(dataContainer.success){
-          //   console.log("withdraw success", dataContainer.data);
-          //   Toast.show({
-          //     type: "success",
-          //     text1: "Registered Succesfully",
-          //     visibilityTime: 3000,
-          //   });
-          //   router.navigate("/(tabs)/home");
-          // }else{
-          //   console.log("withdraw success", dataContainer.errors);
-          //   Toast.show({
-          //     type: "error",
-          //     text1: dataContainer.errors[0].message,
-          //     visibilityTime: 3000,
-          //   });
-          // }
-
-        },
-        onError: ({ graphQLErrors, networkError }) => {
-          if (graphQLErrors) {
-            graphQLErrors.forEach(({ message, locations, path }) => {
-              // alert("Registration failed. Please try again. /n" + message);
-              console.log(message);
-              let temp_message = 'Registration failed. Please Try Again Later';
-              Toast.show({
-                
-                type: "error",
-                text1: message ?? temp_message,
-                visibilityTime: 3000,
-              });
-            });
-          }
-          if (networkError) {
-            console.log(networkError);
-            // console.log(message);
-            Toast.show({
-              type: "error",
-              text1: "Network error. Please try again later",
-              visibilityTime: 3000,
-            });
-          }
-          // setLoading(false);
-        },
+      Toast.show({
+        type: "info",
+        text1: "Function is Not Available, Please Contact Admin",
+        visibilityTime: 3000,
       });
     } catch (err) {
       console.log("functionerror, ", err);
@@ -188,16 +97,18 @@ export default function Register() {
               />
             </View>
 
-            <ThemedText  style={[{ marginTop: 8, marginLeft:5 }]}>
-              🇲🇾 +60 
-              </ThemedText>
+            <ThemedText style={[{ marginTop: 8, marginLeft: 5 }]}>
+              🇲🇾 +60
+            </ThemedText>
           </TouchableOpacity>
 
           {/* Phone Number */}
           <ThemedInput
             style={styles.inputPhone}
-            onChangeText={(text) => {const numericValue = text.replace(/[^0-9]/g, "");
-              setPhone(numericValue)}}
+            onChangeText={(text) => {
+              const numericValue = text.replace(/[^0-9]/g, "");
+              setPhone(numericValue);
+            }}
             value={phone}
             autoCapitalize="none"
             keyboardType="phone-pad"
@@ -236,7 +147,7 @@ export default function Register() {
 
         <View style={styles.action}>
           <ThemedButton
-            title="Sign Up"
+            title="Reset Password"
             onPress={signUp}
             disabled={loading} // Disable button when loading
             loading={loading}

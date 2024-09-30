@@ -78,7 +78,7 @@ export default function LoginScreen() {
     }
   
     // Optional: Phone number format validation (10-15 digits)
-    const phoneRegex = /^[0-9]{10,15}$/; 
+    const phoneRegex = /^[0-9]{9,16}$/; 
     // if (!phoneRegex.test(phone)) {
     //   Toast.show({
     //     type: "error",
@@ -220,7 +220,7 @@ export default function LoginScreen() {
             disabled={loading} // Disable button when loadingent style when disabled
           ></ThemedButton>
           <ThemedView style={styles.option}>
-            <ThemedLink style={styles.link} push href="/">
+            <ThemedLink style={styles.link} push href="/(auth)/forget">
               Forget?
             </ThemedLink>
             <ThemedLink

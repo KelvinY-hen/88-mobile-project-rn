@@ -202,14 +202,17 @@ export default function Withdraw() {
       return;
     }
 
-    if ( parseInt(amount) <  20 || !amount) {
-      Toast.show({
-        type: "error",
-        text1: "Minimum Withdrawal is 20",
-        visibilityTime: 3000,
-      });
-      return;
-    }
+    //** Amount Validation (>20)*/
+    //** */
+    // if ( parseInt(amount) <  20 || !amount) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Minimum Withdrawal is 20",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
+    //** */
 
     // Optional: Validate account number format (example for digits only)
     // const accountNoRegex = /^[0-9]{6,20}$/; // Example: 6-20 digits
@@ -583,7 +586,7 @@ export default function Withdraw() {
           type="input"
           label="RM"
           keyboardType="number-pad"
-          optional="Minimum 20"
+          optional="Withdraw Amount"
           inputValue={amount}
           handleFunction={(text) => {
             const numericValue = text.replace(/[^0-9]/g, "");

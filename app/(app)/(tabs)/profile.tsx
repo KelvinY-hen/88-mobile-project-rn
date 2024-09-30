@@ -212,7 +212,7 @@ export default function TabTwoScreen() {
           >
             <ThemedText style={styles.sectionTitle}>Balance</ThemedText>
             <TouchableOpacity
-              style={{ paddingTop: 6 }}
+              style={{ paddingTop: 6, }}
               onPress={() => setShowBalance(!showBalance)}
             >
               <ThemedFA6 name={showBalance ? "eye" : "eye-slash"} size={13} />
@@ -237,18 +237,26 @@ export default function TabTwoScreen() {
                     display: "flex",
                     gap: 10,
                     marginHorizontal: 5,
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
+                    marginVertical:7,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
                     width: 170,
                     borderRadius: 3,
-                    backgroundColor: "skyblue",
+                    // backgroundColor: "skyblue",
                     marginLeft: index === 0 ? 15 : 5,
                     marginRight: index === BANK_SECTIONS.length - 1 ? 15 : 5,
+                    shadowColor: "#000", // Color of the shadow
+                    shadowOffset: {
+                      width: 1, // Horizontal offset
+                      height: 1, // Vertical offset
+                    },
+                    shadowOpacity: 0.2, // Transparency of the shadow
+                    elevation: 3, // For Android
+                    shadowRadius:2
                   }}
                 >
-                  <ThemedText>{label}</ThemedText>
-                  <ThemedText style={{ textAlign: "right" }}>
-                    {" "}
+                  <ThemedText style={{fontWeight:500}}>{label}</ThemedText>
+                  <ThemedText style={{ textAlign: "right", fontWeight:300, fontSize: 20}}>
                     {showBalance ? balTemp: "****"}
                   </ThemedText>
                 </ThemedView>

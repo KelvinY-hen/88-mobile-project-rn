@@ -14,6 +14,7 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { confirm } from "@/components/base/confirm";
 import Toast from "react-native-toast-message";
 import { router, useFocusEffect } from "expo-router";
+import { transform } from "@babel/core";
 
 const BANK_SECTIONS = [
   {
@@ -204,12 +205,22 @@ export default function bankAccount() {
                   style={{
                     display: "flex",
                     gap: 10,
-                    margin: 5,
-                    marginHorizontal: 13,
-                    paddingHorizontal: 15,
-                    paddingVertical: 15,
-                    borderRadius: 3,
-                    backgroundColor: "skyblue",
+                    marginHorizontal: 15,
+                    marginVertical: 7,
+                    // marginHorizontal: 13,
+                    paddingHorizontal: 25,
+                    paddingVertical: 20,
+                    borderRadius: 10,
+                    // borderBottomWidth:1
+                    // backgroundColor: "skyblue",
+                    shadowColor: "#000", // Color of the shadow
+                    shadowOffset: {
+                      width: 1, // Horizontal offset
+                      height: 1, // Vertical offset
+                    },
+                    shadowOpacity: 0.2, // Transparency of the shadow
+                    elevation: 3, // For Android
+                    shadowRadius:2
                   }}
                 >
                   <ThemedView
@@ -217,10 +228,10 @@ export default function bankAccount() {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "space-between",
-                      backgroundColor: "skyblue",
+                      // backgroundColor: "skyblue",
                     }}
                   >
-                    <ThemedText>{account_name}</ThemedText>
+                    <ThemedText style={{textTransform:'uppercase'}}>{account_name}</ThemedText>
                     <TouchableOpacity onPress={() => deleteUserBank(id)}>
                       <ThemedFA6
                         name="trash-can"
@@ -289,7 +300,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   section: {
-    paddingTop: 13,
+    paddingTop: 5,
   },
   sectionTitle: {
     fontSize: 14,

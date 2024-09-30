@@ -27,6 +27,7 @@ import { useCallback, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { getUserData, logoutSuccess } from "@/redux/actions/auth";
+import Clipboard from "@react-native-clipboard/clipboard";
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
@@ -127,7 +128,7 @@ export default function HomeScreen() {
       console.log("test", data);
       dispatch(getUserData(data?.me));
     }
-  }, [data]); 
+  }, [data]);
 
   useFocusEffect(
     useCallback(() => {
@@ -141,17 +142,17 @@ export default function HomeScreen() {
 
       // Optional: If you need to do something on unmounting the focus
       return () => {};
-    }, [refetch]) 
+    }, [refetch])
   );
 
   const onRefresh = async () => {
     setRefreshing(true);
-    
+
     try {
-      console.log('refetch');
+      console.log("refetch");
       await refetch();
     } catch (err) {
-      console.log('Error during refetch: ', err);
+      console.log("Error during refetch: ", err);
     } finally {
       setRefreshing(false);
     }
@@ -165,6 +166,15 @@ export default function HomeScreen() {
     Toast.show({
       type: "info",
       text1: "Function is Currently Not Available 🙇🏽",
+      visibilityTime: 3000,
+    });
+  };
+
+  const copyToClipboard = () => {
+    Clipboard.setString(userData.agent_linked_code); // Copy to clipboard
+    Toast.show({
+      type: "info",
+      text1: "Agent Code Copied to Clipboard!",
       visibilityTime: 3000,
     });
   };
@@ -204,6 +214,28 @@ export default function HomeScreen() {
               />
             </TouchableOpacity>
           </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              // gap: 5,
+              alignItems:'center',
+              marginTop: 10,
+            }}
+          >
+            <ThemedFA6
+              name={"fingerprint"}
+              style={{ color: "#ffffff" }}
+              size={12}
+            />{" "}
+            <Text style={{ fontSize: 15, color: "#ffffff" }}>
+              {" "}
+              {userData.agent_linked_code}
+            </Text>
+            <TouchableOpacity onPress={copyToClipboard}>
+              <ThemedFA6 name={"copy"} style={{ color: "#ffffff", marginLeft:10 }} size={15} />{" "}
+            </TouchableOpacity>
+          </View>
         </View>
         <ThemedView style={styles.headerPadding}></ThemedView>
         {/* <View style={styles.topMenuStyling}> */}
@@ -218,7 +250,7 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={styles.imageContainer2}
             onPress={() => {
-              true ? router.push('/qr') : notifyNotAvailable()
+              true ? router.push("/qr") : notifyNotAvailable();
             }}
           >
             <Ionicons size={30} style={[{ marginBottom: -3 }]} name="qr-code" />
@@ -226,7 +258,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.imageContainer2}
-            onPress={() => router.push("/(app)/withdraw")}
+            onPress={() => {
+              userData.has_pin
+                ? router.push("/(app)/withdraw")
+                : router.push("/(app)/(security)/paymentPasswordSetting");
+            }}
           >
             <ThemedFA6
               size={30}
@@ -460,6 +496,7 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     marginLeft: 10,
+    color: "white",
   },
   balanceDetailsButton: {
     flexDirection: "row",

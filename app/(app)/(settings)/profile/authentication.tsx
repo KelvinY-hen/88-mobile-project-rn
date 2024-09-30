@@ -153,7 +153,7 @@ export default function updateUsername() {
     >
       <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
         {/* Input Password */}
-        <ThemedRow type="input" label="Name" optional="your name"></ThemedRow>
+        <ThemedRow type="input" label="Name" optional="Your Name"></ThemedRow>
         <ThemedRow
           type="radio"
           label="Gender"
@@ -170,7 +170,7 @@ export default function updateUsername() {
         ></ThemedRow>
         <ThemedRow
           type="input"
-          label="ID Number"
+          label="Document ID "
           optional="Your ID Number"
           style={{marginBottom:3}}
         ></ThemedRow>
@@ -204,10 +204,10 @@ export default function updateUsername() {
             >
               <ThemedView>
                 <ThemedText style={{ fontSize: 16, fontWeight: "500" }}>
-                  ID Photo
+                  Document Photo
                 </ThemedText>
                 <ThemedText style={{ fontSize: 14 }}>
-                  Upload your ID photo
+                  Upload your Doc photo
                 </ThemedText>
               </ThemedView>
               <TouchableOpacity onPress={() => handlePresentPress(imageIndex)}>

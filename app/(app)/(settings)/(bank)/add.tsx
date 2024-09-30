@@ -326,7 +326,7 @@ export default function updateUsername() {
           // editable={false}
           type="input"
           label="Bank a/c"
-          keyboardType="number-pad"
+          keyboardType="phone-pad"
           // style={{marginTop:15}}
           inputValue={accNo}
           handleFunction={(text) => {const numericValue = text.replace(/[^0-9]/g, "");

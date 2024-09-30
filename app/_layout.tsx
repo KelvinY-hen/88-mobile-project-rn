@@ -112,9 +112,20 @@ export default function RootLayout() {
                     }}
                   />
                   <Stack.Screen
+                    name="(auth)/forget"
+                    options={{
+                      headerShown: true,
+                      title: "Forget Password",
+                      headerTitleAlign: "center",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
                     name="(app)/(tabs)"
                     options={{
                       headerShown: true,
+                      // headerStyle:{backgroundColor:'#0051BA'},
                       title: "81 Pay",
                       animation: "slide_from_right",
                       headerTitleAlign: "center",
@@ -145,7 +156,7 @@ export default function RootLayout() {
                     options={{
                       headerShown: true,
                       headerTitleAlign: "center",
-                      title: "Withdraw History",
+                      title: "Transaction History",
                       animation: "slide_from_right",
                       animationDuration: 50,
                     }}

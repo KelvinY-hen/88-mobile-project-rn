@@ -61,12 +61,16 @@ export default function Register() {
     if( pin.join("").length != 6 ){
       return;
     }
+
+    let home = userData.has_pin
     // Set loading state to true
 
     // setLoading(true);
 
     // Show confirmation dialog
     const confirmed = await confirm("Do you want to proceed with the PIN?");
+
+    // const confirmed = true;
 
     if (confirmed) {
       try {
@@ -81,7 +85,11 @@ export default function Register() {
               text1: "Pin Setup Successfully",
               visibilityTime: 3000,
             });
-            router.navigate("/(app)/profile");
+            if(home){
+              router.navigate("/(app)/profile");
+            }else{
+              router.navigate("/home");
+            }
           },
           onError: ({ graphQLErrors, networkError }) => {
             console.log("tester erroer");
@@ -130,7 +138,7 @@ export default function Register() {
           <ThemedView style={styles.bodyContainer}>
             <ThemedView style={styles.rowWrapper}>
               <ThemedText style={styles.rowHeader}>
-                Reset payment password
+                Reset payment PIN
               </ThemedText>
               <ThemedView
                 style={{

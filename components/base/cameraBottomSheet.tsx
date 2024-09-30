@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 import { updatePotrait } from '@/redux/actions/user';
 import { AppDispatch } from '@/redux/store';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import {request, PERMISSIONS} from 'react-native-permissions';
+
 // import { AppDispatch } from '@/constants/Types';
 
 const data = [
@@ -53,7 +55,8 @@ const CameraBottomSheet: React.FC<CameraBottomSheetProps> = ({ handleImage, hand
   const openCamera = async () => {
     const { status } = await ImagePicker.getCameraPermissionsAsync();
     if (status !== 'granted') {
-      alert('Sorry, we need camera permissions to make this work!');
+      const result = ImagePicker.requestCameraPermissionsAsync();
+      console.log(result);
       return;
     }
     try {
