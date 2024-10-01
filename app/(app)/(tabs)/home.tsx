@@ -15,7 +15,7 @@ import {
   ThemedText,
   ThemedView,
 } from "@/components";
-
+import * as Sentry from '@sentry/react-native';
 import { Ionicons, FontAwesome6, AntDesign } from "@expo/vector-icons";
 
 import middleMenuData from "../../../constants/MiddleMenu.json";
@@ -231,7 +231,9 @@ export default function HomeScreen() {
             <Text style={{ fontSize: 15, color: "#ffffff" }}>
               {userData.agent_linked_code}
             </Text>
-            <TouchableOpacity onPress={copyToClipboard}>
+            <TouchableOpacity onPress={
+              copyToClipboard
+              }>
               <ThemedFA6 name={"copy"} style={{ color: "#ffffff", marginLeft:10 }} size={15} />
             </TouchableOpacity>
           </View>

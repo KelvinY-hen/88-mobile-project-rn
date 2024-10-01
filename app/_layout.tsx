@@ -28,6 +28,14 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import { toastConfig } from "@/constants/ToastConfig";
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://15c08f6102226410afa636f7f06748c3@o4508046229372928.ingest.us.sentry.io/4508046301265920',
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // enableSpotlight: __DEV__,
+});
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -35,7 +43,7 @@ SplashScreen.preventAutoHideAsync();
 
 
 
-export default function RootLayout() {
+function RootLayout() {
   const httpLink = new HttpLink({
     uri: "http://47.129.200.19/graphql",
   });
@@ -361,3 +369,5 @@ export default function RootLayout() {
     // </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout)
