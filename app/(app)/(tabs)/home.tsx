@@ -27,7 +27,7 @@ import { useCallback, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { getUserData, logoutSuccess } from "@/redux/actions/auth";
-import Clipboard from "@react-native-clipboard/clipboard";
+import * as Clipboard from 'expo-clipboard';
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
@@ -170,8 +170,8 @@ export default function HomeScreen() {
     });
   };
 
-  const copyToClipboard = () => {
-    Clipboard.setString(userData.agent_linked_code); // Copy to clipboard
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(userData.agent_linked_code);
     Toast.show({
       type: "info",
       text1: "Agent Code Copied to Clipboard!",
@@ -225,15 +225,14 @@ export default function HomeScreen() {
           >
             <ThemedFA6
               name={"fingerprint"}
-              style={{ color: "#ffffff" }}
+              style={{ color: "#ffffff", paddingRight:3 }}
               size={12}
-            />{" "}
+            />
             <Text style={{ fontSize: 15, color: "#ffffff" }}>
-              {" "}
               {userData.agent_linked_code}
             </Text>
             <TouchableOpacity onPress={copyToClipboard}>
-              <ThemedFA6 name={"copy"} style={{ color: "#ffffff", marginLeft:10 }} size={15} />{" "}
+              <ThemedFA6 name={"copy"} style={{ color: "#ffffff", marginLeft:10 }} size={15} />
             </TouchableOpacity>
           </View>
         </View>

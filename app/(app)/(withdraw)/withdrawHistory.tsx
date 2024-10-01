@@ -13,6 +13,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ThemedFA6 } from "@/components/ThemedFA6";
+
 import { confirm } from "@/components/base/confirm";
 import Toast from "react-native-toast-message";
 import { router, useFocusEffect } from "expo-router";
@@ -95,17 +96,22 @@ export default function bankAccount() {
   const colorScheme = useColorScheme();
   const color = colorScheme == "dark" ? "#FFFFFF" : "#b5b5b5"; // Corrected color code
 
+  const cancelWithdrawal = async () => {
+   const confirmed = await confirm("Do you want to proceed with cancelling the withdrawal?");
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+        allowRefresh={withdraw_refetch}
       >
         <ThemedView style={[styles.section]}>
           <ScrollView style={{ display: "flex", flexDirection: "column" }}>
             {withdrawList.map(
               ({ id, amount, created_at, status, bankAccount }, index) => {
                 const date = new Date(created_at);
-                console.log(date.toLocaleString())
+                console.log(date.toLocaleString());
 
                 // Extracting the desired parts using local timezone
                 const options = {
@@ -148,10 +154,14 @@ export default function bankAccount() {
                         //   backgroundColor: "skyblue",
                       }}
                     >
-                      <ThemedView
-                        style={{ padding: 10, alignItems: "center" }}
-                      >
-                        <ThemedText style={{ fontWeight: 500, fontSize: 32,paddingTop:7 }}>
+                      <ThemedView style={{ padding: 10, alignItems: "center" }}>
+                        <ThemedText
+                          style={{
+                            fontWeight: 500,
+                            fontSize: 32,
+                            paddingTop: 7,
+                          }}
+                        >
                           {day}
                         </ThemedText>
                         <ThemedText
@@ -167,7 +177,13 @@ export default function bankAccount() {
                         {/* <ThemedText>{`${hours}:${minutes}`}</ThemedText> */}
                         <ThemedText>{time}</ThemedText>
                       </ThemedView>
-                      <ThemedView style={{ paddingLeft: 20, flex: 1, justifyContent:'center' }}>
+                      <ThemedView
+                        style={{
+                          paddingLeft: 20,
+                          flex: 1,
+                          justifyContent: "center",
+                        }}
+                      >
                         <ThemedText>{id}</ThemedText>
                         <ThemedText style={{ textAlign: "left" }}>
                           {bankAccount.account_name}
@@ -177,8 +193,8 @@ export default function bankAccount() {
                         </ThemedText>
                         <ThemedText
                           style={{
-                            fontWeight:500,
-                            fontSize:18,
+                            fontWeight: 500,
+                            fontSize: 18,
                             textAlign: "left",
                             textTransform: "uppercase",
                             color:
@@ -193,6 +209,15 @@ export default function bankAccount() {
                         >
                           {status}
                         </ThemedText>
+                      </ThemedView>
+                      <ThemedView>
+                        <TouchableOpacity >
+                          <ThemedFA6
+                            style={{ paddingHorizontal: 5 }}
+                            name={"xmark"}
+                            size={24}
+                          />
+                        </TouchableOpacity>
                       </ThemedView>
                     </ThemedView>
                   </ThemedView>

@@ -20,7 +20,8 @@ import { ThemedButton } from "@/components/ThemedButton";
 import { gql, useMutation, useQuery } from "@apollo/client";
 
 import { loginSuccess, toggleIsLoggedIn } from '../redux/actions/auth'; 
-
+import DeviceInfo from 'react-native-device-info';
+import { getUniqueId, getManufacturer } from 'react-native-device-info';
 
 import { useDispatch } from "react-redux";
 import Toast from "react-native-toast-message";
@@ -57,7 +58,11 @@ export default function LoginScreen() {
 
   const [loginMutation] = useMutation(LOGIN_MUTATION);
 
+  let deviceId = DeviceInfo.getDeviceId();
+
   const signIn = () => {
+
+  console.log(deviceId);
     if (!phone) {
       Toast.show({
         type: "error",

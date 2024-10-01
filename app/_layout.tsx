@@ -140,6 +140,20 @@ export default function RootLayout() {
                     }}
                   />
 
+                  {/* Home Screen Setting */}
+
+                  {/* QR */}
+                  <Stack.Screen
+                    name="(app)/(qr)/qr"
+                    options={{
+                      headerShown: true,
+                      title: "QR",
+                      headerTitleAlign: "center",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+
                   {/* withdraw */}
                   <Stack.Screen
                     name="(app)/(withdraw)/withdraw"
@@ -149,6 +163,15 @@ export default function RootLayout() {
                       headerTitleAlign: "center",
                       animation: "slide_from_right",
                       animationDuration: 50,
+                      headerRight: () => (
+                        <ThemedLink
+                          push
+                          style={[{ marginHorizontal: 3 }]}
+                          href="(app)/(withdraw)/withdrawHistory"
+                        >
+                          History
+                        </ThemedLink>
+                      ),
                     }}
                   />
                   <Stack.Screen
