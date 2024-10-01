@@ -25,23 +25,13 @@ import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
 import { getUserData } from "@/redux/actions/auth";
+import { GQL_Query } from "@/constants";
 // TouchableOpacity
 
 export default function Register() {
 
 
-  const GET_USER_DATA = gql`
-    query Query {
-      me {
-        id
-        mobile_number
-        agent_linked_code
-        balance
-        has_pin
-      }
-    }
-  `;
-  const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
+  const { loading, data, error, refetch } = useQuery(GQL_Query.ME_QUERY);
 
   useEffect(() => {
     if (data) {

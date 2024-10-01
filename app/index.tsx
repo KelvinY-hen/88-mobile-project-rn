@@ -12,12 +12,12 @@ import {
 
 import { useState } from "react";
 import { Link, router } from "expo-router";
-import { images } from "../constants";
+import { images, GQL_Query } from "../constants";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { ThemedInput } from "@/components/ThemedInput";
 import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { ThemedButton } from "@/components/ThemedButton";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
 import { loginSuccess, toggleIsLoggedIn } from '../redux/actions/auth'; 
 import DeviceInfo from 'react-native-device-info';
@@ -36,27 +36,9 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const LOGIN_MUTATION = gql`
-    mutation Login($input: LoginInput!) {
-      login(input: $input) {
-        token
-      }
-    }
-  `;
-
-  const GET_USER_DATA = gql`
-    query Query{
-        me{
-          id
-          mobile_number
-          agent_linked_code
-        }
-      }
-  `
-    
 
 
-  const [loginMutation] = useMutation(LOGIN_MUTATION);
+  const [loginMutation] = useMutation(GQL_Query.LOGIN_MUTATION);
 
   let deviceId = DeviceInfo.getDeviceId();
 

@@ -28,6 +28,8 @@ import { getUserData, logoutSuccess } from "@/redux/actions/auth";
 import Toast from "react-native-toast-message";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { ThemedFA6 } from "@/components/ThemedFA6";
+import GqlQuery from "@/constants/GqlQuery";
+import { GQL_Query } from "@/constants";
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
 
 const PROFILE_SECTIONS = [
@@ -94,29 +96,10 @@ export default function TabTwoScreen() {
   const [loading, setLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
 
-  const LOGOUT_MUTATION = gql`
-    mutation {
-      logout {
-        status
-        message
-      }
-    }
-  `;
 
-  const [logoutMutation] = useMutation(LOGOUT_MUTATION);
+  const [logoutMutation] = useMutation(GQL_Query.LOGOUT_MUTATION);
 
-  const GET_USER_DATA = gql`
-    query Query {
-      me {
-        id
-        mobile_number
-        agent_linked_code
-        balance
-        has_pin
-      }
-    }
-  `;
-  const { loading:user_data_loading, data, error, refetch } = useQuery(GET_USER_DATA);
+  const { loading:user_data_loading, data, error, refetch } = useQuery(GQL_Query.ME_QUERY);
 
 
   useEffect(() => {

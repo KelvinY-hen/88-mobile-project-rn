@@ -28,8 +28,9 @@ import BottomSheetComponent from "@/components/base/bottomSheet";
 import { confirm } from "@/components/base/confirm";
 import { Checkbox } from "react-native-paper";
 import PinPromptBottomSheet from "@/components/base/pinPromptBottomSheet";
-import { CREATE_WITHDRAW_REQUEST_MUTATION } from "@/constants/GraphQLQuery";
+import GqlQuery, { CREATE_WITHDRAW_REQUEST_MUTATION } from "@/constants/GqlQuery";
 import { useMutationAPI } from "../../../services/api"
+import { GQL_Query } from "@/constants";
 // TouchableOpacity
 
 const saved_account_data = [
@@ -91,53 +92,20 @@ export default function Withdraw() {
   const bankSheetRef = useRef(null);
   const pinSheetRef = useRef(null);
 
-  const GET_ALL_BANKS = gql`
-    query Query {
-      banks {
-        id
-        name
-      }
-    }
-  `;
-
-  const GET_USER_BANK = gql`
-    query {
-      userBanks {
-        success
-        message
-        data {
-          ... on UserBank {
-            id
-            bank_account
-            account_name
-            bank_id
-            branch_name
-            is_primary
-            created_at
-            updated_at
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
 
   const {
     loading: bank_loading,
     data: bank_data,
     error,
     refetch,
-  } = useQuery(GET_ALL_BANKS);
+  } = useQuery(GqlQuery.GET_ALL_BANKS);
 
   const {
     loading: user_bank_loading,
     data: user_bank_data,
     error: user_bank_error,
     refetch: user_bank_refetch,
-  } = useQuery(GET_USER_BANK);
+  } = useQuery(GQL_Query.GET_USER_BANK);
 
   useEffect(() => {
     if (bank_data && bank_data.banks) {
@@ -232,43 +200,8 @@ export default function Withdraw() {
   };
 
 
-  const CREATE_USER_BANK_MUTATION = gql`
-    mutation CreateUserBank(
-      $bank_account: String!, 
-      $account_name: String!, 
-      $bank_id: ID!, 
-      $branch_name: String!, 
-      $is_primary: Boolean!
-    ) {
-      createUserBank(
-        bank_account: $bank_account, 
-        account_name: $account_name, 
-        bank_id: $bank_id, 
-        branch_name: $branch_name, 
-        is_primary: $is_primary
-      ) {
-        success
-        message
-        data {
-          ... on UserBank {
-            id
-            bank_account
-            account_name
-            bank_id
-            branch_name
-            is_primary
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
 
-
-  const [createUserBankMutation] = useMutation(CREATE_USER_BANK_MUTATION);
+  const [createUserBankMutation] = useMutation(GQL_Query.CREATE_USER_BANK_MUTATION);
 
   const [createWithdrawRequestMutation] = useMutation(CREATE_WITHDRAW_REQUEST_MUTATION);
 

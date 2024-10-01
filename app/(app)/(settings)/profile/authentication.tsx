@@ -86,17 +86,6 @@ export default function updateUsername() {
     </TouchableOpacity>
   );
 
-  const REGISTER_MUTATION = gql`
-    mutation Register($input: RegisterInput!) {
-      register(input: $input) {
-        token
-        status
-      }
-    }
-  `;
-
-  const [registerMutation] = useMutation(REGISTER_MUTATION);
-
   const signUp = async () => {
     setLoading(true);
     try {

@@ -28,6 +28,7 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { ThemedLink } from "@/components/ThemedLink";
 import PinInputGrid from "@/components/ThemedPinInput";
 import { confirm } from "@/components/base/confirm";
+import { GQL_Query } from "@/constants";
 // TouchableOpacity
 
 export default function Register() {
@@ -37,25 +38,8 @@ export default function Register() {
 
   const userData = useSelector((state) => state.user.user);
 
-  const SET_PIN_MUTATION = gql`
-    mutation SetPin($pin: String!) {
-      setPin(pin: $pin) {
-        success
-        message
-        data {
-          ... on UserPin {
-            pin
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
 
-  const [setPinMutation] = useMutation(SET_PIN_MUTATION);
+  const [setPinMutation] = useMutation(GQL_Query.SET_PIN_MUTATION);
 
   const setPinFunction = async () => {
     if( pin.join("").length != 6 ){

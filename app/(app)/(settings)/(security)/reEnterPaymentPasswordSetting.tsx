@@ -28,8 +28,8 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { ThemedLink } from "@/components/ThemedLink";
 import PinInputGrid from "@/components/ThemedPinInput";
 import { confirm } from "@/components/base/confirm";
-import { CHECK_PIN_QUERY } from "../../../../constants/GraphQLQuery";
 import useMyLazyQuery from "@/hooks/useMyLazyQuery";
+import { GQL_Query } from "@/constants";
 // TouchableOpacity
 
 export default function Register() {
@@ -60,7 +60,7 @@ export default function Register() {
   // const [checkPinMutation] = useMutation(CHECK_PIN_MUTATION);
 
   const [checkPin, { data, loading: query_loading, error }] = useMyLazyQuery(
-    CHECK_PIN_QUERY,
+    GQL_Query.CHECK_PIN_QUERY,
     {
       variables: { pin: pin.join("") },
     }

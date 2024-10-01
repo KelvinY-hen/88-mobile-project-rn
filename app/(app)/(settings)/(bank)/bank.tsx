@@ -15,6 +15,7 @@ import { confirm } from "@/components/base/confirm";
 import Toast from "react-native-toast-message";
 import { router, useFocusEffect } from "expo-router";
 import { transform } from "@babel/core";
+import { GQL_Query } from "@/constants";
 
 const BANK_SECTIONS = [
   {
@@ -54,37 +55,12 @@ export default function bankAccount() {
   const dispatch = useDispatch();
   const [userBankList, setUserBankList] = useState([]);
 
-  const GET_USER_BANK = gql`
-    query {
-      userBanks {
-        success
-        message
-        data {
-          ... on UserBank {
-            id
-            bank_account
-            account_name
-            bank_id
-            branch_name
-            is_primary
-            created_at
-            updated_at
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
-
   const {
     loading: user_bank_loading,
     data: user_bank_data,
     error: user_bank_error,
     refetch: user_bank_refetch,
-  } = useQuery(GET_USER_BANK);
+  } = useQuery(GQL_Query.GET_USER_BANK);
 
   useEffect(() => {
       // Refetch data when the component mounts or when the page is navigated to
@@ -111,20 +87,8 @@ export default function bankAccount() {
     }
   }, [user_bank_data]);
 
-  const DELETE_USER_BANK_MUTATION = gql`
-    mutation DeleteUserBank($id: ID!) {
-      deleteUserBank(id: $id) {
-        success
-        message
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
 
-  const [deleteUserBankMutation] = useMutation(DELETE_USER_BANK_MUTATION);
+  const [deleteUserBankMutation] = useMutation(GQL_Query.DELETE_USER_BANK_MUTATION);
 
   const deleteUserBank = async (bank_id: string) => {
     // Set loading state to true

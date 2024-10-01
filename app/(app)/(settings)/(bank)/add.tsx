@@ -27,6 +27,7 @@ import ThemedRow from "@/components/base/RowBar";
 import BottomSheetComponent from "@/components/base/bottomSheet";
 import { confirm } from "@/components/base/confirm";
 import { Checkbox } from "react-native-paper";
+import { GQL_Query } from "@/constants";
 // TouchableOpacity
 
 const countries = [
@@ -65,21 +66,13 @@ export default function updateUsername() {
   const countrySheetRef = useRef(null);
   const bankSheetRef = useRef(null);
 
-  const GET_ALL_BANKS = gql`
-    query Query {
-      banks {
-        id
-        name
-      }
-    }
-  `;
 
   const {
     loading: bank_loading,
     data: bank_data,
     error,
     refetch,
-  } = useQuery(GET_ALL_BANKS);
+  } = useQuery(GQL_Query.GET_ALL_BANKS);
 
   useEffect(() => {
     if (bank_data && bank_data.banks) {
@@ -87,64 +80,8 @@ export default function updateUsername() {
     }
   }, [bank_data]); // The effect will only run when `data` changes
 
-  // const CREATE_USER_BANK_MUTATION = gql`
-  //   mutation {
-  //   createUserBank(input: $input) {
-  //     success
-  //     message
-  //     data {
-  //     ... on UserBank {
-  //       bank_account
-  //       account_name
-  //       bank_id
-  //       branch_name
-  //       is_primary
-  //       }
-  //     }
-  //     errors {
-  //       code
-  //       message
-  //     }
-  //   }
-  // }
-  // `;
 
-  const CREATE_USER_BANK_MUTATION = gql`
-    mutation CreateUserBank(
-      $bank_account: String!, 
-      $account_name: String!, 
-      $bank_id: ID!, 
-      $branch_name: String!, 
-      $is_primary: Boolean!
-    ) {
-      createUserBank(
-        bank_account: $bank_account, 
-        account_name: $account_name, 
-        bank_id: $bank_id, 
-        branch_name: $branch_name, 
-        is_primary: $is_primary
-      ) {
-        success
-        message
-        data {
-          ... on UserBank {
-            bank_account
-            account_name
-            bank_id
-            branch_name
-            is_primary
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
-
-
-  const [createUserBankMutation] = useMutation(CREATE_USER_BANK_MUTATION);
+  const [createUserBankMutation] = useMutation(GQL_Query.CREATE_USER_BANK_MUTATION);
 
     const addBank = async () => {
 

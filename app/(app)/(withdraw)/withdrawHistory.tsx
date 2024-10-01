@@ -17,54 +17,20 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { confirm } from "@/components/base/confirm";
 import Toast from "react-native-toast-message";
 import { router, useFocusEffect } from "expo-router";
+import { GQL_Query } from "@/constants";
 
 export default function bankAccount() {
   const dispatch = useDispatch();
   const [userBankList, setUserBankList] = useState([]);
   const [withdrawList, setWithdrawList] = useState([]);
 
-  const GET_WITHDRAW_REQUEST = gql`
-    query {
-      allWithdrawRequests {
-        success
-        message
-        data {
-          ... on WithdrawRequest {
-            id
-            user_id
-            bank_account_id
-            amount
-            status
-            created_at
-            updated_at
-            bankAccount {
-              id
-              bank_account
-              account_name
-              branch_name
-              is_primary
-              bank {
-                id
-                name
-                country_code
-              }
-            }
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
 
   const {
     loading: withdraw_loading,
     data: withdraw_data,
     error: withdraw_error,
     refetch: withdraw_refetch,
-  } = useQuery(GET_WITHDRAW_REQUEST);
+  } = useQuery(GQL_Query.GET_WITHDRAW_REQUEST);
 
   if (withdraw_data) {
     console.log(withdraw_data);

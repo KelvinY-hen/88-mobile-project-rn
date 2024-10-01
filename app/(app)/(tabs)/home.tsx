@@ -28,6 +28,8 @@ import Toast from "react-native-toast-message";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { getUserData, logoutSuccess } from "@/redux/actions/auth";
 import * as Clipboard from 'expo-clipboard';
+import { GQL_Query } from "@/constants";
+import GqlQuery from "@/constants/GqlQuery";
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
@@ -41,16 +43,7 @@ export default function HomeScreen() {
     router.push(route); // Programmatically navigate to the (app) route
   };
 
-  const LOGOUT_MUTATION = gql`
-    mutation {
-      logout {
-        status
-        message
-      }
-    }
-  `;
-
-  const [logoutMutation] = useMutation(LOGOUT_MUTATION);
+  const [logoutMutation] = useMutation(GQL_Query.LOGOUT_MUTATION);
 
   const logout = () => {
     // setLoading(true);
@@ -102,26 +95,7 @@ export default function HomeScreen() {
     }
   };
 
-  const GET_USER_DATA = gql`
-    query Query {
-      me {
-        id
-        mobile_number
-        agent_linked_code
-        balance
-        has_pin
-      }
-    }
-  `;
-  const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
-
-  // useEffect(() => {
-  //   try {
-  //     refetch();
-  //   } catch (error) {
-  //     logout();
-  //   }
-  // }, []); // Empty dependency array to run on mount
+  const { loading, data, error, refetch } = useQuery(GqlQuery.ME_QUERY);
 
   useEffect(() => {
     if (data) {
@@ -144,23 +118,6 @@ export default function HomeScreen() {
       return () => {};
     }, [refetch])
   );
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-
-    try {
-      console.log("refetch");
-      await refetch();
-    } catch (err) {
-      console.log("Error during refetch: ", err);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  // if(error){
-  //   logout();
-  // }
 
   const notifyNotAvailable = () => {
     Toast.show({

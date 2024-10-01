@@ -7,6 +7,8 @@ import { Link, router } from "expo-router";
 
 import { useState } from "react";
 
+import { GQL_Query } from "@/constants";
+
 import {
   ActivityIndicator,
   Button,
@@ -22,6 +24,7 @@ import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
+import {handleError} from "../../services/errorService"
 // TouchableOpacity
 
 export default function Register() {
@@ -32,20 +35,11 @@ export default function Register() {
 
   const [loading, setLoading] = useState(false);
 
-  const REGISTER_MUTATION = gql`
-    mutation Register($input: RegisterInput!) {
-      register(input: $input) {
-        token
-        status
-      }
-    }
-  `;
 
-  const [registerMutation] = useMutation(REGISTER_MUTATION);
+  const [registerMutation] = useMutation(GQL_Query.REGISTER_MUTATION);
 
   const signUp = async () => {
 
-    router.navigate("/");
 
     if (!phone) {
       Toast.show({
@@ -74,7 +68,6 @@ export default function Register() {
       return;
     }
   
-    // Optional: You can add further phone number validation (regex)
     const phoneRegex = /^[0-9]{9,16}$/; // Example: Ensures phone is 10-15 digits
     if (!phoneRegex.test(phone)) {
       Toast.show({
@@ -87,6 +80,8 @@ export default function Register() {
     
     setLoading(true);
     try {
+      throw new Error("Test error");
+      
       registerMutation({
         variables: {
           input: {
@@ -130,7 +125,6 @@ export default function Register() {
           if (graphQLErrors) {
             graphQLErrors.forEach(({ message, locations, path }) => {
               // alert("Registration failed. Please try again. /n" + message);
-              console.log(message);
               let temp_message = 'Registration failed. Please Try Again Later';
               Toast.show({
                 
@@ -142,7 +136,6 @@ export default function Register() {
           }
           if (networkError) {
             console.log(networkError);
-            // console.log(message);
             Toast.show({
               type: "error",
               text1: "Network error. Please try again later",
@@ -154,6 +147,7 @@ export default function Register() {
       });
     } catch (err) {
       console.log("functionerror, ", err);
+      handleError(err, { component: "register_signUp", info: "Function Error Sign Up" })
       Toast.show({
         type: "error",
         text1: "An Error occuered. Please try again later",
