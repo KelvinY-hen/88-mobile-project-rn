@@ -97,8 +97,10 @@ export default function bankAccount() {
   const color = colorScheme == "dark" ? "#FFFFFF" : "#b5b5b5"; // Corrected color code
 
   const cancelWithdrawal = async () => {
-   const confirmed = await confirm("Do you want to proceed with cancelling the withdrawal?");
-  }
+    const confirmed = await confirm(
+      "Do you want to proceed with cancelling the withdrawal?"
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -200,9 +202,9 @@ export default function bankAccount() {
                             color:
                               status === "completed"
                                 ? "green"
-                                : status === "failed"
-                                ? "red"
                                 : status === "rejected"
+                                ? "red"
+                                : status === "pending"
                                 ? "#ff9900"
                                 : "black",
                           }}
@@ -210,15 +212,17 @@ export default function bankAccount() {
                           {status}
                         </ThemedText>
                       </ThemedView>
-                      <ThemedView>
-                        <TouchableOpacity >
-                          <ThemedFA6
-                            style={{ paddingHorizontal: 5 }}
-                            name={"xmark"}
-                            size={24}
-                          />
-                        </TouchableOpacity>
-                      </ThemedView>
+                      {(status == "pending") &&
+                        <ThemedView>
+                          <TouchableOpacity>
+                            <ThemedFA6
+                              style={{ paddingHorizontal: 5 }}
+                              name={"xmark"}
+                              size={24}
+                            />
+                          </TouchableOpacity>
+                        </ThemedView>
+                      }
                     </ThemedView>
                   </ThemedView>
                 );

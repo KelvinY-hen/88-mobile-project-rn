@@ -1,6 +1,8 @@
-{
+const IS_DEV = process.env.APP_VARIANT === 'development';
+
+export default{
   "expo": {
-    "name": "88-mobile-project-rn",
+    "name": IS_DEV ? "EWallet_Dev" : "88-mobile-project-rn" ,
     "slug": "88-mobile-project-rn",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,7 +15,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": IS_DEV ? 'com.myapp.dev' : 'com.myapp',
     },
     "android": {
       "adaptiveIcon": {
@@ -22,8 +25,10 @@
       },
       "package": "testing.c",
       "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ],
+      package: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +41,16 @@
         "expo-image-picker",
         {
           "photosPermission": "Pick Image"
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
+          "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable",
+          // If you are using a self-hosted instance, update the value of the url property
+          // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
+          "url": "https://sentry.io/"
         }
       ]
     ],
