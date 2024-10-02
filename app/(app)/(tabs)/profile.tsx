@@ -9,6 +9,7 @@ import {
   Switch,
   View,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import {
   ThemedButton,
@@ -92,23 +93,27 @@ const BANK_SECTIONS = [
 
 export default function TabTwoScreen() {
   const dispatch = useDispatch();
+  const screenWidth = Dimensions.get("window").width;
+
   const userData = useSelector((state) => state.user.user);
   const [loading, setLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
 
-
   const [logoutMutation] = useMutation(GQL_Query.LOGOUT_MUTATION);
 
-  const { loading:user_data_loading, data, error, refetch } = useQuery(GQL_Query.ME_QUERY);
-
+  const {
+    loading: user_data_loading,
+    data,
+    error,
+    refetch,
+  } = useQuery(GQL_Query.ME_QUERY);
 
   useEffect(() => {
     if (data) {
       console.log("test", data);
       dispatch(getUserData(data?.me));
     }
-  }, [data]); 
-
+  }, [data]);
 
   useFocusEffect(
     useCallback(() => {
@@ -122,7 +127,7 @@ export default function TabTwoScreen() {
 
       // Optional: If you need to do something on unmounting the focus
       return () => {};
-    }, [refetch]) 
+    }, [refetch])
   );
 
   const logout = () => {
@@ -138,7 +143,7 @@ export default function TabTwoScreen() {
             visibilityTime: 3000,
           });
           dispatch(logoutSuccess());
-          router.replace('/');
+          router.replace("/");
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
@@ -187,15 +192,119 @@ export default function TabTwoScreen() {
         </ThemedView> */}
 
         <ThemedView style={[styles.section]}>
+          {/* <ThemedView
+            style={{
+              paddingTop:20,
+              backgroundColor: "#0051BA",
+              display: "flex",
+              flexDirection: "row",
+              gap: 17,
+              paddingVertical: 10,
+              width: screenWidth,
+              paddingHorizontal: 15,
+            }}
+          >
+            <ThemedView
+              style={{
+                padding: 10,
+                borderRadius: 100,
+                backgroundColor: "rgb(217, 226, 255)",
+                width: 80,
+                height: 80,
+                justifyContent: "center",
+                alignContent: "center",
+              }}
+            >
+              <ThemedFA6
+                name={"user"}
+                size={28}
+                style={{ alignSelf: "center" }}
+              />
+            </ThemedView>
+            <View
+              style={{
+                gap: 10,
+                flexWrap: "wrap",
+                flex: 1,
+                // width: "70%"
+              }}
+            >
+              <ThemedText
+                style={{
+                  paddingHorizontal: 5,
+                  fontSize: 13,
+                  backgroundColor: "#ffffff",
+                  alignSelf: "flex-start",
+                  borderRadius: 3,
+                }}
+              >
+                <ThemedFA6
+                  name={"circle-xmark"}
+                  size={13}
+                  style={{ alignSelf: "center", marginRight: 3 }}
+                />
+                Uncertified
+              </ThemedText>
+
+              <ThemedText
+                style={{
+                  fontSize: 24,
+                  fontWeight: "500",
+                  alignSelf: "flex-start",
+                  flexWrap: "wrap",
+                  width: "100%", // Or you can use maxWidth: some value
+                }}
+              >
+                {userData.agent_linked_code}
+                <ThemedFA6
+                  name={"pencil"}
+                  size={15}
+                  style={{ alignSelf: "center", marginLeft: 5 }}
+                />
+              </ThemedText>
+
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  // gap: 5,
+                  alignItems: "center",
+                }}
+              >
+                <ThemedFA6
+                  name={"fingerprint"}
+                  style={{ color: "#ffffff", paddingRight: 5 }}
+                  size={15}
+                />
+                <Text style={{ fontSize: 15, color: "#ffffff" }}>
+                  {userData.agent_linked_code}
+                </Text>
+                <TouchableOpacity
+                // onPress={
+                //   copyToClipboard
+                //   }
+                >
+                  <ThemedFA6
+                    name={"copy"}
+                    style={{ color: "#ffffff", marginLeft: 10 }}
+                    size={17}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ThemedView> */}
           <ThemedView
             style={[
               styles.sectionHeader,
-              { display: "flex", flexDirection: "row", gap: 10 },
+              { 
+                backgroundColor: "#0051BA",
+
+                display: "flex", flexDirection: "row", gap: 10, paddingTop:12 },
             ]}
           >
             <ThemedText style={styles.sectionTitle}>Balance</ThemedText>
             <TouchableOpacity
-              style={{ paddingTop: 6, }}
+              style={{ paddingTop: 6 }}
               onPress={() => setShowBalance(!showBalance)}
             >
               <ThemedFA6 name={showBalance ? "eye" : "eye-slash"} size={13} />
@@ -204,13 +313,15 @@ export default function TabTwoScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={{ display: "flex", flexDirection: "row" }}
+            style={{               backgroundColor: "#0051BA",
+              display: "flex", flexDirection: "row", paddingBottom:12
+            }}
           >
             {BANK_SECTIONS.map(({ id, label }, index) => {
               let balTemp = 0;
-              if(index == 0){
-                balTemp = userData.balance
-              }else{
+              if (index == 0) {
+                balTemp = userData.balance;
+              } else {
                 balTemp = 0;
               }
               return (
@@ -220,7 +331,7 @@ export default function TabTwoScreen() {
                     display: "flex",
                     gap: 10,
                     marginHorizontal: 5,
-                    marginVertical:7,
+                    marginVertical: 7,
                     paddingHorizontal: 12,
                     paddingVertical: 8,
                     width: 170,
@@ -235,12 +346,18 @@ export default function TabTwoScreen() {
                     },
                     shadowOpacity: 0.2, // Transparency of the shadow
                     elevation: 3, // For Android
-                    shadowRadius:2
+                    shadowRadius: 2,
                   }}
                 >
-                  <ThemedText style={{fontWeight:500}}>{label}</ThemedText>
-                  <ThemedText style={{ textAlign: "right", fontWeight:300, fontSize: 20}}>
-                    {showBalance ? balTemp: "****"}
+                  <ThemedText style={{ fontWeight: 500 }}>{label}</ThemedText>
+                  <ThemedText
+                    style={{
+                      textAlign: "right",
+                      fontWeight: 300,
+                      fontSize: 20,
+                    }}
+                  >
+                    {showBalance ? balTemp : "****"}
                   </ThemedText>
                 </ThemedView>
               );
@@ -249,7 +366,7 @@ export default function TabTwoScreen() {
         </ThemedView>
 
         {PROFILE_SECTIONS.map(({ header, items }) => (
-          <ThemedView style={styles.section} key={header}>
+          <ThemedView style={[styles.section, {paddingTop:12}]} key={header}>
             <ThemedView style={styles.sectionHeader}>
               <ThemedText style={styles.sectionTitle}>{header}</ThemedText>
             </ThemedView>
@@ -401,7 +518,7 @@ const styles = StyleSheet.create({
   },
   /** Section */
   section: {
-    paddingTop: 24,
+    // paddingTop: 24,
   },
   sectionTitle: {
     fontSize: 14,

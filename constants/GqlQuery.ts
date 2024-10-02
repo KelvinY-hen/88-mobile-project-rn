@@ -229,6 +229,18 @@ mutation SetPin($pin: String!) {
 }
 `;
 
+export const REQUEST_OTP_MUTATION = gql`
+mutation RequestOTP($phoneNumber: String!){
+    requestOtp(phoneNumber: $phoneNumber) {
+        success
+        message        
+        errors {
+            code
+            message
+        }
+    }
+}
+    `
 export default {
   CREATE_WITHDRAW_REQUEST_MUTATION,
   CREATE_USER_BANK_MUTATION,
@@ -239,6 +251,7 @@ export default {
   GET_USER_BANK,
   GET_ALL_BANKS,
   GET_WITHDRAW_REQUEST,
+  REQUEST_OTP_MUTATION,
   CHECK_PIN_QUERY,
   DELETE_USER_BANK_MUTATION,
   SET_PIN_MUTATION,

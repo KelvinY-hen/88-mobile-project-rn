@@ -1,5 +1,3 @@
-import { ThemedButton } from "@/components/ThemedButton";
-import { ThemedInput } from "@/components/ThemedInput";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { gql, useMutation, useQuery } from "@apollo/client";
 
@@ -16,37 +14,29 @@ import {
   Text,
   TextInput,
   View,
+  TouchableOpacity,
 } from "react-native";
-// import { TouchableOpacity } from "react-native-gesture-handler";
-import { TouchableOpacity } from "react-native";
-import { GraphQLError } from "graphql";
+
 import Toast from "react-native-toast-message";
-import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
+import {
+  ParallaxScrollView,
+  ThemedText,
+  ThemedView,
+  ThemedButton,
+  ThemedInput,
+  ThemedRow,
+  ThemedFA6,
+  ThemedLink,
+} from "@/components";
+
 import { useDispatch, useSelector } from "react-redux";
-import ThemedRow from "@/components/base/RowBar";
-import { ThemedFA6 } from "@/components/ThemedFA6";
-import { ThemedLink } from "@/components/ThemedLink";
 // TouchableOpacity
 
 export default function Register() {
-  const dispatch = useDispatch();
-  const [phone, setPhone] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [loading, setLoading] = useState(false);
 
   const userData = useSelector((state) => state.user.user);
-
-  // const GET_USER_DATA = gql`
-  //   query Query {
-  //     me {
-  //       id
-  //       mobile_number
-  //       agent_linked_code
-  //     }
-  //   }
-  // `;
-
-  // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -73,7 +63,7 @@ export default function Register() {
                 placeholder="verification code"
               ></ThemedInput>
               <ThemedView style={styles.option}>
-                <ThemedLink style={styles.code}  href={"/forgotPassword"}>
+                <ThemedLink style={styles.code} href={"/forgotPassword"}>
                   Get Code?
                 </ThemedLink>
               </ThemedView>
@@ -152,7 +142,7 @@ const styles = StyleSheet.create({
   },
   option: {
     // textAlign: "center",
-    justifyContent:"center",
+    justifyContent: "center",
     borderColor: "#e5e5e5",
     borderTopWidth: 1,
     borderBottomWidth: 1,

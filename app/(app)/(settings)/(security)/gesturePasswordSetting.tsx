@@ -1,9 +1,6 @@
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedInput } from "@/components/ThemedInput";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
-
-import { Link, router } from "expo-router";
 
 import { useState } from "react";
 
@@ -16,17 +13,12 @@ import {
   Text,
   TextInput,
   View,
+  TouchableOpacity
 } from "react-native";
-// import { TouchableOpacity } from "react-native-gesture-handler";
-import { TouchableOpacity } from "react-native";
-import { GraphQLError } from "graphql";
+
 import Toast from "react-native-toast-message";
-import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
+import { ParallaxScrollView, ThemedText, ThemedView, ThemedFA6, ThemedLink, ThemedRow } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
-import ThemedRow from "@/components/base/RowBar";
-import { ThemedFA6 } from "@/components/ThemedFA6";
-import { ThemedLink } from "@/components/ThemedLink";
-// TouchableOpacity
 
 export default function Register() {
   const dispatch = useDispatch();

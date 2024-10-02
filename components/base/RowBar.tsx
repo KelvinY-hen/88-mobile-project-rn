@@ -17,8 +17,8 @@ type RADIO_OBJECT_TYPE = {
 type ThemedRowProps = {
   id?: string;
   index?: number;
-  type: string;
-  label: string;
+  type?: string;
+  label?: string;
   icon?: string;
   link?: string;
   inputValue?:string;
@@ -29,6 +29,7 @@ type ThemedRowProps = {
   logout?: () => void;
   editable:boolean,
   stateValue:string;
+  style:object,
 };
 
 const ThemedRow: React.FC<ThemedRowProps> = ({

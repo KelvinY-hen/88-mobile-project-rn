@@ -71,9 +71,14 @@ export default function updateUsername() {
 
   const incrementImage = () => {
     setImageNumber(prevNumber => {
-      const newNumber = prevNumber + 1;
-      setImageList([...imageList, { imageIndex: newNumber, image: {} }]);
-      return newNumber;
+
+      if(prevNumber < 3){
+        const newNumber = prevNumber + 1;
+        setImageList([...imageList, { imageIndex: newNumber, image: {} }]);
+        return newNumber;
+      }else{
+        return prevNumber
+      }
     });
   };
 
@@ -212,12 +217,12 @@ export default function updateUsername() {
           );
         })}
         <View style={styles.action}>
-          <ThemedButton
+          {imageNumber < 3 && <ThemedButton
             title="Add more"
             onPress={incrementImage}
             disabled={loading} // Disable button when loading
             loading={loading}
-          ></ThemedButton>
+          ></ThemedButton>}
 
           <ThemedButton
             title="Submit"

@@ -1,40 +1,37 @@
-import { ThemedButton } from "@/components/ThemedButton";
-import { ThemedInput } from "@/components/ThemedInput";
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { Ionicons } from "@expo/vector-icons";
 
-import { Link, router } from "expo-router";
-
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
-  ActivityIndicator,
-  Button,
+  Dimensions,
   KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
-// import { TouchableOpacity } from "react-native-gesture-handler";
-import { TouchableOpacity } from "react-native";
-import { GraphQLError } from "graphql";
-import Toast from "react-native-toast-message";
-import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
+
+import {
+  ParallaxScrollView,
+  ThemedButton,
+  ThemedInput,
+  ThemedText,
+  ThemedView,
+  BottomSheetComponent,
+  CameraBottomSheet,
+  ThemedFA6,
+} from "@/components";
+
 import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
-
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import BottomSheetComponent from "@/components/base/bottomSheet";
-import CameraBottomSheet from "@/components/base/cameraBottomSheet";
 import { updatePotrait } from "@/redux/actions/user";
 
 // TouchableOpacity
 
-
 export default function Register() {
   const dispatch = useDispatch();
+  const screenWidth = Dimensions.get('window').width;
   const [authenticatedStatus, setAuthenticatedStatus] = useState(false);
   const bottomSheetRef = useRef(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -42,43 +39,16 @@ export default function Register() {
 
   const userData = useSelector((state) => state.user.user);
 
-  // const GET_USER_DATA = gql`
-  //   query Query {
-  //     me {
-  //       id
-  //       mobile_number
-  //       agent_linked_code
-  //     }
-  //   }
-  // `;
-
-  // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
-
-  // const pickImage = async () => {
-  //   // No permissions request is necessary for launching the image library
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-
-  //   console.log(result);
-
-  //   if (!result.canceled) {
-  //     setImage(result.assets[0].uri);
-  //   }
-  // };
-
   const handleImage = (image) => {
-     dispatch(updatePotrait(image.uri));
-    setImage(image)
-  }
+    dispatch(updatePotrait(image.uri));
+    setImage(image);
+  };
 
-  useEffect(()=>{
-    console.log('duar memek', userData)
-  },[userData])
+  useEffect(() => {
+    console.log("duar memek", userData);
+  }, [userData]);
 
+  //** Bottom Sheet Camera -- START*/
   const handlePresentPress = useCallback(() => {
     bottomSheetRef.current?.present();
   }, []);
@@ -94,15 +64,16 @@ export default function Register() {
 
   const renderCustomItem = (item) => (
     <TouchableOpacity
-      style={{ alignItems: "center", padding:10 }}
+      style={{ alignItems: "center", padding: 10 }}
       onPress={() => handleItemPress(item)}
     >
       <Text style={{ fontSize: 18 }}>{item.label}</Text>
     </TouchableOpacity>
   );
+  //** Bottom Sheet Camera -- END */
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, width: screenWidth }}>
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
         headerImage={
@@ -125,11 +96,13 @@ export default function Register() {
             ></ThemedRow>
             <ThemedRow
               type="link"
+              style={{ borderBottomWidth: 1 }}
               label="Authentication"
               optional={authenticatedStatus ? "Certified" : "Uncertified"}
               link="/(app)/(settings)/profile/authentication"
             ></ThemedRow>
           </ThemedView>
+
         </KeyboardAvoidingView>
       </ParallaxScrollView>
       <CameraBottomSheet

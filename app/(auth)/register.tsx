@@ -24,8 +24,10 @@ import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
-import { handleError } from "../../services/errorService";
+// import { handleError } from "../../services/errorService";
+import { handleError } from '../../utils/handleError'
 import { ThemedLink } from "@/components/ThemedLink";
+import { useMutationAPI } from "@/services/api";
 // TouchableOpacity
 
 export default function Register() {
@@ -78,7 +80,6 @@ export default function Register() {
 
     setLoading(true);
     try {
-      throw new Error("Test error");
 
       registerMutation({
         variables: {
@@ -95,28 +96,9 @@ export default function Register() {
             text1: "Registered Succesfully",
             visibilityTime: 3000,
           });
-          // router.replace("/");
+
           router.navigate("/");
 
-          // setLoading(false);
-
-          // let dataContainer = infoData.register;
-          // if(dataContainer.success){
-          //   console.log("withdraw success", dataContainer.data);
-          //   Toast.show({
-          //     type: "success",
-          //     text1: "Registered Succesfully",
-          //     visibilityTime: 3000,
-          //   });
-          //   router.navigate("/(tabs)/home");
-          // }else{
-          //   console.log("withdraw success", dataContainer.errors);
-          //   Toast.show({
-          //     type: "error",
-          //     text1: dataContainer.errors[0].message,
-          //     visibilityTime: 3000,
-          //   });
-          // }
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
@@ -157,7 +139,56 @@ export default function Register() {
     }
   };
 
-  const signIn = () => {};
+  const { handleMutation: requestOTP_mutation, loading:requestOTP_loading } = useMutationAPI(GQL_Query.REQUEST_OTP_MUTATION)
+
+  const requestOTP = async()=>{
+    const result = await requestOTP_mutation(
+      phone
+    )
+
+    if (result.success) {
+      let dataContainer = result.data.createWithdrawRequest;
+      if (dataContainer.success) {
+        Toast.show({
+          type: "success",
+          text1: "Withdwraw Request Successful",
+          visibilityTime: 3000,
+        });
+        router.navigate("/(tabs)/home");
+      } else {
+        console.log("withdraw success", dataContainer.errors);
+        Toast.show({
+          type: "error",
+          text1: dataContainer.errors[0].message,
+          visibilityTime: 3000,
+        });
+      }
+    } else {
+      handleError(result.error, new Error('Outside of Scope') , { component: 'OTP', info: result.data });
+
+      // if (result.error == "graphql") {
+      //   console.log(result.data);
+      //   Toast.show({
+      //     type: "error",
+      //     text1: "Withdrawal Request failed. Please try again later",
+      //     visibilityTime: 3000,
+      //   });
+      // } else if (result.error == "network") {
+      //   Toast.show({
+      //     type: "error",
+      //     text1: "Network error. Please try again later",
+      //     visibilityTime: 3000,
+      //   });
+      // } else if (result.error == "function") {
+      //   Toast.show({
+      //     type: "error",
+      //     text1: "An Error occuered. Please try again later",
+      //     visibilityTime: 3000,
+      //   });
+      // }
+    }
+
+  }
 
   return (
     <ParallaxScrollView

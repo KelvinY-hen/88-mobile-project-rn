@@ -1,12 +1,7 @@
-import { ThemedButton } from "@/components/ThemedButton";
-import { ThemedInput } from "@/components/ThemedInput";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
 import { Link, router } from "expo-router";
-
 import { useCallback, useEffect, useRef, useState } from "react";
-
 import {
   ActivityIndicator,
   Button,
@@ -15,64 +10,37 @@ import {
   Text,
   TextInput,
   View,
+  TouchableOpacity,
 } from "react-native";
-// import { TouchableOpacity } from "react-native-gesture-handler";
-import { TouchableOpacity } from "react-native";
-import { GraphQLError } from "graphql";
+
 import Toast from "react-native-toast-message";
-import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
-import { ThemedFA6 } from "@/components/ThemedFA6";
+import {
+  ParallaxScrollView,
+  ThemedText,
+  ThemedView,
+  ThemedButton,
+  ThemedInput,
+  ThemedFA6,
+  ThemedRow,
+} from "@/components";
 import { useSelector } from "react-redux";
-import ThemedRow from "@/components/base/RowBar";
 import BottomSheetComponent from "@/components/base/bottomSheet";
-import { confirm } from "@/components/base/confirm";
-import { Checkbox } from "react-native-paper";
 import PinPromptBottomSheet from "@/components/base/pinPromptBottomSheet";
-import GqlQuery, { CREATE_WITHDRAW_REQUEST_MUTATION } from "@/constants/GqlQuery";
-import { useMutationAPI } from "../../../services/api"
+import GqlQuery, {
+  CREATE_WITHDRAW_REQUEST_MUTATION,
+} from "@/constants/GqlQuery";
+import { useMutationAPI } from "../../../services/api";
 import { GQL_Query } from "@/constants";
+import { handleError } from "@/utils/handleError";
 // TouchableOpacity
-
-const saved_account_data = [
-  {
-    id: 0,
-    account_name: "🇺🇸 HLB",
-    bank_account: "12345",
-    bank_id: "asd",
-    branch_name: "branch",
-  },
-  {
-    id: 2,
-    account_name: "🇺🇸 Maybank",
-    bank_account: "12345",
-    bank_id: "US",
-    branch_name: "branch",
-  },
-  {
-    id: 3,
-    account_name: "🇺🇸 OCBC",
-    bank_account: "12345",
-    bank_id: "US",
-    branch_name: "branch",
-  },
-];
-
-const banks = [
-  { id: 0, label: "Maybank", value: "maybank" },
-  { id: 1, label: "CIMB Bank", value: "cimb" },
-  { id: 2, label: "Public Bank", value: "public" },
-  { id: 3, label: "RHB Bank", value: "rhb" },
-  { id: 4, label: "Hong Leong Bank", value: "hong_leong" },
-  { id: 5, label: "AmBank", value: "ambank" },
-  { id: 6, label: "Bank Islam", value: "bank_islam" },
-  { id: 7, label: "UOB Bank", value: "uob" },
-  { id: 8, label: "HSBC Bank", value: "hsbc" },
-];
 
 export default function Withdraw() {
   const [username, setUserName] = useState(
     useSelector((state) => state.user.user.agent_linked_code)
   );
+  const { handleMutation: withdraw_mutation, loading: withdraw_loading } =
+    useMutationAPI(GQL_Query.CREATE_WITHDRAW_REQUEST_MUTATION);
+
   const [loading, setLoading] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
@@ -84,14 +52,12 @@ export default function Withdraw() {
   const [name, setName] = useState("");
   const [branch, setBranch] = useState("");
   const [amount, setAmount] = useState();
-  const [save, toggleSave] = useState(false);
 
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
 
   const savedAccoutSheetRef = useRef(null);
   const bankSheetRef = useRef(null);
   const pinSheetRef = useRef(null);
-
 
   const {
     loading: bank_loading,
@@ -100,6 +66,12 @@ export default function Withdraw() {
     refetch,
   } = useQuery(GqlQuery.GET_ALL_BANKS);
 
+  useEffect(() => {
+    if (bank_data && bank_data.banks) {
+      setBankList(bank_data.banks); // Set bank data only when it changes
+    }
+  }, [bank_data]);
+
   const {
     loading: user_bank_loading,
     data: user_bank_data,
@@ -107,11 +79,6 @@ export default function Withdraw() {
     refetch: user_bank_refetch,
   } = useQuery(GQL_Query.GET_USER_BANK);
 
-  useEffect(() => {
-    if (bank_data && bank_data.banks) {
-      setBankList(bank_data.banks); // Set bank data only when it changes
-    }
-  }, [bank_data]);
   useEffect(() => {
     let userBankListTemp = user_bank_data?.userBanks?.data;
     if (userBankListTemp) {
@@ -126,7 +93,7 @@ export default function Withdraw() {
 
   const resetPin = () => {
     setPin(["", "", "", "", "", ""]);
-  }
+  };
 
   const withdrawHandler = async () => {
     // Validate account number
@@ -149,7 +116,6 @@ export default function Withdraw() {
       return;
     }
 
-
     // Validate bank selection
     if (!selectedBank || !selectedBank?.id) {
       Toast.show({
@@ -159,7 +125,6 @@ export default function Withdraw() {
       });
       return;
     }
-
 
     if (!branch) {
       Toast.show({
@@ -196,130 +161,127 @@ export default function Withdraw() {
     // const confirmed = await confirm("Do you want to proceed with request?");
 
     handlePinPresentPress();
-    
   };
 
+  const [createUserBankMutation] = useMutation(
+    GQL_Query.CREATE_USER_BANK_MUTATION
+  );
 
-
-  const [createUserBankMutation] = useMutation(GQL_Query.CREATE_USER_BANK_MUTATION);
-
-  const [createWithdrawRequestMutation] = useMutation(CREATE_WITHDRAW_REQUEST_MUTATION);
+  const [createWithdrawRequestMutation] = useMutation(
+    GQL_Query.CREATE_WITHDRAW_REQUEST_MUTATION
+  );
 
   const submitWithdrawalRequest = async () => {
-
-    if( pin.join("").length != 6 ){
-      return;
+    if (pin.join("").length != 6) {
+      return; 
     }
-
 
     handlePinDismissPress();
     setLoading(true);
-    
-    if(!selectedAccount){
+
+    if (!selectedAccount) {
       var bankRegisterResult = null;
       // const result = await graphQL_registerBank({accNo, name, selectedBank, branch});
-        try {
-          await createUserBankMutation({
-            variables: {
-              bank_account: accNo,
-              account_name: name,
-              bank_id: selectedBank.id,
-              branch_name: branch,
-              is_primary: false,
-            },
-            onCompleted: (infoData) => {
-                console.log(infoData);
-                bankRegisterResult = { success: true, data: infoData, error: false };
-            },        
-            onError: ({ graphQLErrors, networkError }) => {
-              console.log('tester erroer')
-              if (graphQLErrors) {
-                graphQLErrors.forEach(({ message, locations, path }) => {
-                  // alert("Registration failed. Please try again. /n" + message);
-                  console.log(message);
-                  Toast.show({
-                    type: "error",
-                    text1: "Bank Registration failed. Please try again later",
-                    visibilityTime: 3000,
-                  });
-                  bankRegisterResult = { success: false, data: message,  error: "graphQL" };
-                });
-              }
-              if (networkError) {
-                console.log(networkError);
-                // console.log(message);
+      try {
+        await createUserBankMutation({
+          variables: {
+            bank_account: accNo,
+            account_name: name,
+            bank_id: selectedBank.id,
+            branch_name: branch,
+            is_primary: false,
+          },
+          onCompleted: (infoData) => {
+            console.log(infoData);
+            bankRegisterResult = {
+              success: true,
+              data: infoData,
+              error: false,
+            };
+          },
+          onError: ({ graphQLErrors, networkError }) => {
+            console.log("tester erroer");
+            if (graphQLErrors) {
+              graphQLErrors.forEach(({ message, locations, path }) => {
+                // alert("Registration failed. Please try again. /n" + message);
+                console.log(message);
                 Toast.show({
                   type: "error",
-                  text1: "Network error. Please try again later",
+                  text1: "Bank Registration failed. Please try again later",
                   visibilityTime: 3000,
                 });
-                bankRegisterResult = { success: false, data: networkError,error: "network" };
-              }
-              // setLoading(false);
-            },
-          });
-          // console.log("Bank Added successfully!");
-        } catch (err) {
-          console.log("functionerror, ", err);
-          Toast.show({
-            type: "error",
-            text1: "An Error occuered. Please try again later",
-            visibilityTime: 3000,
-          });
-          bankRegisterResult = { success: false, data: err, error: "function" };
+                bankRegisterResult = {
+                  success: false,
+                  data: message,
+                  error: "graphQL",
+                };
+              });
+            }
+            if (networkError) {
+              console.log(networkError);
+              // console.log(message);
+              Toast.show({
+                type: "error",
+                text1: "Network error. Please try again later",
+                visibilityTime: 3000,
+              });
+              bankRegisterResult = {
+                success: false,
+                data: networkError,
+                error: "network",
+              };
+            }
+            // setLoading(false);
+          },
+        });
+        // console.log("Bank Added successfully!");
+      } catch (err) {
+        console.log("functionerror, ", err);
+        Toast.show({
+          type: "error",
+          text1: "An Error occuered. Please try again later",
+          visibilityTime: 3000,
+        });
+        bankRegisterResult = { success: false, data: err, error: "function" };
+      } finally {
+      }
 
-        } finally {
-        }
-        
-        if(bankRegisterResult.success && bankRegisterResult?.data?.createUserBank.success){
-          console.log("buat bank sukes juga dh", bankRegisterResult);
+      if (
+        bankRegisterResult.success &&
+        bankRegisterResult?.data?.createUserBank.success
+      ) {
+        console.log("buat bank sukes juga dh", bankRegisterResult);
 
-          setSelectedAccount(bankRegisterResult?.data?.createUserBank?.data);
+        setSelectedAccount(bankRegisterResult?.data?.createUserBank?.data);
 
-          let variable = {
-            bank_account_id: bankRegisterResult?.data?.createUserBank?.data?.id,
-            amount: parseInt(amount), // Ensure the amount is a float
-            pin: pin.join(""),
-          }
+        let variable = {
+          bank_account_id: bankRegisterResult?.data?.createUserBank?.data?.id,
+          amount: parseInt(amount), // Ensure the amount is a float
+          pin: pin.join(""),
+        };
 
-          await withdrawAPI(variable);
-          
-          // console.log("jalan bans register dlx", variable);
-
-          // const result = await useMutationAPI(createWithdrawRequestMutation, variable)
-    
-    
-          // console.log("jalan bans register dl2", result);
-        }
-
-    }else{
-
+        await withdrawAPI(variable);
+      }
+    } else {
       let variable = {
         bank_account_id: selectedAccount.id,
         amount: parseInt(amount), // Ensure the amount is a float
         pin: pin.join(""),
-      }
+      };
       console.log("jalan bans no register", variable);
 
       await withdrawAPI(variable);
-      
-
     }
-    
-    
-    setLoading(false)
 
-    
-    
+    setLoading(false);
   };
 
   const withdrawAPI = async (variable) => {
+    const result = await withdraw_mutation(variable);
 
-    const result = await useMutationAPI(createWithdrawRequestMutation, variable)
-
-    if(result.success){
+    if (result.success) {
       let dataContainer = result.data.createWithdrawRequest;
-      if(dataContainer.success){
+      if (dataContainer.success) {
         console.log("withdraw success", dataContainer.data);
         Toast.show({
           type: "success",
@@ -327,7 +289,7 @@ export default function Withdraw() {
           visibilityTime: 3000,
         });
         router.navigate("/(tabs)/home");
-      }else{
+      } else {
         console.log("withdraw success", dataContainer.errors);
         Toast.show({
           type: "error",
@@ -335,52 +297,54 @@ export default function Withdraw() {
           visibilityTime: 3000,
         });
       }
-    }else{
-       if(result.error == 'graphql'){
-        console.log(result.data)
-        Toast.show({
-          type: "error",
-          text1: "Withdrawal Request failed. Please try again later",
-          visibilityTime: 3000,
-        });
-      }else if(result.error == 'network'){
-        Toast.show({
-          type: "error",
-          text1: "Network error. Please try again later",
-          visibilityTime: 3000,
-        });
-      }else if(result.error == 'function'){
-        Toast.show({
-          type: "error",
-          text1: "An Error occuered. Please try again later",
-          visibilityTime: 3000,
-        });
-      }
+    } else {
+
+      handleError(result.error, new Error('Outside of Scope') , { component: 'Withdraw-API', errorType :result.error, errorMessage:result?.data[0]?.message && ''});
+
+
+      // if (result.error == "graphql") {
+      //   console.log(result.data);
+      //   Toast.show({
+      //     type: "error",
+      //     text1: "Withdrawal Request failed. Please try again later",
+      //     visibilityTime: 3000,
+      //   });
+      // } else if (result.error == "network") {
+      //   Toast.show({
+      //     type: "error",
+      //     text1: "Network error. Please try again later",
+      //     visibilityTime: 3000,
+      //   });
+      // } else if (result.error == "function") {
+      //   Toast.show({
+      //     type: "error",
+      //     text1: "An Error occuered. Please try again later",
+      //     visibilityTime: 3000,
+      //   });
+      // }
     }
-    console.log('hasil', result);
+    console.log("hasil", result);
 
     resetPin();
-
-    
-  }
+  };
 
   const handleExpandSavedAccount = () => {
-    if(selectedAccount){
+    if (selectedAccount) {
       setSelectedAccount(null);
-      setAccNo('');
-      setName('');
-      setBranch('');
-      setSelectedBank(null)
+      setAccNo("");
+      setName("");
+      setBranch("");
+      setSelectedBank(null);
       return;
-    }else{
-      savedAccoutSheetRef.current?.present()
+    } else {
+      savedAccoutSheetRef.current?.present();
     }
   };
   const handleExpandBank = () => {
-    if(selectedAccount){
-      return
-    }else{
-      bankSheetRef.current?.present()
+    if (selectedAccount) {
+      return;
+    } else {
+      bankSheetRef.current?.present();
     }
   };
   const handleDismissSavedAccount = () => savedAccoutSheetRef.current?.close();
@@ -461,13 +425,11 @@ export default function Withdraw() {
           // optional="Enter bank account"
         ></ThemedRow>
         <ThemedRow
-
           editable={selectedAccount ? false : true}
           type="input"
           label="Bank a/c"
           // style={{marginTop:15}}
           keyboardType="number-pad"
-
           inputValue={accNo}
           handleFunction={(text) => {
             const numericValue = text.replace(/[^0-9]/g, "");
