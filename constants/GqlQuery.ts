@@ -230,8 +230,8 @@ mutation SetPin($pin: String!) {
 `;
 
 export const REQUEST_OTP_MUTATION = gql`
-mutation RequestOTP($phoneNumber: String!){
-    requestOtp(phoneNumber: $phoneNumber) {
+mutation RequestOTP($phoneNumber: String!, $delivery_type: String!){
+    requestOtp(phoneNumber: $phoneNumber, delivery_type: $delivery_type ) {
         success
         message        
         errors {

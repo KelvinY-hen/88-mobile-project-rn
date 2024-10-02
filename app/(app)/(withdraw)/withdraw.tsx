@@ -299,7 +299,7 @@ export default function Withdraw() {
       }
     } else {
 
-      handleError(result.error, new Error('Outside of Scope') , { component: 'Withdraw-API', errorType :result.error, errorMessage:result?.data[0]?.message && ''});
+      handleError(result.error, new Error('Outside of Scope') , { component: 'Withdraw-API', errorType :result.error, errorMessage:result?.data?.[0]?.message ?? ''});
 
 
       // if (result.error == "graphql") {

@@ -12,6 +12,7 @@ import { GQL_Query } from "@/constants";
 import {
   ActivityIndicator,
   Button,
+  Dimensions,
   KeyboardAvoidingView,
   StyleSheet,
   Text,
@@ -25,13 +26,19 @@ import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
 // import { handleError } from "../../services/errorService";
-import { handleError } from '../../utils/handleError'
+import { handleError } from "../../utils/handleError";
 import { ThemedLink } from "@/components/ThemedLink";
 import { useMutationAPI } from "@/services/api";
+import { getCode } from "@/services/getCode";
 // TouchableOpacity
 
 export default function Register() {
+  const screenWidth = Dimensions.get("window").width;
   const [phone, setPhone] = useState("");
+  const { countdown, isCounting, requestOTP, showResendOptions } = getCode();
+  // const [countdown, setCountdown] = useState(0);
+  // const [isCounting, setIsCounting] = useState(false);
+  const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -45,6 +52,15 @@ export default function Register() {
       Toast.show({
         type: "error",
         text1: "Phone number is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    if (!otp) {
+      Toast.show({
+        type: "error",
+        text1: "OTP is required",
         visibilityTime: 3000,
       });
       return;
@@ -80,13 +96,13 @@ export default function Register() {
 
     setLoading(true);
     try {
-
       registerMutation({
         variables: {
           input: {
             mobile_number: phone,
             password: password,
             password_confirmation: confirmPassword,
+            otp: otp,
           },
         },
         onCompleted: (infoData) => {
@@ -98,7 +114,6 @@ export default function Register() {
           });
 
           router.navigate("/");
-
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
@@ -139,56 +154,12 @@ export default function Register() {
     }
   };
 
-  const { handleMutation: requestOTP_mutation, loading:requestOTP_loading } = useMutationAPI(GQL_Query.REQUEST_OTP_MUTATION)
+  const { handleMutation: requestOTP_mutation, loading: requestOTP_loading } =
+    useMutationAPI(GQL_Query.REQUEST_OTP_MUTATION);
 
-  const requestOTP = async()=>{
-    const result = await requestOTP_mutation(
-      phone
-    )
-
-    if (result.success) {
-      let dataContainer = result.data.createWithdrawRequest;
-      if (dataContainer.success) {
-        Toast.show({
-          type: "success",
-          text1: "Withdwraw Request Successful",
-          visibilityTime: 3000,
-        });
-        router.navigate("/(tabs)/home");
-      } else {
-        console.log("withdraw success", dataContainer.errors);
-        Toast.show({
-          type: "error",
-          text1: dataContainer.errors[0].message,
-          visibilityTime: 3000,
-        });
-      }
-    } else {
-      handleError(result.error, new Error('Outside of Scope') , { component: 'OTP', info: result.data });
-
-      // if (result.error == "graphql") {
-      //   console.log(result.data);
-      //   Toast.show({
-      //     type: "error",
-      //     text1: "Withdrawal Request failed. Please try again later",
-      //     visibilityTime: 3000,
-      //   });
-      // } else if (result.error == "network") {
-      //   Toast.show({
-      //     type: "error",
-      //     text1: "Network error. Please try again later",
-      //     visibilityTime: 3000,
-      //   });
-      // } else if (result.error == "function") {
-      //   Toast.show({
-      //     type: "error",
-      //     text1: "An Error occuered. Please try again later",
-      //     visibilityTime: 3000,
-      //   });
-      // }
-    }
-
-  }
+  const handleClickRequestOTP = async (deliveryType: string) => {
+    await requestOTP(phone, deliveryType);
+  };
 
   return (
     <ParallaxScrollView
@@ -234,14 +205,49 @@ export default function Register() {
         <View style={[{ flexDirection: "row", marginVertical: 4 }]}>
           <ThemedInput
             style={styles.inputPhone}
-            // onChangeText={setVerificationCode}
-            // value={verificationCode}
-            // autoCapitalize="none"
+            onChangeText={setOtp}
+            value={otp}
+            autoCapitalize="none"
             placeholder="OTP code"
           ></ThemedInput>
-          <View style={styles.option}>
-            <ThemedText style={styles.code}>Get Code?</ThemedText>
-          </View>
+          {/* <View style={styles.option}> */}
+
+          {/* OTP Fuction */}
+          {showResendOptions ? (
+            <>
+              <TouchableOpacity
+                style={styles.option}
+                onPress={isCounting ? null : () => handleClickRequestOTP("sms")}
+                disabled={isCounting}
+              >
+                <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
+                  {isCounting ? ` ${countdown}s` : "SMS"}
+                </ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.option}
+                onPress={
+                  isCounting ? null : () => handleClickRequestOTP("whatsapp")
+                }
+                disabled={isCounting}
+              >
+                <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
+                  {isCounting ? ` ${countdown}s` : "Whatsapp"}
+                </ThemedText>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={styles.option}
+              onPress={isCounting ? null : () => handleClickRequestOTP("sms")}
+              disabled={isCounting}
+            >
+              <ThemedText style={[styles.code, { width: screenWidth / 2 }]}>
+                {isCounting ? ` ${countdown}s` : "Get Code"}
+              </ThemedText>
+            </TouchableOpacity>
+          )}
+          
         </View>
 
         {/* Input Password */}
@@ -336,7 +342,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   code: {
-    width: 100,
     // paddingTop: 1,
     textAlign: "center",
     borderColor: "#e5e5e5",

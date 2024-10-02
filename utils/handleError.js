@@ -19,7 +19,7 @@ export const handleError = (errorType, errorData = {}, additionalInfo = {}) => {
       console.error('GraphQL Error:', errorData);
       Toast.show({
         type: 'error',
-        text1: 'GraphQL Error',
+        text1: 'Query Error',
         text2: 'API Request failed. Please try again later.',
         visibilityTime: 3000,
       });

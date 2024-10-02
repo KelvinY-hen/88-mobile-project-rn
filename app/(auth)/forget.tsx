@@ -10,6 +10,7 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Button,
+  Dimensions,
   KeyboardAvoidingView,
   StyleSheet,
   Text,
@@ -22,10 +23,15 @@ import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
+import { getCode } from "@/services/getCode";
 // TouchableOpacity
 
 export default function Register() {
+  const screenWidth = Dimensions.get("window").width;
+
   const [phone, setPhone] = useState("");
+  const { countdown, isCounting, requestOTP, showResendOptions } = getCode();
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,17 +50,7 @@ export default function Register() {
   const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const signUp = async () => {
-    // router.navigate("/");
-
-    // if (!phone) {
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Phone number is required",
-    //     visibilityTime: 3000,
-    //   });
-    //   return;
-    // }
-
+    const result = await requestOTP();
     try {
       Toast.show({
         type: "info",
@@ -73,7 +69,10 @@ export default function Register() {
     }
   };
 
-  const signIn = () => {};
+  
+  const handleClickRequestOTP = async (deliveryType: string) => {
+    await requestOTP(phone, deliveryType);
+  };
 
   return (
     <ParallaxScrollView
@@ -102,7 +101,6 @@ export default function Register() {
             </ThemedText>
           </TouchableOpacity>
 
-
           {/* Phone Number */}
           <ThemedInput
             style={styles.inputPhone}
@@ -117,7 +115,6 @@ export default function Register() {
           ></ThemedInput>
         </View>
 
-
         <View style={[{ flexDirection: "row", marginVertical: 4 }]}>
           <ThemedInput
             style={styles.inputPhone}
@@ -126,9 +123,40 @@ export default function Register() {
             // autoCapitalize="none"
             placeholder="OTP code"
           ></ThemedInput>
-          <View style={styles.option}>
-            <ThemedText style={styles.code}>Get Code?</ThemedText>
-          </View>
+          {showResendOptions ? (
+            <>
+              <TouchableOpacity
+                style={styles.option}
+                onPress={isCounting ? null : () => handleClickRequestOTP("sms")}
+                disabled={isCounting}
+              >
+                <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
+                  {isCounting ? ` ${countdown}s` : "SMS"}
+                </ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.option}
+                onPress={
+                  isCounting ? null : () => handleClickRequestOTP("whatsapp")
+                }
+                disabled={isCounting}
+              >
+                <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
+                  {isCounting ? ` ${countdown}s` : "Whatsapp"}
+                </ThemedText>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={styles.option}
+              onPress={isCounting ? null : () => handleClickRequestOTP("sms")}
+              disabled={isCounting}
+            >
+              <ThemedText style={[styles.code, { width: screenWidth / 2 }]}>
+                {isCounting ? ` ${countdown}s` : "Get Code"}
+              </ThemedText>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Input Password */}
