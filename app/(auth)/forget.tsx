@@ -102,6 +102,7 @@ export default function Register() {
             </ThemedText>
           </TouchableOpacity>
 
+
           {/* Phone Number */}
           <ThemedInput
             style={styles.inputPhone}
@@ -114,6 +115,20 @@ export default function Register() {
             keyboardType="phone-pad"
             placeholder="Your Phone Number"
           ></ThemedInput>
+        </View>
+
+
+        <View style={[{ flexDirection: "row", marginVertical: 4 }]}>
+          <ThemedInput
+            style={styles.inputPhone}
+            // onChangeText={setVerificationCode}
+            // value={verificationCode}
+            // autoCapitalize="none"
+            placeholder="OTP code"
+          ></ThemedInput>
+          <View style={styles.option}>
+            <ThemedText style={styles.code}>Get Code?</ThemedText>
+          </View>
         </View>
 
         {/* Input Password */}
@@ -201,8 +216,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   option: {
-    display: "flex",
-    flexDirection: "row",
+    // textAlign: "center",
+    justifyContent: "center",
+    // borderColor: "#e5e5e5",
+    // borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+  code: {
+    width: 100,
+    // paddingTop: 1,
+    textAlign: "center",
+    borderColor: "#e5e5e5",
+    borderLeftWidth: 1,
+    // borderTopWidth: 1,
+    // borderBottomWidth: 1,
   },
   link: {
     width: "33.333%",
@@ -214,7 +241,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderBottomWidth: 1,
     flexDirection: "row",
-    marginHorizontal: 5,
+    marginRight: 5,
   },
   eyeContainer: {
     // width: 25,

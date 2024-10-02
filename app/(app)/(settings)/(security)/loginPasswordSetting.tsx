@@ -89,9 +89,11 @@ export default function loginPasswordSetting() {
                 placeholder="Your Password"
                 secureTextEntry={!showPassword}
               ></ThemedInput>
-              <ThemedLink style={styles.option} href={"/forgotPassword"}>
-                Forget?
-              </ThemedLink>
+              <ThemedView style={styles.option}>
+                <ThemedLink style={styles.code} href={"/forgotPassword"}>
+                  Forget?
+                </ThemedLink>
+              </ThemedView>
             </ThemedView>
             <ThemedView style={styles.action}>
               <ThemedButton
@@ -166,12 +168,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   option: {
-    width: 100,
-    paddingTop: 5,
-    textAlign: "center",
+    // textAlign: "center",
+    justifyContent:"center",
     borderColor: "#e5e5e5",
     borderTopWidth: 1,
     borderBottomWidth: 1,
+  },
+  code: {
+    width: 100,
+    // paddingTop: 1,
+    textAlign: "center",
+    borderColor: "#e5e5e5",
+    borderLeftWidth: 1,
+    // borderTopWidth: 1,
+    // borderBottomWidth: 1,
   },
   rowHeader: {
     fontSize: 18,

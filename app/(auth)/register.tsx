@@ -24,7 +24,8 @@ import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
-import {handleError} from "../../services/errorService"
+import { handleError } from "../../services/errorService";
+import { ThemedLink } from "@/components/ThemedLink";
 // TouchableOpacity
 
 export default function Register() {
@@ -35,12 +36,9 @@ export default function Register() {
 
   const [loading, setLoading] = useState(false);
 
-
   const [registerMutation] = useMutation(GQL_Query.REGISTER_MUTATION);
 
   const signUp = async () => {
-
-
     if (!phone) {
       Toast.show({
         type: "error",
@@ -49,7 +47,7 @@ export default function Register() {
       });
       return;
     }
-    
+
     if (!password || !confirmPassword) {
       Toast.show({
         type: "error",
@@ -58,7 +56,7 @@ export default function Register() {
       });
       return;
     }
-  
+
     if (password !== confirmPassword) {
       Toast.show({
         type: "error",
@@ -67,7 +65,7 @@ export default function Register() {
       });
       return;
     }
-  
+
     const phoneRegex = /^[0-9]{9,16}$/; // Example: Ensures phone is 10-15 digits
     if (!phoneRegex.test(phone)) {
       Toast.show({
@@ -77,11 +75,11 @@ export default function Register() {
       });
       return;
     }
-    
+
     setLoading(true);
     try {
       throw new Error("Test error");
-      
+
       registerMutation({
         variables: {
           input: {
@@ -119,15 +117,13 @@ export default function Register() {
           //     visibilityTime: 3000,
           //   });
           // }
-
         },
         onError: ({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
             graphQLErrors.forEach(({ message, locations, path }) => {
               // alert("Registration failed. Please try again. /n" + message);
-              let temp_message = 'Registration failed. Please Try Again Later';
+              let temp_message = "Registration failed. Please Try Again Later";
               Toast.show({
-                
                 type: "error",
                 text1: message ?? temp_message,
                 visibilityTime: 3000,
@@ -147,7 +143,10 @@ export default function Register() {
       });
     } catch (err) {
       console.log("functionerror, ", err);
-      handleError(err, { component: "register_signUp", info: "Function Error Sign Up" })
+      handleError(err, {
+        component: "register_signUp",
+        info: "Function Error Sign Up",
+      });
       Toast.show({
         type: "error",
         text1: "An Error occuered. Please try again later",
@@ -182,21 +181,36 @@ export default function Register() {
               />
             </View>
 
-            <ThemedText  style={[{ marginTop: 8, marginLeft:5 }]}>
-              🇲🇾 +60 
-              </ThemedText>
+            <ThemedText style={[{ marginTop: 8, marginLeft: 5 }]}>
+              🇲🇾 +60
+            </ThemedText>
           </TouchableOpacity>
 
           {/* Phone Number */}
           <ThemedInput
             style={styles.inputPhone}
-            onChangeText={(text) => {const numericValue = text.replace(/[^0-9]/g, "");
-              setPhone(numericValue)}}
+            onChangeText={(text) => {
+              const numericValue = text.replace(/[^0-9]/g, "");
+              setPhone(numericValue);
+            }}
             value={phone}
             autoCapitalize="none"
             keyboardType="phone-pad"
             placeholder="Your Phone Number"
           ></ThemedInput>
+        </View>
+
+        <View style={[{ flexDirection: "row", marginVertical: 4 }]}>
+          <ThemedInput
+            style={styles.inputPhone}
+            // onChangeText={setVerificationCode}
+            // value={verificationCode}
+            // autoCapitalize="none"
+            placeholder="OTP code"
+          ></ThemedInput>
+          <View style={styles.option}>
+            <ThemedText style={styles.code}>Get Code?</ThemedText>
+          </View>
         </View>
 
         {/* Input Password */}
@@ -284,8 +298,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   option: {
-    display: "flex",
-    flexDirection: "row",
+    // textAlign: "center",
+    justifyContent: "center",
+    // borderColor: "#e5e5e5",
+    // borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+  code: {
+    width: 100,
+    // paddingTop: 1,
+    textAlign: "center",
+    borderColor: "#e5e5e5",
+    borderLeftWidth: 1,
+    // borderTopWidth: 1,
+    // borderBottomWidth: 1,
   },
   link: {
     width: "33.333%",
@@ -297,7 +323,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderBottomWidth: 1,
     flexDirection: "row",
-    marginHorizontal: 5,
+    marginRight: 5,
   },
   eyeContainer: {
     // width: 25,

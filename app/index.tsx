@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderBottomWidth: 1,
     flexDirection: "row",
-    marginHorizontal: 5,
+    marginRight: 5,
   },
   eyeContainer: {
     // width: 25,
