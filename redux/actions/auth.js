@@ -20,7 +20,7 @@ import { USER_TYPES } from '../actionTypes/user';
 export const loginSuccess = data => async dispatch => {
   try {
     // Save token to AsyncStorage
-    await AsyncStorage.setItem('token', data.token);
+    await AsyncStorage.setItem('token', data);
 
     dispatch({
       type: Types.LOGIN_SUCCESS,

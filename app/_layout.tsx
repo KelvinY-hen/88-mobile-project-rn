@@ -39,7 +39,7 @@ Sentry.init({
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 
 
@@ -84,8 +84,7 @@ SplashScreen.preventAutoHideAsync();
 
   useEffect(() => {
     if (loaded) {
-      // router.replace('/(tabs)/home')
-      SplashScreen.hideAsync();
+      // SplashScreen.hideAsync();
     }
   }, [loaded]);
 

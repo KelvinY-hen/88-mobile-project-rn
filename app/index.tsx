@@ -24,9 +24,10 @@ import { ThemedLink } from "@/components/ThemedLink";
 import { ThemedFA6 } from "@/components/ThemedFA6";
 import { RootState } from "@/redux/store";
 import * as SplashScreen from 'expo-splash-screen';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 
 export default function LoginScreen() {
@@ -36,19 +37,42 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const token = useSelector((state: RootState) => state.auth.Token);
 
-
+  // const token = useSelector((state: RootState) => state.auth.Token);
+  
   const [loginMutation] = useMutation(GQL_Query.LOGIN_MUTATION);
-
+  
   let deviceId = DeviceInfo.getUniqueIdSync();
-
+  
   // useEffect(() => {
   //   if(token){
   //     router.replace('/(tabs)/home')
   //   }
-  //   console.log('test');
+  //   console.log('test', token);
   // },[token])
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+
+        const storedToken = await AsyncStorage.getItem('token');
+        console.log('simpanan', storedToken);
+
+        if (storedToken) {
+          dispatch(loginSuccess(storedToken));
+          router.replace('/(tabs)/home');
+        }
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      } finally {
+        // Ensure that the splash screen is hidden even if an error occurs
+        await SplashScreen.hideAsync();
+      }
+    };
+
+    fetchToken();
+  }, []); 
 
   const signIn = () => {
 
@@ -102,7 +126,7 @@ export default function LoginScreen() {
             visibilityTime: 3000
           });
 
-          dispatch(loginSuccess(infoData.login));
+          dispatch(loginSuccess(infoData.login.token));
           router.replace('/(app)/(tabs)/home')
         },
         onError: ({ graphQLErrors, networkError }) => {

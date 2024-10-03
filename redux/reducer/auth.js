@@ -11,7 +11,7 @@ export default function auth(state = initialState, action) {
         case Types.LOGIN_SUCCESS:
             return {
                 ...state,
-                Token: action.payload.token,
+                Token: action.payload,
                 isLoggedIn: true
             };
         case Types.LOGOUT:
