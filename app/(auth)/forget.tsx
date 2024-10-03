@@ -119,9 +119,9 @@ export default function Register() {
     const result = await forget_password_mutation(variables)
 
     if (result.success) {
-      let dataContainer = result.data.forgetPasswordMutation;
+      let dataContainer = result.data.resetPassword;
       console.log(dataContainer);
-      if (dataContainer.success) {
+      if (dataContainer.status == "PASSWORD_RESET") {
         console.log("Password Reset Succesfully", dataContainer.data);
         Toast.show({
           type: "success",
@@ -133,7 +133,7 @@ export default function Register() {
         console.log("Password reset Failed", dataContainer?.errors);
         Toast.show({
           type: "error",
-          text1: dataContainer?.errors?.[0]?.message,
+          text1: dataContainer?.message,
           visibilityTime: 3000,
         });
       }
@@ -141,7 +141,7 @@ export default function Register() {
       handleError(result.error, new Error("Outside of Scope"), {
         component: "Forgot-Password-API",
         errorType: result.error,
-        errorMessage: result?.data?.[0]?.message ?? "",
+        errorMessage: result?.data?.message ?? "",
       });
     }
   };
