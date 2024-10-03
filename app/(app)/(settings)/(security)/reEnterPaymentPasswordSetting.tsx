@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Button,
+  Dimensions,
   KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
@@ -30,32 +31,18 @@ import PinInputGrid from "@/components/ThemedPinInput";
 import { confirm } from "@/components/base/confirm";
 import useMyLazyQuery from "@/hooks/useMyLazyQuery";
 import { GQL_Query } from "@/constants";
+import { useOTP } from "@/hooks/useOTP";
 // TouchableOpacity
 
 export default function Register() {
   const dispatch = useDispatch();
+  const screenWidth = Dimensions.get("window").width;
   const [pin, setPin] = useState(Array(6).fill("")); // State to hold the PIN input
   const [loading, setLoading] = useState(false);
+  const { countdown, isCounting, requestOTP, showResendOptions } = useOTP();
+
 
   const userData = useSelector((state) => state.user.user);
-
-  const SET_PIN_MUTATION = gql`
-    mutation SetPin($pin: String!) {
-      setPin(pin: $pin) {
-        success
-        message
-        data {
-          ... on UserPin {
-            pin
-          }
-        }
-        errors {
-          code
-          message
-        }
-      }
-    }
-  `;
 
   // const [checkPinMutation] = useMutation(CHECK_PIN_MUTATION);
 
@@ -180,9 +167,9 @@ export default function Register() {
                 <ThemedText style={styles.rowLabel}>
                   please enter your pin for verification
                 </ThemedText>
-                {/* <ThemedLink style={styles.rowOption} href={"/forgotPassword"}>
+                <ThemedLink style={styles.rowOption} href={"/forgotPassword?type=pin"}>
                   Forget?
-                </ThemedLink> */}
+                </ThemedLink>
               </ThemedView>
             </ThemedView>
             <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
@@ -269,6 +256,9 @@ const styles = StyleSheet.create({
   //     borderTopWidth: 1,
   //     borderBottomWidth: 1,
   //   },
+  rowOption: {
+
+  },
   rowHeader: {
     fontSize: 18,
     fontWeight: "500",

@@ -1,27 +1,24 @@
 import { useState } from "react";
-import { useMutationAPI } from "./api";
+import { useMutationAPI } from "../services/api";
 import { GQL_Query } from "../constants";
 import { handleError } from "../utils/handleError";
 import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
-export const getCode = () => {
-  const [countdown, setCountdown] = useState(0);
-  const [showResendOptions, setShowResendOptions] = useState(false);
-  const [isCounting, setIsCounting] = useState(false);
+
+export const useOTP = () => {
+  const [countdown, setCountdown] = useState<number>(0);
+  const [showResendOptions, setShowResendOptions] = useState<boolean>(false);
+  const [isCounting, setIsCounting] = useState<boolean>(false);
   const { handleMutation: requestOTP_mutation, loading: requestOTP_loading } =
     useMutationAPI(GQL_Query.REQUEST_OTP_MUTATION);
 
-  const requestOTP = async (phoneNumber, deliveryType) => {
+  const requestOTP = async (phoneNumber:string, deliveryType:string) => {
     setShowResendOptions(false);
     console.log(deliveryType);
     setCountdown(60); // 60 seconds countdown
     setIsCounting(true);
 
-    Toast.show({
-      type: "success",
-      text1: "OTP Sent",
-      visibilityTime: 3000,
-    });
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -34,7 +31,7 @@ export const getCode = () => {
         return prev - 1;
       });
     }, 1000);
-    return;
+    // return;
 
     const variable = {
       phoneNumber: phoneNumber,
@@ -43,15 +40,16 @@ export const getCode = () => {
 
     const result = await requestOTP_mutation(variable);
 
+    console.log(result);
     if (result.success) {
-      let dataContainer = result.data.createWithdrawRequest;
+      let dataContainer = result.data.requestOtp;
       if (dataContainer.success) {
         Toast.show({
           type: "success",
-          text1: "OTP Sent",
+          text1: "OTP Sent Succesfully",
           visibilityTime: 3000,
         });
-        router.navigate("/(tabs)/home");
+        // router.navigate("/(tabs)/home");
       } else {
         Toast.show({
           type: "error",

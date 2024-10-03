@@ -1,22 +1,13 @@
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
-
-import { Link, router } from "expo-router";
-
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-
 import {
-  ActivityIndicator,
-  Button,
   KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
-  Text,
-  TextInput,
-  View,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
-
+import { router, useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
 import {
   ParallaxScrollView,
@@ -24,19 +15,49 @@ import {
   ThemedView,
   ThemedButton,
   ThemedInput,
-  ThemedRow,
-  ThemedFA6,
-  ThemedLink,
 } from "@/components";
+import { useSelector } from "react-redux";
+import { useOTP } from "@/hooks/useOTP";
+import { RootState } from "@/redux/store";
+import { handleError } from "@/utils/handleError";
 
-import { useDispatch, useSelector } from "react-redux";
-// TouchableOpacity
-
+type Params = {
+  type: string;
+};
 export default function Register() {
-  const [verificationCode, setVerificationCode] = useState("");
-  const [loading, setLoading] = useState(false);
+  const screenWidth = Dimensions.get("window").width;
+  const [verificationCode, setVerificationCode] = useState<string>("");
+  const { countdown, isCounting, requestOTP, showResendOptions } = useOTP();
+  const [loading, setLoading] = useState<boolean>(false);
+  const userData = useSelector((state: RootState) => state.user.user);
+  const { type } = useLocalSearchParams();
 
-  const userData = useSelector((state) => state.user.user);
+  //** handle to activate request otp
+  //**                                */
+  const handleClickRequestOTP = async (deliveryType: string) => {
+    await requestOTP(userData?.mobile_number, deliveryType);
+  };
+
+  //** handle to submit otp verification
+  //**                                */
+  const submit = async () => {
+    setLoading(true);
+
+    try {
+      //** route based on parameter */
+      if (type == "pin") {
+        //* pin route
+        router.replace("/paymentPasswordSetting");
+      } else if (type == "password") {
+        //* password route
+        router.replace("/newLoginPasswordSetting");
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    setLoading(false);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -62,16 +83,56 @@ export default function Register() {
                 autoCapitalize="none"
                 placeholder="verification code"
               ></ThemedInput>
-              <ThemedView style={styles.option}>
-                <ThemedLink style={styles.code} href={"/forgotPassword"}>
-                  Get Code?
-                </ThemedLink>
-              </ThemedView>
+              {/* OTP Fuction */}
+              {showResendOptions ? (
+                <>
+                  <TouchableOpacity
+                    style={styles.option}
+                    onPress={
+                      isCounting ? null : () => handleClickRequestOTP("sms")
+                    }
+                    disabled={isCounting}
+                  >
+                    <ThemedText
+                      style={[styles.code, { width: screenWidth / 4 }]}
+                    >
+                      {isCounting ? ` ${countdown}s` : "SMS"}
+                    </ThemedText>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.option}
+                    onPress={
+                      isCounting
+                        ? null
+                        : () => handleClickRequestOTP("whatsapp")
+                    }
+                    disabled={isCounting}
+                  >
+                    <ThemedText
+                      style={[styles.code, { width: screenWidth / 4 }]}
+                    >
+                      {isCounting ? ` ${countdown}s` : "Whatsapp"}
+                    </ThemedText>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={
+                    isCounting ? null : () => handleClickRequestOTP("sms")
+                  }
+                  disabled={isCounting}
+                >
+                  <ThemedText style={[styles.code, { width: screenWidth / 2 }]}>
+                    {isCounting ? ` ${countdown}s` : "Get Code"}
+                  </ThemedText>
+                </TouchableOpacity>
+              )}
             </ThemedView>
             <ThemedView style={styles.action}>
               <ThemedButton
                 title="Next"
-                // onPress={signUp}
+                onPress={submit}
                 disabled={loading} // Disable button when loading
                 loading={loading}
               ></ThemedButton>

@@ -1,52 +1,50 @@
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedInput } from "@/components/ThemedInput";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { gql, useMutation } from "@apollo/client";
+// import { useMutation } from "@apollo/client";
 
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 
 import { useState } from "react";
 
 import { GQL_Query } from "@/constants";
 
 import {
-  ActivityIndicator,
-  Button,
   Dimensions,
   KeyboardAvoidingView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
+  TouchableOpacity,
 } from "react-native";
-// import { TouchableOpacity } from "react-native-gesture-handler";
-import { TouchableOpacity } from "react-native";
-import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
-import { ParallaxScrollView, ThemedText } from "@/components";
-import { ThemedFA6 } from "@/components/ThemedFA6";
-// import { handleError } from "../../services/errorService";
+import { ParallaxScrollView, ThemedText, ThemedFA6 } from "@/components";
 import { handleError } from "../../utils/handleError";
-import { ThemedLink } from "@/components/ThemedLink";
 import { useMutationAPI } from "@/services/api";
-import { getCode } from "@/services/getCode";
-// TouchableOpacity
+import { useOTP } from "@/hooks/useOTP";
 
+
+//** Register User Function */
 export default function Register() {
   const screenWidth = Dimensions.get("window").width;
-  const [phone, setPhone] = useState("");
-  const { countdown, isCounting, requestOTP, showResendOptions } = getCode();
-  // const [countdown, setCountdown] = useState(0);
-  // const [isCounting, setIsCounting] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
-  const [registerMutation] = useMutation(GQL_Query.REGISTER_MUTATION);
+  //** Register User Parameter Value */
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
 
+  // OTP Hooks
+  const { countdown, isCounting, requestOTP, showResendOptions } = useOTP();
+
+  // use Mutation Hooks -- with register mutation script
+  const { handleMutation: register_mutation, loading: register_loading } =
+    useMutationAPI(GQL_Query.REGISTER_MUTATION);
+
+  // const [registerMutation] = useMutation(GQL_Query.REGISTER_MUTATION);
+
+  //** Sign Up Function */
   const signUp = async () => {
     if (!phone) {
       Toast.show({
@@ -95,69 +93,127 @@ export default function Register() {
     }
 
     setLoading(true);
-    try {
-      registerMutation({
-        variables: {
-          input: {
-            mobile_number: phone,
-            password: password,
-            password_confirmation: confirmPassword,
-            otp: otp,
-          },
-        },
-        onCompleted: (infoData) => {
-          console.log(infoData);
-          Toast.show({
-            type: "success",
-            text1: "Registered Succesfully",
-            visibilityTime: 3000,
-          });
 
-          router.navigate("/");
-        },
-        onError: ({ graphQLErrors, networkError }) => {
-          if (graphQLErrors) {
-            graphQLErrors.forEach(({ message, locations, path }) => {
-              // alert("Registration failed. Please try again. /n" + message);
-              let temp_message = "Registration failed. Please Try Again Later";
-              Toast.show({
-                type: "error",
-                text1: message ?? temp_message,
-                visibilityTime: 3000,
-              });
-            });
-          }
-          if (networkError) {
-            console.log(networkError);
-            Toast.show({
-              type: "error",
-              text1: "Network error. Please try again later",
-              visibilityTime: 3000,
-            });
-          }
-          // setLoading(false);
-        },
+    let variables = {
+      input: {
+        mobile_number: phone,
+        password: password,
+        password_confirmation: confirmPassword,
+        otp: otp,
+      },
+    };
+
+    const result = await register_mutation(variables);
+
+    if (result.success) {
+      let dataContainer = result.data.register;
+      console.log(dataContainer);
+      if (dataContainer.status == "SUCCESS") {
+        console.log("Register Sucesfull", dataContainer.data);
+        Toast.show({
+          type: "success",
+          text1: "Registered Succesfully",
+          visibilityTime: 3000,
+        });
+        router.navigate("/");
+      } else {
+        console.log("Register Failed", dataContainer?.errors);
+        Toast.show({
+          type: "error",
+          text1: dataContainer?.errors?.[0]?.message,
+          visibilityTime: 3000,
+        });
+      }
+    } else {
+      handleError(result.error, new Error("Outside of Scope"), {
+        component: "Register-API",
+        errorType: result.error,
+        errorMessage: result?.data?.[0]?.message ?? "",
       });
-    } catch (err) {
-      console.log("functionerror, ", err);
-      handleError(err, {
-        component: "register_signUp",
-        info: "Function Error Sign Up",
-      });
-      Toast.show({
-        type: "error",
-        text1: "An Error occuered. Please try again later",
-        visibilityTime: 3000,
-      });
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
+    // try {
+
+    //   registerMutation({
+    //     variables: {
+    //       input: {
+    //         mobile_number: phone,
+    //         password: password,
+    //         password_confirmation: confirmPassword,
+    //         // otp: otp,
+    //       },
+    //     },
+    //     onCompleted: (infoData) => {
+    //       console.log(infoData);
+    //       Toast.show({
+    //         type: "success",
+    //         text1: "Registered Succesfully",
+    //         visibilityTime: 3000,
+    //       });
+
+    //       router.navigate("/");
+    //     },
+    //     onError: ({ graphQLErrors, networkError }) => {
+    //       if (graphQLErrors) {
+    //         graphQLErrors.forEach(({ message, locations, path }) => {
+    //           // alert("Registration failed. Please try again. /n" + message);
+    //           let temp_message = "Registration failed. Please Try Again Later";
+    //           Toast.show({
+    //             type: "error",
+    //             text1: message ?? temp_message,
+    //             visibilityTime: 3000,
+    //           });
+    //         });
+    //       }
+    //       if (networkError) {
+    //         console.log(networkError);
+    //         Toast.show({
+    //           type: "error",
+    //           text1: "Network error. Please try again later",
+    //           visibilityTime: 3000,
+    //         });
+    //       }
+    //       // setLoading(false);
+    //     },
+    //   });
+    // } catch (err) {
+    //   console.log("functionerror, ", err);
+    //   // handleError(err, {
+    //   //   component: "register_signUp",
+    //   //   info: "Function Error Sign Up",
+    //   // });
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "An Error occuered. Please try again later",
+    //     visibilityTime: 3000,
+    //   });
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
-  const { handleMutation: requestOTP_mutation, loading: requestOTP_loading } =
-    useMutationAPI(GQL_Query.REQUEST_OTP_MUTATION);
-
+  //** Handle Request OTP Click */
   const handleClickRequestOTP = async (deliveryType: string) => {
+    if (!phone) {
+      Toast.show({
+        type: "error",
+        text1: "Phone number is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    const phoneRegex = /^[0-9]{9,16}$/; // Example: Ensures phone is 10-15 digits
+    if (!phoneRegex.test(phone)) {
+      Toast.show({
+        type: "error",
+        text1: "Invalid phone number format",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+    
     await requestOTP(phone, deliveryType);
   };
 
@@ -170,7 +226,7 @@ export default function Register() {
         {/* Input Phone Number */}
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
           {/* Country Code */}
-          <TouchableOpacity style={styles.countryCodeContainer}>
+          {/* <TouchableOpacity style={styles.countryCodeContainer}>
             <View
               style={{
                 justifyContent: "center",
@@ -186,7 +242,7 @@ export default function Register() {
             <ThemedText style={[{ marginTop: 8, marginLeft: 5 }]}>
               🇲🇾 +60
             </ThemedText>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* Phone Number */}
           <ThemedInput
@@ -198,7 +254,7 @@ export default function Register() {
             value={phone}
             autoCapitalize="none"
             keyboardType="phone-pad"
-            placeholder="Your Phone Number"
+            placeholder="Your Phone Number (60....)"
           ></ThemedInput>
         </View>
 
@@ -210,9 +266,8 @@ export default function Register() {
             autoCapitalize="none"
             placeholder="OTP code"
           ></ThemedInput>
-          {/* <View style={styles.option}> */}
 
-          {/* OTP Fuction */}
+          {/* OTP Fuction -- show default send sms first, if failed  --> show option*/}
           {showResendOptions ? (
             <>
               <TouchableOpacity
@@ -247,7 +302,6 @@ export default function Register() {
               </ThemedText>
             </TouchableOpacity>
           )}
-          
         </View>
 
         {/* Input Password */}
@@ -283,7 +337,7 @@ export default function Register() {
           <ThemedButton
             title="Sign Up"
             onPress={signUp}
-            disabled={loading} // Disable button when loading
+            disabled={loading} 
             loading={loading}
           ></ThemedButton>
         </View>

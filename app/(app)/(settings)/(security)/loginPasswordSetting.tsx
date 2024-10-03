@@ -86,11 +86,11 @@ export default function loginPasswordSetting() {
                 onChangeText={setPassword}
                 value={password}
                 autoCapitalize="none"
-                placeholder="Your Password"
+                placeholder="Your Old Password"
                 secureTextEntry={!showPassword}
               ></ThemedInput>
               <ThemedView style={styles.option}>
-                <ThemedLink style={styles.code} href={"/forgotPassword"}>
+                <ThemedLink style={styles.code} href={"/forgotPassword?type=password"}>
                   Forget?
                 </ThemedLink>
               </ThemedView>

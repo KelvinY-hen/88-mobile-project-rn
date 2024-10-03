@@ -23,17 +23,21 @@ import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
 import { ParallaxScrollView, ThemedText } from "@/components";
 import { ThemedFA6 } from "@/components/ThemedFA6";
-import { getCode } from "@/services/getCode";
+import { useOTP } from "@/hooks/useOTP";
+import { handleError } from "@/utils/handleError";
+import { useMutationAPI } from "@/services/api";
+import { GQL_Query } from "@/constants";
 // TouchableOpacity
 
 export default function Register() {
   const screenWidth = Dimensions.get("window").width;
 
   const [phone, setPhone] = useState("");
-  const { countdown, isCounting, requestOTP, showResendOptions } = getCode();
+  const { countdown, isCounting, requestOTP, showResendOptions } = useOTP();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -47,30 +51,118 @@ export default function Register() {
     }
   `;
 
-  const [registerMutation] = useMutation(REGISTER_MUTATION);
+  const { handleMutation: forget_password_mutation, loading: forget_password_loading } =
+  useMutationAPI(GQL_Query.REGISTER_MUTATION);
 
-  const signUp = async () => {
-    const result = await requestOTP();
-    try {
-      Toast.show({
-        type: "info",
-        text1: "Function is Not Available, Please Contact Admin",
-        visibilityTime: 3000,
-      });
-    } catch (err) {
-      console.log("functionerror, ", err);
+  const handleForgotPassword = async () => {
+    Toast.show({
+      type: "info",
+      text1: "Function is Not Available, Please Contact Admin",
+      visibilityTime: 3000,
+    });
+    return;
+
+    if (!phone) {
       Toast.show({
         type: "error",
-        text1: "An Error occuered. Please try again later",
+        text1: "Phone number is required",
         visibilityTime: 3000,
       });
-    } finally {
-      setLoading(false);
+      return;
+    }
+
+
+    if (!otp) {
+      Toast.show({
+        type: "error",
+        text1: "OTP is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    if (!password || !confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Password and confirmation are required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Passwords do not match",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    const phoneRegex = /^[0-9]{9,16}$/; // Example: Ensures phone is 10-15 digits
+    if (!phoneRegex.test(phone)) {
+      Toast.show({
+        type: "error",
+        text1: "Invalid phone number format",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+
+    let variables = {};
+    
+    const result = await forget_password_mutation(variables)
+
+    if (result.success) {
+      let dataContainer = result.data.register;
+      console.log(dataContainer);
+      if (dataContainer.status == "SUCCESS") {
+        console.log("Password Reset Succesfully", dataContainer.data);
+        Toast.show({
+          type: "success",
+          text1: "Password Reset Succesfully",
+          visibilityTime: 3000,
+        });
+        router.navigate("/");
+      } else {
+        console.log("Password reset Failed", dataContainer?.errors);
+        Toast.show({
+          type: "error",
+          text1: dataContainer?.errors?.[0]?.message,
+          visibilityTime: 3000,
+        });
+      }
+    } else {
+      handleError(result.error, new Error("Outside of Scope"), {
+        component: "Forgot-API",
+        errorType: result.error,
+        errorMessage: result?.data?.[0]?.message ?? "",
+      });
     }
   };
 
   
   const handleClickRequestOTP = async (deliveryType: string) => {
+    if (!phone) {
+      Toast.show({
+        type: "error",
+        text1: "Phone number is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    const phoneRegex = /^[0-9]{9,16}$/; // Example: Ensures phone is 10-15 digits
+    if (!phoneRegex.test(phone)) {
+      Toast.show({
+        type: "error",
+        text1: "Invalid phone number format",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
     await requestOTP(phone, deliveryType);
   };
 
@@ -111,7 +203,7 @@ export default function Register() {
             value={phone}
             autoCapitalize="none"
             keyboardType="phone-pad"
-            placeholder="Your Phone Number"
+            placeholder="Your Phone Number (60....)"
           ></ThemedInput>
         </View>
 
@@ -191,7 +283,7 @@ export default function Register() {
         <View style={styles.action}>
           <ThemedButton
             title="Reset Password"
-            onPress={signUp}
+            onPress={handleForgotPassword}
             disabled={loading} // Disable button when loading
             loading={loading}
           ></ThemedButton>

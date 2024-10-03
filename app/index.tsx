@@ -1,27 +1,22 @@
 import {
   Image,
   StyleSheet,
-  Platform,
   View,
-  Text,
-  TextInput,
   KeyboardAvoidingView,
-  Button,
   TouchableOpacity,
 } from "react-native";
 
 import { useState } from "react";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { images, GQL_Query } from "../constants";
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { ThemedInput } from "@/components/ThemedInput";
 import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
 import { ThemedButton } from "@/components/ThemedButton";
 import { useMutation } from "@apollo/client";
 
-import { loginSuccess, toggleIsLoggedIn } from '../redux/actions/auth'; 
+import { loginSuccess } from '../redux/actions/auth'; 
 import DeviceInfo from 'react-native-device-info';
-import { getUniqueId, getManufacturer } from 'react-native-device-info';
+// import { getUniqueId, getManufacturer } from 'react-native-device-info';
 
 import { useDispatch } from "react-redux";
 import Toast from "react-native-toast-message";
@@ -40,8 +35,10 @@ export default function LoginScreen() {
 
   const [loginMutation] = useMutation(GQL_Query.LOGIN_MUTATION);
 
-  let deviceId = DeviceInfo.getDeviceId();
+  let deviceId = DeviceInfo.getUniqueId();
 
+  console.log('deviceid',deviceId);
+  // console.log(getUniqueId());
   const signIn = () => {
 
   console.log(deviceId);
