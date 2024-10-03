@@ -32,6 +32,8 @@ import { confirm } from "@/components/base/confirm";
 import useMyLazyQuery from "@/hooks/useMyLazyQuery";
 import { GQL_Query } from "@/constants";
 import { useOTP } from "@/hooks/useOTP";
+import { useMutationAPI } from "@/services/api";
+import { handleError } from "@/utils/handleError";
 // TouchableOpacity
 
 export default function Register() {
@@ -53,90 +55,82 @@ export default function Register() {
     }
   );
 
-  useEffect(() => {
-    if (data) {
-      let success = data.checkPin.success;
-      if (success) {
-        router.navigate("/(app)/(security)/paymentPasswordSetting");
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Wrong PIN. ",
-          visibilityTime: 3000,
-        });
-      }
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     let success = data.checkPin.success;
+  //     if (success) {
+  //       router.navigate("/(app)/(security)/paymentPasswordSetting");
+  //     } else {
+  //       Toast.show({
+  //         type: "error",
+  //         text1: "Wrong PIN. ",
+  //         visibilityTime: 3000,
+  //       });
+  //     }
+  //   }
+  // }, [data]);
 
+  //** Reset PIN with TAC Query */
+  const { handleMutation: reset_pin_mutation, loading: reset_pin_loading } =
+    useMutationAPI(GQL_Query.RESET_PIN_MUTATION);
+
+  //** handle set pin when clicked */
   const setPinFunction = async () => {
-    // e.preventDefault(); // Prevent the default form submission
+    // ensure pin is properly inputted
     if (pin.join("").length != 6) {
       return;
     }
 
+    if (newPin.join("").length != 6) {
+      return;
+    }
+
+    let pinJoined = pin.join("");
+    let newPinJoined = newPin.join("");
+
     setLoading(true);
 
-    if (pin.join("").length == 6) {
-      await checkPin();
-      console.log(data);
-    }
-    // Set loading state to true
-    // setLoading(true);
+    // if (pin.join("").length == 6) {
+    //   await checkPin();
+    //   console.log(data);
+    // }
 
-    // Show confirmation dialog
-    // const confirmed = await confirm("Do you want to proceed with the PIN?");
+    const variables = {
+      old_pin: pinJoined,
+      new_pin: newPinJoined,
+    };
+
+    //call reset pin mutation
+    const result = await reset_pin_mutation(variables);
+
+    if (result.success) {
+      let dataContainer = result.data.updatePin;
+      console.log(dataContainer);
+      if (dataContainer.success) {
+        console.log("Reset PIN Succesfull", dataContainer.data);
+        Toast.show({
+          type: "success",
+          text1: "Reset PIN Succesfully",
+          visibilityTime: 3000,
+        });
+        router.navigate("/profile");
+      } else {
+        console.log("Reset PIN Failed", dataContainer?.errors);
+        Toast.show({
+          type: "error",
+          text1: dataContainer?.errors[0]?.message,
+          visibilityTime: 3000,
+        });
+      }
+    } else {
+      handleError(result.error, new Error("Outside of Scope"), {
+        component: "Reset-PIN-API",
+        errorType: result.error,
+        errorMessage: result?.data?.[0]?.message ?? "",
+      });
+    }
 
     setLoading(false);
-    const confirmed = true;
-
-    // if (confirmed) {
-    //   try {
-    //     const pinString = pin.join("");
-    //     // Call your GraphQL API to delete the image
-    //     await checkPinMutation({
-    //       variables: { pin: pinString },
-    //       onCompleted: (infoData) => {
-    //         console.log(infoData);
-    //         // Toast.show({
-    //         //   type: "success",
-    //         //   text1: "Pin Setup Successfully",
-    //         //   visibilityTime: 3000,
-    //         // });
-    //         router.navigate("/(app)/(security)/paymentPasswordSetting");
-    //       },
-    //       onError: ({ graphQLErrors, networkError }) => {
-    //         console.log("tester erroer");
-    //         if (graphQLErrors) {
-    //           graphQLErrors.forEach(({ message, locations, path }) => {
-    //             // alert("Registration failed. Please try again. /n" + message);
-    //             console.log(message);
-    //             Toast.show({
-    //               type: "error",
-    //               text1: "Wrong Pin",
-    //               visibilityTime: 3000,
-    //             });
-    //           });
-    //         }
-    //         if (networkError) {
-    //           console.log(networkError);
-    //           // console.log(message);
-    //           Toast.show({
-    //             type: "error",
-    //             text1: "Network error. Please try again later",
-    //             visibilityTime: 3000,
-    //           });
-    //         }
-    //         // setLoading(false);
-    //       },
-    //     }); // Pass appropriate variables
-
-    //     console.log('pin api was hit')
-    //   } catch (err) {
-    //     console.log("Error entering pin: ", err);
-    //   }
-    // } else {
-    //   console.log("User Cancel confirming pin.");
-    // }
   };
 
   return (

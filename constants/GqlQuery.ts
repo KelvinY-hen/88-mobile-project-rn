@@ -258,9 +258,40 @@ mutation RequestOTP($phoneNumber: String!, $delivery_type: String!){
         }
 
     }
-  
-  
   }`
+
+  export const RESET_PIN_MUTATION = gql`
+  mutation UpdatePin($old_pin: String!, $new_pin: String!){
+    updatePin(
+        old_pin: $old_pin,
+        new_pin: $new_pin
+        ) {
+        success
+        message
+        data {
+            ... on UserPin { 
+                pin                        
+            }
+        }
+        errors {
+            code
+            message
+        }
+    }
+}`
+
+  export const FORGET_PASSWORD_MUTATION = gql`
+  mutation ResetPassword($mobile_number: String!, $otp: String!, $password: String!, $password_confirmation: String!) {
+  resetPassword(input: {
+    mobile_number: $mobile_number,
+    otp: $otp,
+    password: $password,
+    password_confirmation: $password_confirmation
+  }) {
+    status
+    message
+  }
+}`
 export default {
   CREATE_WITHDRAW_REQUEST_MUTATION,
   CREATE_USER_BANK_MUTATION,
@@ -275,5 +306,7 @@ export default {
   CHECK_PIN_QUERY,
   DELETE_USER_BANK_MUTATION,
   SET_PIN_MUTATION,
-  RESET_PIN_TAC_MUTATION
+  RESET_PIN_TAC_MUTATION,
+  RESET_PIN_MUTATION,
+  FORGET_PASSWORD_MUTATION
 };

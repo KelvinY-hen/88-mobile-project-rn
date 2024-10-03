@@ -52,15 +52,15 @@ export default function Register() {
   `;
 
   const { handleMutation: forget_password_mutation, loading: forget_password_loading } =
-  useMutationAPI(GQL_Query.REGISTER_MUTATION);
+  useMutationAPI(GQL_Query.FORGET_PASSWORD_MUTATION);
 
   const handleForgotPassword = async () => {
-    Toast.show({
-      type: "info",
-      text1: "Function is Not Available, Please Contact Admin",
-      visibilityTime: 3000,
-    });
-    return;
+    // Toast.show({
+    //   type: "info",
+    //   text1: "Function is Not Available, Please Contact Admin",
+    //   visibilityTime: 3000,
+    // });
+    // return;
 
     if (!phone) {
       Toast.show({
@@ -70,7 +70,6 @@ export default function Register() {
       });
       return;
     }
-
 
     if (!otp) {
       Toast.show({
@@ -110,14 +109,19 @@ export default function Register() {
     }
 
 
-    let variables = {};
+    let variables = {
+      mobile_number: phone,
+      password: password,
+      password_confirmation: confirmPassword,
+      otp: otp,
+    };
     
     const result = await forget_password_mutation(variables)
 
     if (result.success) {
-      let dataContainer = result.data.register;
+      let dataContainer = result.data.forgetPasswordMutation;
       console.log(dataContainer);
-      if (dataContainer.status == "SUCCESS") {
+      if (dataContainer.success) {
         console.log("Password Reset Succesfully", dataContainer.data);
         Toast.show({
           type: "success",
@@ -135,7 +139,7 @@ export default function Register() {
       }
     } else {
       handleError(result.error, new Error("Outside of Scope"), {
-        component: "Forgot-API",
+        component: "Forgot-Password-API",
         errorType: result.error,
         errorMessage: result?.data?.[0]?.message ?? "",
       });
@@ -175,7 +179,7 @@ export default function Register() {
         {/* Input Phone Number */}
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
           {/* Country Code */}
-          <TouchableOpacity style={styles.countryCodeContainer}>
+          {/* <TouchableOpacity style={styles.countryCodeContainer}>
             <View
               style={{
                 justifyContent: "center",
@@ -191,7 +195,7 @@ export default function Register() {
             <ThemedText style={[{ marginTop: 8, marginLeft: 5 }]}>
               🇲🇾 +60
             </ThemedText>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* Phone Number */}
           <ThemedInput
@@ -210,9 +214,9 @@ export default function Register() {
         <View style={[{ flexDirection: "row", marginVertical: 4 }]}>
           <ThemedInput
             style={styles.inputPhone}
-            // onChangeText={setVerificationCode}
-            // value={verificationCode}
-            // autoCapitalize="none"
+            onChangeText={setOtp}
+            value={otp}
+            autoCapitalize="none"
             placeholder="OTP code"
           ></ThemedInput>
           {showResendOptions ? (
@@ -241,7 +245,7 @@ export default function Register() {
           ) : (
             <TouchableOpacity
               style={styles.option}
-              onPress={isCounting ? null : () => handleClickRequestOTP("sms")}
+              onPress={isCounting ? null : () => handleClickRequestOTP("whatsapp")}
               disabled={isCounting}
             >
               <ThemedText style={[styles.code, { width: screenWidth / 2 }]}>

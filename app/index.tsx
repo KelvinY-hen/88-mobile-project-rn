@@ -185,7 +185,7 @@ export default function LoginScreen() {
         {/* Input Phone Number */}
         <View style={{ flexDirection: "row", marginVertical: 4 }}>
           {/* Country Code */}
-          <TouchableOpacity style={styles.countryCodeContainer}>
+          {/* <TouchableOpacity style={styles.countryCodeContainer}>
             <View
               style={{
                 justifyContent: "center",
@@ -200,7 +200,7 @@ export default function LoginScreen() {
               <ThemedText  style={[{ marginTop: 8, marginLeft:5 }]}>
               🇲🇾 +60 
               </ThemedText>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* Phone Number */}
           <ThemedInput
