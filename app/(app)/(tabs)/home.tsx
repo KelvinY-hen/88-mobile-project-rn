@@ -90,8 +90,10 @@ export default function HomeScreen() {
       });
     } finally {
       // setLoading(false);
+      console.log('logout')
       dispatch(logoutSuccess());
-      router.dismissAll();
+      // router.dismissAll();
+      router.replace('/');
     }
   };
 
@@ -104,9 +106,18 @@ export default function HomeScreen() {
     }
   }, [data]);
 
+  // useEffect(()=>{
+  //   if(!token){
+  //     logout();
+  //   }
+  // },[token])
+
   useFocusEffect(
     useCallback(() => {
       // Refetch data when the screen is focused
+      // if(!token){
+      //   logout();
+      // }
       try {
         refetch();
       } catch (error) {

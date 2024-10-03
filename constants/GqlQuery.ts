@@ -241,6 +241,26 @@ mutation RequestOTP($phoneNumber: String!, $delivery_type: String!){
     }
 }
     `
+
+  export const RESET_PIN_TAC_MUTATION = gql`
+  mutation ResetPinUsingOtp( $otp: String!, $new_pin: String!){
+      resetPinUsingOtp( otp: $otp, new_pin: $new_pin ) {
+        success
+        message
+        data {
+            ... on UserPin { 
+                pin                        
+            }
+        }
+        errors {
+            code
+            message
+        }
+
+    }
+  
+  
+  }`
 export default {
   CREATE_WITHDRAW_REQUEST_MUTATION,
   CREATE_USER_BANK_MUTATION,
@@ -255,4 +275,5 @@ export default {
   CHECK_PIN_QUERY,
   DELETE_USER_BANK_MUTATION,
   SET_PIN_MUTATION,
+  RESET_PIN_TAC_MUTATION
 };

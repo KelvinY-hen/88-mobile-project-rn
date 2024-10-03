@@ -5,7 +5,7 @@ import { ThemedInput } from './ThemedInput';
 import { ThemedText } from './ThemedText';
 import { useTheme } from 'react-native-paper';
 
-const PinInputGrid = ({ pin, onChangePin }) => {
+const PinInputGrid = ({ pin, onChangePin, style }) => {
 //   const [pin, setPin] = useState(['', '', '', '', '', '']);
   const inputRefs = Array(6).fill(0).map(() => useRef(null));
   const colorScheme = useColorScheme ();
@@ -37,12 +37,12 @@ const PinInputGrid = ({ pin, onChangePin }) => {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, style]}>
       {pin.map((digit, index) => (
         <TextInput
           key={index}
           ref={inputRefs[index]}
-          style={[styles.input, {color}]}
+          style={[styles.input, {color}, style]}
           maxLength={1} // Only allow 1 digit
           keyboardType="decimal-pad" // Numeric keyboard
           onChangeText={text => handleChange(text, index)} // Handle input change

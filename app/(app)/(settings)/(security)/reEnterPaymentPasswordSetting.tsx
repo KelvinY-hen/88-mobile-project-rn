@@ -38,9 +38,9 @@ export default function Register() {
   const dispatch = useDispatch();
   const screenWidth = Dimensions.get("window").width;
   const [pin, setPin] = useState(Array(6).fill("")); // State to hold the PIN input
+  const [newPin, setNewPin] = useState(Array(6).fill("")); // State to hold the PIN input
   const [loading, setLoading] = useState(false);
   const { countdown, isCounting, requestOTP, showResendOptions } = useOTP();
-
 
   const userData = useSelector((state) => state.user.user);
 
@@ -54,8 +54,7 @@ export default function Register() {
   );
 
   useEffect(() => {
-
-    if(data){
+    if (data) {
       let success = data.checkPin.success;
       if (success) {
         router.navigate("/(app)/(security)/paymentPasswordSetting");
@@ -67,9 +66,7 @@ export default function Register() {
         });
       }
     }
-
-
-  },[data])
+  }, [data]);
 
   const setPinFunction = async () => {
     // e.preventDefault(); // Prevent the default form submission
@@ -77,12 +74,11 @@ export default function Register() {
       return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     if (pin.join("").length == 6) {
-       await checkPin(); 
-       console.log(data)
-      
+      await checkPin();
+      console.log(data);
     }
     // Set loading state to true
     // setLoading(true);
@@ -90,7 +86,7 @@ export default function Register() {
     // Show confirmation dialog
     // const confirmed = await confirm("Do you want to proceed with the PIN?");
 
-    setLoading(false)
+    setLoading(false);
     const confirmed = true;
 
     // if (confirmed) {
@@ -167,13 +163,67 @@ export default function Register() {
                 <ThemedText style={styles.rowLabel}>
                   please enter your pin for verification
                 </ThemedText>
-                <ThemedLink style={styles.rowOption} href={"/forgotPassword?type=pin"}>
+                <ThemedLink
+                  style={styles.rowOption}
+                  href={"/(app)/(settings)/(security)/(forget)/pin"}
+                >
                   Forget?
                 </ThemedLink>
               </ThemedView>
             </ThemedView>
-            <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
-              <PinInputGrid pin={pin} onChangePin={setPin} />
+            <ThemedView
+              style={{
+                paddingVertical: 5,
+                borderBottomWidth: 1,
+                borderBottomColor: "#e5e5e5",
+              }}
+            >
+              <ThemedText
+                style={[
+                  {
+                    paddingVertical: 7,
+                    marginHorizontal: 15,
+                    fontSize: 18,
+                    fontWeight: "500",
+                  },
+                ]}
+              >
+                Enter Your Old Pin:
+              </ThemedText>
+              <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
+                <PinInputGrid
+                  style={{ paddingTop: 5 }}
+                  pin={pin}
+                  onChangePin={setPin}
+                />
+              </ThemedView>
+            </ThemedView>
+            <ThemedView
+              style={{
+                paddingVertical: 5,
+                borderBottomWidth: 1,
+                borderBottomColor: "#e5e5e5",
+              }}
+            >
+              <ThemedText
+                style={[
+                  {
+                    paddingVertical: 7,
+                    marginHorizontal: 15,
+                    fontSize: 18,
+                    fontWeight: "500",
+                  },
+                ]}
+              >
+                Enter Your New Pin:
+              </ThemedText>
+              <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
+                <PinInputGrid
+                  style={{ paddingTop: 5 }}
+                  pin={newPin}
+                  onChangePin={setNewPin}
+                />
+              </ThemedView>
             </ThemedView>
             <ThemedView style={styles.action}>
               <ThemedButton
@@ -256,9 +306,7 @@ const styles = StyleSheet.create({
   //     borderTopWidth: 1,
   //     borderBottomWidth: 1,
   //   },
-  rowOption: {
-
-  },
+  rowOption: {},
   rowHeader: {
     fontSize: 18,
     fontWeight: "500",

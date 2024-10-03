@@ -53,7 +53,7 @@ export const useOTP = () => {
       } else {
         Toast.show({
           type: "error",
-          text1: dataContainer.errors[0].message,
+          text1: dataContainer.message,
           visibilityTime: 3000,
         });
       }

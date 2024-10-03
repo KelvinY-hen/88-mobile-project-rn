@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { useState } from "react";
-import { router } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
 import { images, GQL_Query } from "../constants";
 import { ThemedInput } from "@/components/ThemedInput";
 import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
@@ -18,10 +18,16 @@ import { loginSuccess } from '../redux/actions/auth';
 import DeviceInfo from 'react-native-device-info';
 // import { getUniqueId, getManufacturer } from 'react-native-device-info';
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { ThemedLink } from "@/components/ThemedLink";
 import { ThemedFA6 } from "@/components/ThemedFA6";
+import { RootState } from "@/redux/store";
+import * as SplashScreen from 'expo-splash-screen';
+
+
+SplashScreen.preventAutoHideAsync();
+
 
 export default function LoginScreen() {
   const dispatch = useDispatch()
@@ -30,15 +36,20 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const token = useSelector((state: RootState) => state.auth.Token);
 
 
   const [loginMutation] = useMutation(GQL_Query.LOGIN_MUTATION);
 
-  let deviceId = DeviceInfo.getUniqueId();
+  let deviceId = DeviceInfo.getUniqueIdSync();
 
-  console.log('deviceid',deviceId);
-  // console.log(getUniqueId());
+  // useEffect(() => {
+  //   if(token){
+  //     router.replace('/(tabs)/home')
+  //   }
+  //   console.log('test');
+  // },[token])
+
   const signIn = () => {
 
   console.log(deviceId);
@@ -79,6 +90,7 @@ export default function LoginScreen() {
           input: {
             mobile_number: phone,
             password: password,
+            // deviceId: deviceId
           },
         },
         onCompleted: (infoData) => {
@@ -127,6 +139,8 @@ export default function LoginScreen() {
       setLoading(false);
     }
   };
+
+  
 
   return (
     <ParallaxScrollView 

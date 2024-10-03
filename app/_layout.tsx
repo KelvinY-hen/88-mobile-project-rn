@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -43,10 +43,12 @@ SplashScreen.preventAutoHideAsync();
 
 
 
-function RootLayout() {
+ function RootLayout() {
   const httpLink = new HttpLink({
-    uri: "http://47.129.200.19/graphql",
+    uri: "http://13.212.214.34/graphql",
   });
+
+  // const token = await AsyncStorage.getItem("token")
 
   const authLink = setContext(async (_, { headers }) => {
     const token = await AsyncStorage.getItem("token");
@@ -82,6 +84,7 @@ function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
+      // router.replace('/(tabs)/home')
       SplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -89,6 +92,17 @@ function RootLayout() {
   if (!loaded) {
     return null;
   }
+
+  // useEffect(() => {
+  //   if(token){
+  //     router.replace('/(tabs)/home')
+  //   }else{
+  //     router.replace('/')
+  //   }
+
+  //   // SplashScreen.hideAsync();
+
+  // },[token])
 
   // Initialize Stack Navigator
 
@@ -305,6 +319,16 @@ function RootLayout() {
                       headerShown: true,
                       headerTitleAlign: "center",
                       title: "Verify Pin",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(settings)/(security)/(forget)/pin"
+                    options={{
+                      headerShown: true,
+                      headerTitleAlign: "center",
+                      title: "Reset PIN TAC",
                       animation: "slide_from_right",
                       animationDuration: 50,
                     }}

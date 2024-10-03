@@ -294,7 +294,7 @@ export default function Register() {
           ) : (
             <TouchableOpacity
               style={styles.option}
-              onPress={isCounting ? null : () => handleClickRequestOTP("sms")}
+              onPress={isCounting ? null : () => handleClickRequestOTP("whatsapp")}
               disabled={isCounting}
             >
               <ThemedText style={[styles.code, { width: screenWidth / 2 }]}>

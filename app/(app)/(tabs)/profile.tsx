@@ -115,20 +115,20 @@ export default function TabTwoScreen() {
     }
   }, [data]);
 
-  useFocusEffect(
-    useCallback(() => {
-      // Refetch data when the screen is focused
-      try {
-        refetch();
-      } catch (error) {
-        logout();
-      }
-      console.log("user refetch");
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     // Refetch data when the screen is focused
+  //     try {
+  //       refetch();
+  //     } catch (error) {
+  //       logout();
+  //     }
+  //     console.log("user refetch");
 
-      // Optional: If you need to do something on unmounting the focus
-      return () => {};
-    }, [refetch])
-  );
+  //     // Optional: If you need to do something on unmounting the focus
+  //     return () => {};
+  //   }, [refetch])
+  // );
 
   const logout = () => {
     setLoading(true);
@@ -149,7 +149,7 @@ export default function TabTwoScreen() {
           if (graphQLErrors) {
             graphQLErrors.forEach(({ message, locations, path }) => {
               // alert("Registration failed. Please try again. /n" + message);
-              console.log(message);
+              console.log(graphQLErrors);
               Toast.show({
                 type: "error",
                 text1: "Logout failed. Please try again later",
@@ -166,6 +166,10 @@ export default function TabTwoScreen() {
               visibilityTime: 3000,
             });
           }
+
+          dispatch(logoutSuccess());
+          router.dismissAll();
+          router.replace("/");
         },
       });
     } catch (err) {
@@ -175,8 +179,15 @@ export default function TabTwoScreen() {
         text1: "An Error occuered. Please try again later",
         visibilityTime: 3000,
       });
+
+      dispatch(logoutSuccess());
+      router.dismissAll();
+      router.replace("/");
     } finally {
       setLoading(false);
+      // dispatch(logoutSuccess());
+      // router.dismissAll();
+      // router.replace('/');
     }
   };
 
@@ -296,10 +307,14 @@ export default function TabTwoScreen() {
           <ThemedView
             style={[
               styles.sectionHeader,
-              { 
+              {
                 backgroundColor: "#0051BA",
 
-                display: "flex", flexDirection: "row", gap: 10, paddingTop:12 },
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                paddingTop: 12,
+              },
             ]}
           >
             <ThemedText style={styles.sectionTitle}>Balance</ThemedText>
@@ -313,8 +328,11 @@ export default function TabTwoScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={{               backgroundColor: "#0051BA",
-              display: "flex", flexDirection: "row", paddingBottom:12
+            style={{
+              backgroundColor: "#0051BA",
+              display: "flex",
+              flexDirection: "row",
+              paddingBottom: 12,
             }}
           >
             {BANK_SECTIONS.map(({ id, label }, index) => {
@@ -366,7 +384,7 @@ export default function TabTwoScreen() {
         </ThemedView>
 
         {PROFILE_SECTIONS.map(({ header, items }) => (
-          <ThemedView style={[styles.section, {paddingTop:12}]} key={header}>
+          <ThemedView style={[styles.section, { paddingTop: 12 }]} key={header}>
             <ThemedView style={styles.sectionHeader}>
               <ThemedText style={styles.sectionTitle}>{header}</ThemedText>
             </ThemedView>
