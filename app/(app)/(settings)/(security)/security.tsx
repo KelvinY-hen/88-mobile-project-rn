@@ -88,16 +88,17 @@ export default function Register() {
               type="link"
               label="Payment Password Setting"
               link={paymentPasswordLink}
+              style={{borderWidth: 1}}
+
               // style={{borderWidth: 1}}
               // optional=""
               ></ThemedRow>
-            <ThemedRow
+            {/* <ThemedRow
               type="link"
               label="Question Answer Setting"
               link="/questionAnswerSettingVerify"
               style={{borderWidth: 1}}
-              // optional=""
-              ></ThemedRow>
+              ></ThemedRow> */}
             {/* <ThemedRow
               type="link"
               label="Gesture Password Setting"

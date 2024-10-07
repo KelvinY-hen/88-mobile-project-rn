@@ -51,31 +51,36 @@ export default function Register() {
   //** handle to submit otp verification
   //**                                */
   const submit = async () => {
-    setLoading(true);
 
+
+    if (!verificationCode) {
+      Toast.show({
+        type: "error",
+        text1: "OTP is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    
     let pinJoined = pin.join("");
     if (pinJoined.length != 6) {
         Toast.show({
           type: "error",
-          text1: "Pin Require 6 Diit",
+          text1: "Pin Require 6 Digit",
           visibilityTime: 3000,
         });
         return;
       }
   
-      if (!verificationCode) {
-        Toast.show({
-          type: "error",
-          text1: "OTP is required",
-          visibilityTime: 3000,
-        });
-        return;
-      }
-
       let variables = {
           new_pin: pinJoined,
           otp: verificationCode,
       };
+
+      
+    setLoading(true);
+
 
       const result = await reset_pin_tac_mutation(variables);
 

@@ -26,40 +26,101 @@ import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
 import { ThemedFA6 } from "@/components/ThemedFA6";
 import { ThemedLink } from "@/components/ThemedLink";
+import { useMutationAPI } from "@/services/api";
+import { GQL_Query } from "@/constants";
+import { current } from "@reduxjs/toolkit";
+import { handleError } from "@/utils/handleError";
 // TouchableOpacity
 
 export default function loginPasswordSetting() {
   const dispatch = useDispatch();
   const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [reNewPassword, setReNewPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const userData = useSelector((state) => state.user.user);
 
-  // const GET_USER_DATA = gql`
-  //   query Query {
-  //     me {
-  //       id
-  //       mobile_number
-  //       agent_linked_code
-  //     }
-  //   }
-  // `;
 
-  // const { loading, data, error, refetch } = useQuery(GET_USER_DATA);
+  //** Reset Password Query*/
+  const { handleMutation: change_password_mutation, loading: change_password_loading } =
+    useMutationAPI(GQL_Query.CHANGE_PASSWORD_MUTATION);
 
-  const checkPassword = () => {
-    try {
-      router.push('/newLoginPasswordSetting')
-    } catch (error) {
-      console.log('functionerror, ',error);
+
+  const checkPassword = async () => {
+    if (!oldPassword) {
       Toast.show({
-        type: 'error',
-        text1: 'An Error occuered. Please try again later',
-        visibilityTime: 3000
+        type: "error",
+        text1: "Old Password Required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+    if (!newPassword) {
+      Toast.show({
+        type: "error",
+        text1: "New Password Required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+    if (!reNewPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Please Reenter the new password",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    if (newPassword !== reNewPassword) {
+      Toast.show({
+        type: "error",
+        text1: "New Passwords do not match",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+
+    let variables = {
+      input: {
+        current_password: oldPassword,
+        password: newPassword,
+        password_confirmation: reNewPassword,
+      },
+    };
+    const result = await change_password_mutation(variables)
+    if (result.success) {
+      let dataContainer = result.data.updatePassword;
+      console.log('updatepassword',dataContainer);
+      if (dataContainer.status == "PASSWORD_UPDATED") {
+        console.log("Register Sucesfull", dataContainer.data);
+        Toast.show({
+          type: "success",
+          text1: "Password Updated Succesfully",
+          visibilityTime: 3000,
+        });
+        router.navigate("/profile");
+      } else {
+        console.log("Register Failed", dataContainer?.errors);
+        Toast.show({
+          type: "error",
+          text1: dataContainer?.errors?.[0]?.message ?? 'Password Failed to Update',
+          text2: 'Check phone number, password and ensure the OTP is correct',
+          visibilityTime: 3000,
+        });
+      }
+    } else {
+      handleError(result.error, new Error("Password API Error"), {
+        component: "Password-API",
+        errorType: result.error,
+        errorMessage: result?.data?.[0]?.message ?? "",
       });
     }
+
   }
 
   return (
@@ -80,20 +141,40 @@ export default function loginPasswordSetting() {
                 account number: {userData.mobile_number}
               </ThemedText>
             </ThemedView>
-            <ThemedView style={[{ flexDirection: "row", marginVertical: 4 }]}>
+            <ThemedView style={[{ flexDirection: "row", marginTop: 4 }]}>
               <ThemedInput
-                style={styles.inputPhone}
-                onChangeText={setPassword}
-                value={password}
+                style={[styles.inputPhone, {borderTopWidth:1, borderBottomWidth:1}]}
+                onChangeText={setOldPassword}
+                value={oldPassword}
                 autoCapitalize="none"
                 placeholder="Your Old Password"
                 secureTextEntry={!showPassword}
               ></ThemedInput>
-              <ThemedView style={styles.option}>
+              {/* <ThemedView style={styles.option}>
                 <ThemedLink style={styles.code} href={"/forgotPassword?type=password"}>
                   Forget?
                 </ThemedLink>
-              </ThemedView>
+              </ThemedView> */}
+            </ThemedView>
+            <ThemedView style={[{ flexDirection: "row" }]}>
+              <ThemedInput
+                style={[styles.inputPhone, { borderBottomWidth:1}]}
+                onChangeText={setNewPassword}
+                value={newPassword}
+                autoCapitalize="none"
+                placeholder="Your New Password"
+                secureTextEntry={!showPassword}
+              ></ThemedInput>
+            </ThemedView>
+            <ThemedView style={[{ flexDirection: "row", marginBottom:4, }]}>
+              <ThemedInput
+                style={[styles.inputPhone, { borderBottomWidth:1}]}
+                onChangeText={setReNewPassword}
+                value={reNewPassword}
+                autoCapitalize="none"
+                placeholder="Reenter Your New Password"
+                secureTextEntry={!showPassword}
+              ></ThemedInput>
             </ThemedView>
             <ThemedView style={styles.action}>
               <ThemedButton
@@ -164,8 +245,8 @@ const styles = StyleSheet.create({
     height: 40,
     flex: 1,
     borderColor: "#e5e5e5",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    // borderTopWidth: 1,
+    // borderBottomWidth: 1,
   },
   option: {
     // textAlign: "center",

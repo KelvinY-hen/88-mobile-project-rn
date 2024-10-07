@@ -6,6 +6,7 @@ import {
   Alert,
   useColorScheme,
   Text,
+  View,
 } from "react-native";
 import { ThemedView, ThemedText, ParallaxScrollView } from "@/components";
 
@@ -18,12 +19,14 @@ import { confirm } from "@/components/base/confirm";
 import Toast from "react-native-toast-message";
 import { router, useFocusEffect } from "expo-router";
 import { GQL_Query } from "@/constants";
+import { useMutationAPI } from "@/services/api";
+import { handleError } from "@/utils/handleError";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function bankAccount() {
   const dispatch = useDispatch();
   const [userBankList, setUserBankList] = useState([]);
   const [withdrawList, setWithdrawList] = useState([]);
-
 
   const {
     loading: withdraw_loading,
@@ -31,6 +34,10 @@ export default function bankAccount() {
     error: withdraw_error,
     refetch: withdraw_refetch,
   } = useQuery(GQL_Query.GET_WITHDRAW_REQUEST);
+
+  const { handleMutation: cancel_withdrawal_mutation, loading: cancel_withdrawal_loading } =
+    useMutationAPI(GQL_Query.CANCEL_WITHDRAWAL);
+
 
   if (withdraw_data) {
     console.log(withdraw_data);
@@ -62,10 +69,50 @@ export default function bankAccount() {
   const colorScheme = useColorScheme();
   const color = colorScheme == "dark" ? "#FFFFFF" : "#b5b5b5"; // Corrected color code
 
-  const cancelWithdrawal = async () => {
+  const cancelWithdrawal = async (id:string) => {
     const confirmed = await confirm(
-      "Do you want to proceed with cancelling the withdrawal?"
+      "Do you want to proceed with cancelling the Withdrawal?"
     );
+
+    // const confirmed = true;
+
+    if(confirmed){
+
+      const variables = {
+        withdrawal_request_id:id
+      }
+
+      const result = await cancel_withdrawal_mutation(variables);
+
+      console.log(result);
+      if (result.success) {
+        let dataContainer = result.data.cancelWithdrawalRequest;
+        if (dataContainer.success) {
+          console.log("Withdrawal Cancelled Succesfully", dataContainer.data);
+          Toast.show({
+            type: "success",
+            text1: "Reset PIN Succesfully",
+            visibilityTime: 3000,
+          });
+          withdraw_refetch();
+        } else {
+          console.log("Withdrawal Cancelation Failed", dataContainer?.errors);
+          Toast.show({
+            type: "error",
+            text1: dataContainer?.errors[0]?.message,
+            visibilityTime: 3000,
+          });
+        }
+      } else {
+        handleError(result.error, new Error("Outside of Scope"), {
+          component: "Cancel-Withdraw-API",
+          errorType: result.error,
+          errorMessage: result?.data?.[0]?.message ?? "",
+        });
+      }
+    }
+
+
   };
 
   return (
@@ -170,6 +217,8 @@ export default function bankAccount() {
                                 ? "green"
                                 : status === "rejected"
                                 ? "red"
+                                : status === "canceled"
+                                ? "gray"
                                 : status === "pending"
                                 ? "#ff9900"
                                 : "black",
@@ -178,9 +227,9 @@ export default function bankAccount() {
                           {status}
                         </ThemedText>
                       </ThemedView>
-                      {(status == "pending") &&
+                      {status == "pending" && (
                         <ThemedView>
-                          <TouchableOpacity>
+                          <TouchableOpacity onPress={() => cancelWithdrawal(id)}>
                             <ThemedFA6
                               style={{ paddingHorizontal: 5 }}
                               name={"xmark"}
@@ -188,7 +237,7 @@ export default function bankAccount() {
                             />
                           </TouchableOpacity>
                         </ThemedView>
-                      }
+                      )}
                     </ThemedView>
                   </ThemedView>
                 );
@@ -197,6 +246,11 @@ export default function bankAccount() {
           </ScrollView>
         </ThemedView>
       </ParallaxScrollView>
+      {withdraw_loading && (
+        <View style={styles.overlay}>
+          <ActivityIndicator animating={true} size="large" color="#fff" />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -298,5 +352,16 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#8B8B8B",
     marginRight: 4,
+  },
+
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 1, 0.1)', // Semi-transparent black background
+    zIndex: 1000, // Ensure it stays above other components
   },
 });

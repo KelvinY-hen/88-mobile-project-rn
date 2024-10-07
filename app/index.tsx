@@ -71,7 +71,7 @@ export default function LoginScreen() {
       }
     };
 
-    fetchToken();
+    // fetchToken();
   }, []); 
 
   const signIn = () => {

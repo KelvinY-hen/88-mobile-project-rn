@@ -29,7 +29,9 @@ type ThemedRowProps = {
   logout?: () => void;
   editable:boolean,
   stateValue:string;
+  customChevronIcon?: string
   style:object,
+  keyboardType?:string
 };
 
 const ThemedRow: React.FC<ThemedRowProps> = ({
@@ -45,9 +47,11 @@ const ThemedRow: React.FC<ThemedRowProps> = ({
   logout,
   handleFunction,
   data,
+  keyboardType,
   stateValue,
   style,
   editable,
+  customChevronIcon = null,
   ...otherProps
 }) => {
   const router = useRouter();
@@ -100,6 +104,7 @@ const ThemedRow: React.FC<ThemedRowProps> = ({
                 maxLength={20}
                 editable={editable}
                 value={inputValue}
+                keyboardType={keyboardType}
                 onChangeText={handleFunction}
                 style={[styles.rowLabel, { textAlign: "right" }]}
                 placeholder={optional}
@@ -151,8 +156,8 @@ const ThemedRow: React.FC<ThemedRowProps> = ({
             {optional && !inputType && !inputPotrait && !inputRadio && (
               <ThemedText style={styles.rowLabel}>{optional} </ThemedText>
             )}
-            {["select", "link", "potrait"].includes(type) && (
-              <ThemedFA6 name={"chevron-right"} size={20} style={{marginRight:3}} color="#ababab" />
+            {["select", "link", "potrait"].includes(type) &&  (
+              <ThemedFA6 name={customChevronIcon ? customChevronIcon : "chevron-right"} size={20} style={{marginRight:3}} color="#ababab" />
             )}
           </ThemedView>
         </ThemedView>

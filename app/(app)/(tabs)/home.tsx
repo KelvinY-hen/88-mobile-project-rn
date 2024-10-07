@@ -169,7 +169,7 @@ export default function HomeScreen() {
           <View style={styles.balanceContainer}>
             <Text style={styles.currencyText}>RM</Text>
             <Text style={styles.balanceText}>
-              {showBalance ? userData?.balance : "****"}
+              {loading ? 'Loading...' : showBalance ? userData?.balance : "****"}
             </Text>
             <TouchableOpacity
               style={{ paddingTop: 6 }}
@@ -197,7 +197,7 @@ export default function HomeScreen() {
               size={12}
             />
             <Text style={{ fontSize: 15, color: "#ffffff" }}>
-              {userData.agent_linked_code}
+              {loading ? "Loading..." : userData.agent_linked_code}
             </Text>
             <TouchableOpacity onPress={
               copyToClipboard
@@ -219,7 +219,7 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={styles.imageContainer2}
             onPress={() => {
-              true ? router.push("/qr") : notifyNotAvailable();
+              false ? router.push("/qr") : notifyNotAvailable();
             }}
           >
             <Ionicons size={30} style={[{ marginBottom: -3 }]} name="qr-code" />

@@ -120,7 +120,8 @@ export default function Register() {
         console.log("Register Failed", dataContainer?.errors);
         Toast.show({
           type: "error",
-          text1: dataContainer?.errors?.[0]?.message,
+          text1: dataContainer?.errors?.[0]?.message ?? 'Register Failed',
+          text2: 'Check phone number, password and ensure the OTP is correct',
           visibilityTime: 3000,
         });
       }

@@ -135,17 +135,17 @@ export default function Withdraw() {
       return;
     }
 
-    //** Amount Validation (>20)*/
-    //** */
-    // if ( parseInt(amount) <  20 || !amount) {
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Minimum Withdrawal is 20",
-    //     visibilityTime: 3000,
-    //   });
-    //   return;
-    // }
-    //** */
+    // ** Amount Validation (>20)*/
+    // ** */
+    if ( !amount  || amount <= 0){
+      Toast.show({
+        type: "error",
+        text1: "Amount is required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+    // ** */
 
     // Optional: Validate account number format (example for digits only)
     // const accountNoRegex = /^[0-9]{6,20}$/; // Example: 6-20 digits
@@ -323,9 +323,9 @@ export default function Withdraw() {
       //   });
       // }
     }
-    console.log("hasil", result);
 
     resetPin();
+    await user_bank_refetch();
   };
 
   const handleExpandSavedAccount = () => {
@@ -422,6 +422,7 @@ export default function Withdraw() {
           label="Saved Account"
           style={{ marginBottom: 15, borderBottomWidth: 1 }}
           handleFunction={handleExpandSavedAccount}
+          customChevronIcon={selectedAccount ? "circle-xmark" : ''}
           // optional="Enter bank account"
         ></ThemedRow>
         <ThemedRow
@@ -505,6 +506,7 @@ export default function Withdraw() {
         onDismiss={handleDismissSavedAccount}
         onItemPress={handleSavedAccount}
         renderCustomItem={renderSavedAccount}
+        loading={user_bank_loading}
         title="Select a Preset"
         multiple={false}
         lock={false}
@@ -516,6 +518,7 @@ export default function Withdraw() {
         onDismiss={handleDismissBank}
         onItemPress={handleBankPress}
         renderCustomItem={renderBankItem}
+        loading={bank_loading}
         title="Select a Bank"
         multiple={false}
         lock={false}

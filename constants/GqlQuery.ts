@@ -19,11 +19,11 @@ export const LOGIN_MUTATION = gql`
 
 export const LOGOUT_MUTATION = gql`
   mutation {
-      logout {
-        status
-        message
-      }
+    logout {
+      status
+      message
     }
+  }
 `;
 
 export const ME_QUERY = gql`
@@ -38,8 +38,7 @@ export const ME_QUERY = gql`
   }
 `;
 
-export 
-const DELETE_USER_BANK_MUTATION = gql`
+export const DELETE_USER_BANK_MUTATION = gql`
   mutation DeleteUserBank($id: ID!) {
     deleteUserBank(id: $id) {
       success
@@ -102,20 +101,19 @@ export const CHECK_PIN_QUERY = gql`
   }
 `;
 
-export 
-const CREATE_USER_BANK_MUTATION = gql`
+export const CREATE_USER_BANK_MUTATION = gql`
   mutation CreateUserBank(
-    $bank_account: String!, 
-    $account_name: String!, 
-    $bank_id: ID!, 
-    $branch_name: String!, 
+    $bank_account: String!
+    $account_name: String!
+    $bank_id: ID!
+    $branch_name: String!
     $is_primary: Boolean!
   ) {
     createUserBank(
-      bank_account: $bank_account, 
-      account_name: $account_name, 
-      bank_id: $bank_id, 
-      branch_name: $branch_name, 
+      bank_account: $bank_account
+      account_name: $account_name
+      bank_id: $bank_id
+      branch_name: $branch_name
       is_primary: $is_primary
     ) {
       success
@@ -138,8 +136,7 @@ const CREATE_USER_BANK_MUTATION = gql`
   }
 `;
 
-export 
-const GET_USER_BANK = gql`
+export const GET_USER_BANK = gql`
   query {
     userBanks {
       success
@@ -165,133 +162,170 @@ const GET_USER_BANK = gql`
 `;
 
 export const GET_ALL_BANKS = gql`
-query Query {
-  banks {
-    id
-    name
+  query Query {
+    banks {
+      id
+      name
+    }
   }
-}
 `;
 
-
 export const GET_WITHDRAW_REQUEST = gql`
-query {
-  allWithdrawRequests {
-    success
-    message
-    data {
-      ... on WithdrawRequest {
-        id
-        user_id
-        bank_account_id
-        amount
-        status
-        created_at
-        updated_at
-        bankAccount {
+  query {
+    allWithdrawRequests {
+      success
+      message
+      data {
+        ... on WithdrawRequest {
           id
-          bank_account
-          account_name
-          branch_name
-          is_primary
-          bank {
+          user_id
+          bank_account_id
+          amount
+          status
+          created_at
+          updated_at
+          bankAccount {
             id
-            name
-            country_code
+            bank_account
+            account_name
+            branch_name
+            is_primary
+            bank {
+              id
+              name
+              country_code
+            }
           }
         }
       }
-    }
-    errors {
-      code
-      message
-    }
-  }
-}
-`;
-
-
-export const SET_PIN_MUTATION = gql`
-mutation SetPin($pin: String!) {
-  setPin(pin: $pin) {
-    success
-    message
-    data {
-      ... on UserPin {
-        pin
+      errors {
+        code
+        message
       }
     }
-    errors {
-      code
+  }
+`;
+
+export const SET_PIN_MUTATION = gql`
+  mutation SetPin($pin: String!) {
+    setPin(pin: $pin) {
+      success
       message
+      data {
+        ... on UserPin {
+          pin
+        }
+      }
+      errors {
+        code
+        message
+      }
     }
   }
-}
 `;
 
 export const REQUEST_OTP_MUTATION = gql`
-mutation RequestOTP($phoneNumber: String!, $delivery_type: String!){
-    requestOtp(phoneNumber: $phoneNumber, delivery_type: $delivery_type ) {
-        success
-        message        
-        errors {
-            code
-            message
-        }
-    }
-}
-    `
-
-  export const RESET_PIN_TAC_MUTATION = gql`
-  mutation ResetPinUsingOtp( $otp: String!, $new_pin: String!){
-      resetPinUsingOtp( otp: $otp, new_pin: $new_pin ) {
-        success
+  mutation RequestOTP($phoneNumber: String!, $delivery_type: String!) {
+    requestOtp(phoneNumber: $phoneNumber, delivery_type: $delivery_type) {
+      success
+      message
+      errors {
+        code
         message
-        data {
-            ... on UserPin { 
-                pin                        
-            }
-        }
-        errors {
-            code
-            message
-        }
-
+      }
     }
-  }`
-
-  export const RESET_PIN_MUTATION = gql`
-  mutation UpdatePin($old_pin: String!, $new_pin: String!){
-    updatePin(
-        old_pin: $old_pin,
-        new_pin: $new_pin
-        ) {
-        success
-        message
-        data {
-            ... on UserPin { 
-                pin                        
-            }
-        }
-        errors {
-            code
-            message
-        }
-    }
-}`
-
-  export const FORGET_PASSWORD_MUTATION = gql`
-  mutation ResetPassword($mobile_number: String!, $otp: String!, $password: String!, $password_confirmation: String!) {
-  resetPassword(input: {
-    mobile_number: $mobile_number,
-    otp: $otp,
-    password: $password,
-    password_confirmation: $password_confirmation
-  }) {
-    status
-    message
   }
-}`
+`;
+
+export const RESET_PIN_TAC_MUTATION = gql`
+  mutation ResetPinUsingOtp($otp: String!, $new_pin: String!) {
+    resetPinUsingOtp(otp: $otp, new_pin: $new_pin) {
+      success
+      message
+      data {
+        ... on UserPin {
+          pin
+        }
+      }
+      errors {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const RESET_PIN_MUTATION = gql`
+  mutation UpdatePin($old_pin: String!, $new_pin: String!) {
+    updatePin(old_pin: $old_pin, new_pin: $new_pin) {
+      success
+      message
+      data {
+        ... on UserPin {
+          pin
+        }
+      }
+      errors {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const FORGET_PASSWORD_MUTATION = gql`
+  mutation ResetPassword(
+    $mobile_number: String!
+    $otp: String!
+    $password: String!
+    $password_confirmation: String!
+  ) {
+    resetPassword(
+      input: {
+        mobile_number: $mobile_number
+        otp: $otp
+        password: $password
+        password_confirmation: $password_confirmation
+      }
+    ) {
+      status
+      message
+    }
+  }
+`;
+
+export const CHANGE_PASSWORD_MUTATION = gql`
+  mutation UpdatePassword($input: UpdatePasswordInput!) {
+    updatePassword(input: $input) {
+      status
+    }
+  }
+`;
+
+export const CANCEL_WITHDRAWAL = gql`
+  mutation CancelWithdrawalRequest($withdrawal_request_id: ID!) {
+    cancelWithdrawalRequest(withdrawal_request_id: $withdrawal_request_id) {
+      success
+      message
+      data {
+        ... on WithdrawalRequestResponse {
+          id
+          user_id
+          bank_account_id
+          amount
+          status
+          created_at
+          updated_at
+        }
+      }
+      errors {
+        code
+        message
+      }
+    }
+  }
+`;
+
 export default {
   CREATE_WITHDRAW_REQUEST_MUTATION,
   CREATE_USER_BANK_MUTATION,
@@ -308,5 +342,7 @@ export default {
   SET_PIN_MUTATION,
   RESET_PIN_TAC_MUTATION,
   RESET_PIN_MUTATION,
-  FORGET_PASSWORD_MUTATION
+  FORGET_PASSWORD_MUTATION,
+  CHANGE_PASSWORD_MUTATION,
+  CANCEL_WITHDRAWAL,
 };

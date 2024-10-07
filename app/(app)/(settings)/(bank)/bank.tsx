@@ -4,6 +4,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
+  View,
 } from "react-native";
 import { ThemedView, ThemedText, ParallaxScrollView } from "@/components";
 
@@ -152,10 +154,19 @@ export default function bankAccount() {
     }
   };
 
+  // if (user_bank_loading) {
+  //   return (
+  //     <View style={styles.overlay}>
+  //       <ActivityIndicator size="large" color="#fff" />
+  //     </View>
+  //   );
+  // }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+        allowRefresh={true}
       >
         <ThemedView style={[styles.section]}>
           <ScrollView style={{ display: "flex", flexDirection: "column" }}>
@@ -219,6 +230,11 @@ export default function bankAccount() {
           </ScrollView>
         </ThemedView>
       </ParallaxScrollView>
+      {user_bank_loading && (
+        <View style={styles.overlay}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -320,5 +336,15 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#8B8B8B",
     marginRight: 4,
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 1, 0.1)', // Semi-transparent black background
+    zIndex: 1000, // Ensure it stays above other components
   },
 });

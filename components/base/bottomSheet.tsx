@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 const BottomSheetComponent = ({
@@ -11,6 +11,7 @@ const BottomSheetComponent = ({
   lock = true,
   multiple = false, // Dynamic check for footer
   title = false, // Optional title for the bottom sheet
+  loading = false,
 }) => {
   // Snap points for bottom sheet
   const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
@@ -41,7 +42,7 @@ const BottomSheetComponent = ({
       )}
 
       {/* Dynamic rendering of items */}
-      <BottomSheetFlatList
+      {/* <BottomSheetFlatList
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) =>
@@ -57,8 +58,30 @@ const BottomSheetComponent = ({
           )
         }
         contentContainerStyle={styles.listContainer}
-      />
+      /> */}
+      {loading ? (
+        <View style={styles.overlay}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      ) : (<BottomSheetFlatList
+        data={data}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) =>
+          renderCustomItem ? (
+            renderCustomItem(item) // Use custom rendering if provided
+          ) : (
+            <TouchableOpacity
+              style={styles.item}
+              onPress={() => onItemPress && onItemPress(item)}
+            >
+              <Text style={styles.itemText}>{item.label}</Text>
+            </TouchableOpacity>
+          )
+        }
+        contentContainerStyle={styles.listContainer}
+      />)}
     </BottomSheetModal>
+    
   );
 };
 
@@ -93,6 +116,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // position: 'absolute',
+    // width: '100%',
+    // height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.05)', // Semi-transparent black background
+    zIndex: 1000, // Ensure it stays above other components
   },
 });
 
