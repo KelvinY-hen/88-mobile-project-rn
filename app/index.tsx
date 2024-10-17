@@ -42,7 +42,6 @@ export default function LoginScreen() {
   
   const [loginMutation] = useMutation(GQL_Query.LOGIN_MUTATION);
   
-  let deviceId = DeviceInfo.getUniqueIdSync();
   
   // useEffect(() => {
   //   if(token){
@@ -76,7 +75,9 @@ export default function LoginScreen() {
 
   const signIn = () => {
 
-  console.log(deviceId);
+
+  let deviceId = DeviceInfo.getUniqueIdSync();
+
     if (!phone) {
       Toast.show({
         type: "error",
@@ -109,12 +110,13 @@ export default function LoginScreen() {
     
     setLoading(true);
     try {
+      console.log(deviceId);
       loginMutation({
         variables: {
           input: {
             mobile_number: phone,
             password: password,
-            // deviceId: deviceId
+            device_id: deviceId
           },
         },
         onCompleted: (infoData) => {
@@ -135,7 +137,7 @@ export default function LoginScreen() {
               console.log(message);
               Toast.show({
                 type: 'error',
-                text1: 'Wrong Credentials',
+                text1: message,
                 visibilityTime: 3000
               });
             });

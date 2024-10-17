@@ -192,11 +192,12 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, height:'100%' }}>
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
         allowRefresh={true}
         handleReloadFuction={refetch}
+        style={{ flex: 1, height:'100%' }}
       >
         {/* <ThemedView style={styles.header}>
           <ThemedText style={styles.title}>Profile</ThemedText>
@@ -383,16 +384,23 @@ export default function TabTwoScreen() {
             })}
           </ScrollView> */}
         </ThemedView>
+        <ThemedView style={styles.headerPadding}></ThemedView>
+
 
         {PROFILE_SECTIONS.map(({ header, items }) => (
-          <ThemedView style={[styles.section, { paddingTop: 12 }]} key={header}>
-            <ThemedView style={styles.sectionHeader}>
+          <ThemedView style={[styles.cardSection]} key={header}>
+            {/* <ThemedView style={styles.sectionHeader}>
               <ThemedText style={styles.sectionTitle}>{header}</ThemedText>
-            </ThemedView>
+            </ThemedView> */}
 
             <ThemedView style={styles.sectionBody}>
               {items.map(({ label, id, type, icon, link }, index) => (
                 <ThemedRow
+                  style={[
+                    index === 0 && { borderTopLeftRadius: 25, borderTopRightRadius: 25 },
+                    index === items.length -1 && {borderBottomLeftRadius: 25, borderBottomRightRadius: 25},
+                    {paddingHorizontal:20}
+                  ]}              
                   key={id} // Unique key for each row
                   id={id} // Pass the id to ThemedRow
                   index={index} // The index of the row
@@ -470,6 +478,13 @@ const styles = StyleSheet.create({
     color: "#929292",
     marginTop: 6,
   },
+  headerPadding: {
+    padding: 30,
+    height: 20,
+    backgroundColor: "#0051BA", // Blue background
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+  },
   profileEmail: {
     marginTop: 6,
     fontSize: 16,
@@ -495,7 +510,21 @@ const styles = StyleSheet.create({
   /** Section */
   section: {
     // paddingTop: 24,
-    paddingBottom:5
+    // paddingBottom:5
+  },
+  cardSection: {
+    shadowOpacity: 0.1, // Transparency of the shadow
+    elevation: 3, // For Android
+    shadowRadius: 2, // Blur radius
+    margin: -50,
+    marginBottom:50,
+    paddingVertical: 2,
+    // paddingBottom:5,
+    marginHorizontal:15,
+    borderWidth:1,
+    borderColor:'#b5b5b5',
+    borderRadius:20,
+    // height:'100%',
   },
   sectionTitle: {
     fontSize: 14,
@@ -507,8 +536,9 @@ const styles = StyleSheet.create({
   sectionBody: {
     // paddingLeft: 20,
     backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    borderRadius:25,
+    // borderTopWidth: 1,
+    // borderBottomWidth: 1,
     borderColor: "#e3e3e3",
   },
   /** Row */

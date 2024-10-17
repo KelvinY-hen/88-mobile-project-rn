@@ -79,7 +79,7 @@ export default function ParallaxScrollView({
 
   return (
     <ThemedView style={[{backgroundColor},styles.container, style]}>
-      <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16} 
+      <Animated.ScrollView style={{height:'100%'}} ref={scrollRef} scrollEventThrottle={16} 
       
       refreshControl={
         allowRefresh ? (
@@ -96,6 +96,7 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height:'100%',
   },
   header: {
     // height: 250,
@@ -103,6 +104,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    height:'100%',
     // padding: 32,
     // gap: 16,
     overflow: 'hidden',

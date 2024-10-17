@@ -21,7 +21,7 @@ import {
 import { TouchableOpacity } from "react-native";
 import { GraphQLError } from "graphql";
 import Toast from "react-native-toast-message";
-import { ParallaxScrollView, ThemedText, ThemedView } from "@/components";
+import { ParallaxScrollView, ThemedFA6, ThemedText, ThemedView } from "@/components";
 import { useDispatch, useSelector } from "react-redux";
 import ThemedRow from "@/components/base/RowBar";
 import { getUserData } from "@/redux/actions/auth";
@@ -78,7 +78,51 @@ export default function Register() {
       >
         <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
           <ThemedView style={styles.bodyContainer}>
-            <ThemedRow
+          <ThemedView style={styles.header}>
+            <ThemedText style={styles.title}>Account Security</ThemedText>
+          </ThemedView> 
+          <ThemedView style={styles.sectionHeader}>
+            <ThemedText style={styles.subTitle}>Two-Factor Authetication (2FA)</ThemedText>
+            {/* <ThemedText style={styles.subCaption}>To protect your account, it is recommended to turn on at least one 2FA</ThemedText> */}
+            <ThemedText style={styles.subCaption}>To protect your account, below setting are needed</ThemedText>
+          </ThemedView>
+          <ThemedView style={styles.securityBox}>
+
+            {/* Not available */}
+            {/* <TouchableOpacity onPress={() => router.push('/gesturePasswordSetting')}>
+              <ThemedView style={styles.lineBox}>
+                <ThemedView style={styles.lineBoxName}>
+                  <ThemedFA6 size={20}  name={'keycdn'}></ThemedFA6> <ThemedText style={styles.lineBoxText}>Passykeys (Biometrics)</ThemedText>
+                </ThemedView>
+              </ThemedView>
+            </TouchableOpacity> */}
+
+            <TouchableOpacity onPress={() => router.push('/questionAnswerSettingVerify')}>
+              <ThemedView style={styles.lineBox}>
+                <ThemedView style={styles.lineBoxName}>
+                  <ThemedFA6 size={20}  name={'circle-question'}></ThemedFA6> <ThemedText style={styles.lineBoxText}>Security Question</ThemedText>
+                </ThemedView>
+              </ThemedView>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push(paymentPasswordLink)}>
+              <ThemedView style={styles.lineBox}>
+                <ThemedView style={styles.lineBoxName}>
+                  <ThemedFA6 size={20}  name={'unlock-keyhole'}></ThemedFA6> <ThemedText style={styles.lineBoxText}>PIN</ThemedText>
+                </ThemedView>
+              </ThemedView>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push('/loginPasswordSetting')}>
+              <ThemedView  iew style={styles.lineBox}>
+                <ThemedView  style={styles.lineBoxName}>
+                  <ThemedFA6 size={20}  name={'key'}></ThemedFA6> <ThemedText style={styles.lineBoxText}>Password</ThemedText>
+                </ThemedView>
+            </ThemedView>
+            </TouchableOpacity>
+          </ThemedView>
+
+            {/* <ThemedRow
               type="link"
               label="Login Password Setting"
               // optional=""
@@ -89,10 +133,7 @@ export default function Register() {
               label="Payment Password Setting"
               link={paymentPasswordLink}
               style={{borderWidth: 1}}
-
-              // style={{borderWidth: 1}}
-              // optional=""
-              ></ThemedRow>
+              ></ThemedRow> */}
             {/* <ThemedRow
               type="link"
               label="Question Answer Setting"
@@ -128,9 +169,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 10,
-    marginBottom: 12,
+    paddingHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    paddingHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 2,
+  },
+  securityBox: {
+    paddingHorizontal: 15,
+    marginBottom: 24,
   },
   bodyContainer: {
     // paddingHorizontal: 24,
@@ -144,10 +194,41 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "700",
     marginBottom: 6,
     paddingTop: 10,
+  },
+  subTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 6,
+  },
+  subCaption: {
+    fontSize: 11,
+    fontWeight: "500",
+    color: "#b5b5b5",
+    letterSpacing:0.005,
+    marginBottom: 6,
+  },
+  lineBox:{
+    display:'flex',
+    paddingHorizontal:20,
+    paddingVertical:20,
+    marginVertical:7,
+    borderWidth:1,
+    borderRadius:10,
+    flexDirection:'row',
+  },
+  lineBoxName:{
+    display:'flex',
+    flex:1,
+    flexDirection:'row',
+  },
+  lineBoxText:{
+    marginLeft: 12,
+    fontSize: 16,
+    fontWeight: "600",
   },
   topSection: {
     flex: 1,

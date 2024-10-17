@@ -45,7 +45,7 @@ Sentry.init({
 
  function RootLayout() {
   const httpLink = new HttpLink({
-    uri: "http://13.212.214.34/graphql",
+    uri: "http://54.255.250.176/graphql",
   });
 
   // const token = await AsyncStorage.getItem("token")
