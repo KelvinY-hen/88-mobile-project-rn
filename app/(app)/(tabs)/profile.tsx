@@ -37,13 +37,13 @@ const PROFILE_SECTIONS = [
   {
     header: "Account",
     items: [
-      {
-        id: "profile",
-        icon: "user",
-        label: "Profile",
-        type: "link",
-        link: "/(settings)/profile/profile",
-      },
+      // {
+      //   id: "profile",
+      //   icon: "user",
+      //   label: "Profile",
+      //   type: "link",
+      //   link: "/(settings)/profile/profile",
+      // },
       {
         id: "Bank",
         icon: "building-columns",
@@ -203,9 +203,10 @@ export default function TabTwoScreen() {
         </ThemedView> */}
 
         <ThemedView style={[styles.section]}>
-          {/* <ThemedView
+          <ThemedView
             style={{
-              paddingTop:20,
+              paddingTop:25,
+              paddingBottom:25,
               backgroundColor: "#0051BA",
               display: "flex",
               flexDirection: "row",
@@ -303,8 +304,8 @@ export default function TabTwoScreen() {
                 </TouchableOpacity>
               </View>
             </View>
-          </ThemedView> */}
-          <ThemedView
+          </ThemedView>
+          {/* <ThemedView
             style={[
               styles.sectionHeader,
               {
@@ -380,7 +381,7 @@ export default function TabTwoScreen() {
                 </ThemedView>
               );
             })}
-          </ScrollView>
+          </ScrollView> */}
         </ThemedView>
 
         {PROFILE_SECTIONS.map(({ header, items }) => (
@@ -391,49 +392,6 @@ export default function TabTwoScreen() {
 
             <ThemedView style={styles.sectionBody}>
               {items.map(({ label, id, type, icon, link }, index) => (
-                // <ThemedView
-                //   style={[
-                //     styles.rowWrapper,
-                //     index === 0 && { borderTopWidth: 0 },
-                //   ]}
-                //   key={id}
-                // >
-                //   <TouchableOpacity
-                //     onPress={() => {
-                //       if (type == "link" && link) {
-                //         router.push(link);
-                //       } else if (type == "logout") {
-                //         logout();
-                //       }
-                //     }}
-                //   >
-                //     <ThemedView style={styles.row}>
-                //       <FontAwesome6
-                //         name={icon}
-                //         size={20}
-                //         style={{ marginRight: 32 }}
-                //       />
-                //       <ThemedText style={styles.rowLabel}>{label}</ThemedText>
-                //       <ThemedView style={styles.rowSpacer} />
-                //       {/* {
-                //           type === 'select' && (
-                //             <ThemedText style={styles.rowValue}>
-                //               {
-                //                 form[id]
-                //               }
-                //             </ThemedText>
-                //           )
-                //         } */}
-                //       {["select", "link"].includes(type) && (
-                //         <FontAwesome6
-                //           name={"chevron-right"}
-                //           size={20}
-                //           color="#ababab"
-                //         />
-                //       )}
-                //     </ThemedView>
-                //   </TouchableOpacity>
-                // </ThemedView>
                 <ThemedRow
                   key={id} // Unique key for each row
                   id={id} // Pass the id to ThemedRow
@@ -537,6 +495,7 @@ const styles = StyleSheet.create({
   /** Section */
   section: {
     // paddingTop: 24,
+    paddingBottom:5
   },
   sectionTitle: {
     fontSize: 14,

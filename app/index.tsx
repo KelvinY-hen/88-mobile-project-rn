@@ -179,7 +179,7 @@ export default function LoginScreen() {
             style={styles.logo}
           />
         </TouchableOpacity>
-        <ThemedText style={styles.headerText}>EWALLET</ThemedText>
+        <ThemedText style={styles.headerText}>W&G</ThemedText>
       </ThemedView>
       <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
         {/* Input Phone Number */}

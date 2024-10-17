@@ -167,7 +167,7 @@ export default function HomeScreen() {
       <ThemedView>
         <View style={styles.header}>
           <View style={styles.balanceContainer}>
-            <Text style={styles.currencyText}>RM</Text>
+            <Text style={styles.currencyText}>𝒫</Text>
             <Text style={styles.balanceText}>
               {loading ? 'Loading...' : showBalance ? userData?.balance : "****"}
             </Text>

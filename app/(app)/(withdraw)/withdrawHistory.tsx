@@ -91,7 +91,7 @@ export default function bankAccount() {
           console.log("Withdrawal Cancelled Succesfully", dataContainer.data);
           Toast.show({
             type: "success",
-            text1: "Reset PIN Succesfully",
+            text1: "Withdrawal Cancelled Succesfully",
             visibilityTime: 3000,
           });
           withdraw_refetch();
@@ -119,7 +119,9 @@ export default function bankAccount() {
     <SafeAreaView style={{ flex: 1 }}>
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-        allowRefresh={withdraw_refetch}
+        allowRefresh={true}
+        handleReloadFuction={withdraw_refetch}
+
       >
         <ThemedView style={[styles.section]}>
           <ScrollView style={{ display: "flex", flexDirection: "column" }}>
@@ -204,7 +206,7 @@ export default function bankAccount() {
                           {bankAccount.account_name}
                         </ThemedText>
                         <ThemedText style={{ textAlign: "left" }}>
-                          MYR. {formattedAmount}
+                          𝒫. {formattedAmount}
                         </ThemedText>
                         <ThemedText
                           style={{

@@ -478,9 +478,12 @@ export default function Withdraw() {
           <ThemedText>Save Account</ThemedText>
         </ThemedView> */}
 
+
+      <View style={{ marginTop: 25, justifyContent:'flex-end', paddingHorizontal:10, display:'flex', flexDirection:'row'}}>
+        <ThemedText style={{color:'#b5b5b5', fontSize:13}}>Available:</ThemedText><ThemedText style={{fontSize:15, color:'#0051BA'}}> 100</ThemedText></View>
         <ThemedRow
           type="input"
-          label="RM"
+          label="𝒫"
           keyboardType="number-pad"
           optional="Withdraw Amount"
           inputValue={amount}
@@ -488,7 +491,7 @@ export default function Withdraw() {
             const numericValue = text.replace(/[^0-9]/g, "");
             setAmount(numericValue);
           }}
-          style={{ marginTop: 25, marginBottom: 25, borderBottomWidth: 1 }}
+          style={{  marginBottom: 25,borderBottomWidth: 1 }}
         ></ThemedRow>
 
         <View style={styles.action}>

@@ -151,13 +151,13 @@ Sentry.init({
                       animation: "slide_from_right",
                       headerTitleAlign: "center",
                       animationDuration: 50,
-                      headerRight: () => (
-                        <FontAwesome6
-                          name={"bell"}
-                          size={25}
-                          style={[{ marginHorizontal: 16 }]}
-                        />
-                      ),
+                      // headerRight: () => (
+                      //   <FontAwesome6
+                      //     name={"bell"}
+                      //     size={25}
+                      //     style={[{ marginHorizontal: 16 }]}
+                      //   />
+                      // ),
                     }}
                   />
 

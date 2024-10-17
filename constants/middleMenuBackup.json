@@ -1,0 +1,45 @@
+[
+    {
+      "name": "Recharge",
+      "icon": "plus",
+      "navigation": "/(app)/(tabs)",
+      "status": "maintenance"
+    },
+    {
+      "name": "Official Exchange",
+      "icon": "scale-balanced",
+      "navigation": "/(app)/(tabs)",
+      "status": "maintenance"
+    },
+    {
+      "name": "Currency Market",
+      "icon": "store",
+      "navigation": "/(app)/(tabs)",
+      "status": "maintenance"
+    },
+    {
+      "name": "Phone Top",
+      "icon": "mobile-screen",
+      "navigation": "(app)/(tabs)",
+      "status": "maintenance"
+    },
+    {
+      "name": "Financial",
+      "icon": "coins",
+      "navigation": "(app)/(tabs)",
+      "status": "maintenance"
+    },
+    {
+      "name": "Exchange Rate",
+      "icon": "money-check-dollar",
+      "navigation": "(app)/(tabs)",
+      "status": "maintenance"
+    },
+    {
+      "name": "History",
+      "icon": "file-invoice-dollar",
+      "navigation": "(app)/(withdraw)/withdrawHistory",
+      "status": "active"
+    }
+  ]
+  
