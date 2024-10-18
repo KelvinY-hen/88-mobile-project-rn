@@ -36,6 +36,7 @@ import { Route } from "expo-router/build/Route";
 import { useRoute } from "@react-navigation/native";
 import { handleWithdrawalRequest } from '@/services/withdrawal';
 import useWithdrawalRequest from '@/hooks/useWithdrawal';
+import {addQuestions} from '@/redux/actions/masterData'
 
 // TouchableOpacity
 
@@ -79,9 +80,9 @@ export default function Withdraw() {
   const bankSheetRef = useRef(null);
   const pinSheetRef = useRef(null);
 
-  const [allowPin, setAllowPin] = useState(false);
-  const [allowBiometrics, setAllowBiometrics] = useState(false);
-  const [allowQnA, setAllowQnA] = useState(true);
+  const [allowPin, setAllowPin] = useState(true);
+  const [allowBiometrics, setAllowBiometrics] = useState(true);
+  const [allowQnA, setAllowQnA] = useState(false);
 
   const [biometricsStatus, setBiometricsStatus] = useState(false);
   const [biometricsValue, setBiometricsValue] = useState("");
@@ -115,18 +116,34 @@ export default function Withdraw() {
     }
   }, [user_bank_data]);
 
+  const {
+    loading: security_loading,
+    data: security_data,
+    error: security_error,
+    refetch: security_refetch,
+  } = useQuery(GQL_Query.GET_USER_BANK);
+
+  useEffect(() => {
+    let securityDataTemp = security_data?.security?.data;
+    if (securityDataTemp) {
+      let payload = {
+        allowQnA,
+        allowBiometrics,
+        allowPin,
+      };
+      
+      dispatch(addWithdrawSecurityStep(payload)); // Set bank data only when it changes
+    }
+    let questions = {
+      questions: dummyQuestions
+    }
+    console.log(questions);
+    dispatch(addQuestions(questions)); // Set bank data only when it changes
+  }, [user_bank_data]);
+
   useEffect(() => {
     refetch();
     user_bank_refetch();
-
-    
-    let payload = {
-      allowQnA,
-      allowBiometrics,
-      allowPin,
-    };
-
-    dispatch(addWithdrawSecurityStep(payload));
 
   }, []);
 

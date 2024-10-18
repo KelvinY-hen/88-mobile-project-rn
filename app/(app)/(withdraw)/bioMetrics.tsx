@@ -62,9 +62,8 @@ export default function Biometrics() {
   const [loading, setLoading] = useState(false);
   const [biometricKey, setBiometricKey] = useState(null);
   const userData = useSelector((state) => state.user.user);
-  const withdrawData = useSelector((state) => state.withdraw);
+  const {allowQnA: newAllowQnA} = useSelector((state) => state.withdraw.withdraw);
 
-  console.log("iniwithdrawdata", withdrawData);
 
   const {
     loading: me_query_loading,
@@ -95,40 +94,43 @@ export default function Biometrics() {
     // compatibilityCheck();
 
     //** using rn biometric
-    // const isBiometricSupportFunction = async () => {
-    //   const rnBiometrics = new ReactNativeBiometrics()
+    const isBiometricSupportFunction = async () => {
+      const rnBiometrics = new ReactNativeBiometrics()
 
-    //   const { biometryType } = await rnBiometrics.isSensorAvailable()
+      const { biometryType } = await rnBiometrics.isSensorAvailable()
 
-    //   if (biometryType === BiometryTypes.TouchID) {
-    //     console.log('TouchID is supported', biometryType);
-    //   } else if (biometryType === BiometryTypes.FaceID) {
-    //     console.log('FaceID is supported', biometryType);
-    //   } else if (biometryType === BiometryTypes.Biometrics) {
-    //     console.log('Biometrics is supported', biometryType);
-    //   } else {
-    //     console.log('Biometrics not supported', biometryType, BiometryTypes);
-    //   }
-    //   console.log('test')
+      if (biometryType === BiometryTypes.TouchID) {
+        console.log('TouchID is supported', biometryType);
+        authenticate()
+      } else if (biometryType === BiometryTypes.FaceID) {
+        console.log('FaceID is supported', biometryType);
+        authenticate()
+      } else if (biometryType === BiometryTypes.Biometrics) {
+        console.log('Biometrics is supported', biometryType);
+        authenticate()
+      } else {
+        console.log('Biometrics not supported', biometryType, BiometryTypes);
+      }
+      console.log('test')
 
-    //   rnBiometrics.simplePrompt({promptMessage: 'Confirm fingerprint'})
-    //     .then((resultObject) => {
-    //       const { success } = resultObject
+      // rnBiometrics.simplePrompt({promptMessage: 'Confirm fingerprint'})
+      //   .then((resultObject) => {
+      //     const { success } = resultObject
 
-    //       console.log('test',resultObject)
-    //       if (success) {
-    //         handleBiometricsSubmit(true, 'key')
-    //         console.log('successful biometrics provided',resultObject)
-    //       } else {
-    //         console.log('user cancelled biometric prompt')
-    //       }
-    //     })
-    //     .catch(() => {
-    //       console.log('biometrics failed')
-    //   })
-    // };
+      //     console.log('test',resultObject)
+      //     if (success) {
+      //       handleBiometricsSubmit(true, 'key')
+      //       console.log('successful biometrics provided',resultObject)
+      //     } else {
+      //       console.log('user cancelled biometric prompt')
+      //     }
+      //   })
+      //   .catch(() => {
+      //     console.log('biometrics failed')
+      // })
+    };
 
-    // isBiometricSupportFunction();
+    isBiometricSupportFunction();
 
     // Biometric authentication
     const authenticate = async () => {
@@ -181,7 +183,9 @@ export default function Biometrics() {
       QnA: QnA,
     };
 
-    if (allowQnA) {
+
+    console.log('meng',newAllowQnA );
+    if (newAllowQnA ) {
       router.replace({
         pathname: "/qna",
         params: params,
@@ -189,27 +193,27 @@ export default function Biometrics() {
     } else {
 
 
-    const result = handleWithdrawalRequest();
-    
-    if((await result).success){
-      Toast.show({
-        type: 'success',
-        text1: 'Withdrawal Request Successful',
-        visibilityTime: 3000,
-      });
-    }else{
-      Toast.show({
-        type: 'error',
-        text1: (await result).message,
-        visibilityTime: 3000,
-      });
-    }
-    
+      const result = handleWithdrawalRequest();
+      
+      if((await result).success){
+        Toast.show({
+          type: 'success',
+          text1: 'Withdrawal Request Successful',
+          visibilityTime: 3000,
+        });
+      }else{
+        Toast.show({
+          type: 'error',
+          text1: (await result).message,
+          visibilityTime: 3000,
+        });
+      }
 
-      router.navigate({
-        pathname: "/withdraw",
-        params: params,
-      });
+      // router.navigate({
+      //   pathname: "/withdraw",
+      //   pathname: "/home",
+      //   params: params,
+      // });
     }
   };
 

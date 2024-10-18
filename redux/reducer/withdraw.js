@@ -9,13 +9,13 @@ const initialState = {
         accName: '',
         amount: 0,
         branch: '',
-        allowPin: false,
-        allowBiometrics: false,
+        allowPin: true,
+        allowBiometrics: true,
         biometricsStatus: null,
         biometricsValue: null,
-        allowQnA: false,
+        allowQnA: true,
         QnA: [],
-    }
+    },
   };
 
   export default function withdraw(state = initialState, action) {
@@ -82,11 +82,11 @@ const initialState = {
                     accName: '',
                     amount: 0,
                     branch: '',
-                    allowPin: false,
-                    allowBiometrics: false,
+                    allowPin: true,
+                    allowBiometrics: true,
                     biometricsStatus: null,
                     biometricsValue: null,
-                    allowQnA: false,
+                    allowQnA: true,
                     QnA: [],
                 }
             };

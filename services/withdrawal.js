@@ -30,53 +30,53 @@ export const handleWithdrawalRequest = async (withdrawData) => {
 
   try {
     // If the selected account is not present, register a new bank account
-    // if (!selectedAccount) {
-    //   await createUserBankMutation({
-    //     variables: {
-    //       bank_account: accNo,
-    //       account_name: accName,
-    //       bank_id: bank.id,
-    //       branch_name: branch,
-    //       is_primary: false,
-    //     },
-    //     onCompleted: (infoData) => {
-    //       console.log(infoData);
-    //       bankRegisterResult = {
-    //         success: true,
-    //         data: infoData,
-    //         error: false,
-    //       };
-    //     },
-    //     onError: ({ graphQLErrors, networkError }) => {
-    //       if (graphQLErrors) {
-    //         graphQLErrors.forEach(({ message }) => {
-    //           Toast.show({
-    //             type: "error",
-    //             text1: "Bank Registration failed. Please try again later",
-    //             visibilityTime: 3000,
-    //           });
-    //           bankRegisterResult = {
-    //             success: false,
-    //             data: message,
-    //             error: "graphQL",
-    //           };
-    //         });
-    //       }
-    //       if (networkError) {
-    //         Toast.show({
-    //           type: "error",
-    //           text1: "Network error. Please try again later",
-    //           visibilityTime: 3000,
-    //         });
-    //         bankRegisterResult = {
-    //           success: false,
-    //           data: networkError,
-    //           error: "network",
-    //         };
-    //       }
-    //     },
-    //   });
-    // }
+    if (!selectedAccount) {
+      await createUserBankMutation({
+        variables: {
+          bank_account: accNo,
+          account_name: accName,
+          bank_id: bank.id,
+          branch_name: branch,
+          is_primary: false,
+        },
+        onCompleted: (infoData) => {
+          console.log(infoData);
+          bankRegisterResult = {
+            success: true,
+            data: infoData,
+            error: false,
+          };
+        },
+        onError: ({ graphQLErrors, networkError }) => {
+          if (graphQLErrors) {
+            graphQLErrors.forEach(({ message }) => {
+              Toast.show({
+                type: "error",
+                text1: "Bank Registration failed. Please try again later",
+                visibilityTime: 3000,
+              });
+              bankRegisterResult = {
+                success: false,
+                data: message,
+                error: "graphQL",
+              };
+            });
+          }
+          if (networkError) {
+            Toast.show({
+              type: "error",
+              text1: "Network error. Please try again later",
+              visibilityTime: 3000,
+            });
+            bankRegisterResult = {
+              success: false,
+              data: networkError,
+              error: "network",
+            };
+          }
+        },
+      });
+    }
 
     // If registration is successful or the account already exists, proceed with withdrawal
     // const bankAccountId = bankRegisterResult?.data?.createUserBank?.data?.id || selectedAccount?.id;

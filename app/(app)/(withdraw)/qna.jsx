@@ -35,6 +35,7 @@ import { GQL_Query } from "@/constants";
 import { useBottomSheet } from "@/hooks/useBottomSheet";
 import { addQnAData } from "../../../redux/actions/withdraw";
 import useWithdrawalRequest from '@/hooks/useWithdrawal';
+import { clearQuestions } from "@/redux/actions/masterData";
 // TouchableOpacity
 
 const dummyQuestions = [
@@ -75,17 +76,21 @@ export default function QnAWithdraw() {
     QnA,
   } = useLocalSearchParams();
   const questions = JSON.parse(QnA); // Parse the string back into an object
+  // const questionsData = useSelector((state) => state.questions);
 
   // useEffect(() => {
   //   if (QnA) {
   //     setQuestions(JSON.parse(QnA));
   //   }
   // },[QnA])
-
+  
+  // useEffect(() => {
+  //   // setQuestions(questionsData)
+  //   console.log(questionsData);
+  // },[questionsData])
   const [loading, setLoading] = useState(false);
 
 
-  // const withdrawData = useSelector((state) => state.withdraw);
 
   // console.log('iniwithdrawdataqna', withdrawData);
 
@@ -132,6 +137,7 @@ export default function QnAWithdraw() {
       });
     }
     
+    // dispatch(clearQuestions());
     // var params = {
     //   pin,
     //   accNo,
@@ -164,7 +170,7 @@ export default function QnAWithdraw() {
           <Ionicons size={310} name="code-slash" style={styles.headerImage} />
         }
       >
-        <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
+        <KeyboardAvoidingView behavior="position" style={styles.formSection}>
           <ThemedView style={styles.bodyContainer}>
             <ThemedView style={styles.header}>
               <ThemedText style={styles.title}>Security</ThemedText>
@@ -334,7 +340,6 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 15,
     marginTop: 10,
-    marginBottom: 24,
   },
   title: {
     fontSize: 28,

@@ -8,4 +8,4 @@ export const WITHDRAW_TYPES = {
     ADD_QNA_DATA: 'ADD_QNA_DATA',
     CLEAR_QNA_DATA: 'CLEAR_QNA_DATA',
     CLEAR_DATA: 'CLEAR_DATA',
-  };
+};

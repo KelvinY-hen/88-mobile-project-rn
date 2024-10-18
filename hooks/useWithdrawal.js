@@ -107,10 +107,11 @@ const useWithdrawalRequest = () => {
           allowQnA,
           QnA,
         };
+        console.log("var kita", variables);
+        console.log("var kita2", withdrawData);
 
          dispatch(clearWithdrawData());
 
-        console.log("hook kita", variables);
         // const result = await executeWithdrawal(variables);
 
         result = {
