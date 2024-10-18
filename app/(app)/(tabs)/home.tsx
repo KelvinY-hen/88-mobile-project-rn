@@ -167,7 +167,7 @@ export default function HomeScreen() {
       <ThemedView>
         <View style={styles.header}>
           <View style={styles.balanceContainer}>
-            <Text style={styles.currencyText}>𝒫</Text>
+            <Text style={styles.currencyText}>𝒫 </Text>
             <Text style={styles.balanceText}>
               {loading ? 'Loading...' : showBalance ? userData?.balance : "****"}
             </Text>
@@ -454,8 +454,16 @@ const styles = StyleSheet.create({
     // justifyContent: 'space-between',
   },
   currencyText: {
+    // backgroundColor:'pink',
+    // alignSelf: 'flex-start',
+    // width:15,
+    textAlign: 'center', // Center the text within its container
     color: "white",
-    fontSize: 34,
+    lineHeight: 45,
+    letterSpacing: 10,
+    // paddingVertical: 10, // Adds more vertical padding
+    // marginRight:10,
+    fontSize: 28,
     fontWeight: "bold",
   },
   balanceText: {

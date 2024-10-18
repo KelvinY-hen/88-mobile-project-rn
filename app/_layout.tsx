@@ -196,6 +196,44 @@ Sentry.init({
                     }}
                   />
                   <Stack.Screen
+                    name="(app)/(withdraw)/bioMetrics"
+                    options={{
+                      headerShown: true,
+                      title: "Security: Biometrics",
+                      headerTitleAlign: "center",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                      headerRight: () => (
+                        <ThemedLink
+                          push
+                          style={[{ marginHorizontal: 3 }]}
+                          href="(app)/(withdraw)/withdrawHistory"
+                        >
+                          History
+                        </ThemedLink>
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(app)/(withdraw)/qna"
+                    options={{
+                      headerShown: true,
+                      title: "Security: QnA",
+                      headerTitleAlign: "center",
+                      animation: "slide_from_right",
+                      animationDuration: 50,
+                      headerRight: () => (
+                        <ThemedLink
+                          push
+                          style={[{ marginHorizontal: 3 }]}
+                          href="(app)/(withdraw)/withdrawHistory"
+                        >
+                          History
+                        </ThemedLink>
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
                     name="(app)/(withdraw)/withdrawHistory"
                     options={{
                       headerShown: true,

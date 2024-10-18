@@ -17,7 +17,7 @@ export function ThemedInput({ style, lightColor, darkColor, ...otherProps }: The
     const color = colorScheme == 'dark' ? '#FFFFFF' : '#000000'; // Corrected color code
   
 
-  return <TextInput style={[{ color }, style,styles.input]} placeholderTextColor={placeholderColor}  {...otherProps} />;
+  return <TextInput style={[{ color }, style,styles.input]}  placeholderTextColor={placeholderColor}  {...otherProps} />;
 }
 
 const styles = StyleSheet.create({

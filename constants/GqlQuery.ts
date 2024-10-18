@@ -326,6 +326,24 @@ export const CANCEL_WITHDRAWAL = gql`
   }
 `;
 
+export const GET_SECURITY_QUESTION = gql `
+  query Query{
+      securityQuestions {
+          success
+          message
+          data {
+          ... on SecurityQuestion {
+              id
+              question
+          }
+          }
+          errors {
+          code
+          message
+      }
+    }
+  }
+`
 export default {
   CREATE_WITHDRAW_REQUEST_MUTATION,
   CREATE_USER_BANK_MUTATION,
@@ -345,4 +363,5 @@ export default {
   FORGET_PASSWORD_MUTATION,
   CHANGE_PASSWORD_MUTATION,
   CANCEL_WITHDRAWAL,
+  GET_SECURITY_QUESTION
 };

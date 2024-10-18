@@ -25,6 +25,8 @@ import { ThemedFA6 } from "@/components/ThemedFA6";
 import { RootState } from "@/redux/store";
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics'
+
 
 
 // SplashScreen.preventAutoHideAsync();
@@ -33,14 +35,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function LoginScreen() {
   const dispatch = useDispatch()
 
+  const [isBiometricSupported, setIsBiometricSupported] = useState(null); 
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [biometricKey, setBiometricKey] = useState(false);
 
   // const token = useSelector((state: RootState) => state.auth.Token);
   
   const [loginMutation] = useMutation(GQL_Query.LOGIN_MUTATION);
+
   
   
   // useEffect(() => {
@@ -51,6 +56,7 @@ export default function LoginScreen() {
   // },[token])
 
   useEffect(() => {
+
     const fetchToken = async () => {
       try {
         await SplashScreen.preventAutoHideAsync();
@@ -70,10 +76,75 @@ export default function LoginScreen() {
       }
     };
 
+
+    const createBiometricKey = async () => {
+      const rnBiometrics = new ReactNativeBiometrics()
+
+      const { publicKey } = await rnBiometrics.createKeys();
+      setBiometricKey(publicKey);
+
+
+      // Send the public key to your Laravel backend to register the user
+    };
+
+    //** using expo authentication *z/
+    // const compatibilityCheck = async () => {
+    //   const compatible = await LocalAuthentication.hasHardwareAsync();
+    //   const type = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    //   const result = await LocalAuthentication.authenticateAsync({
+    //     promptMessage:'Biometrics',
+    //     cancelLabel:'Cancel Biometrics'
+    //   });
+    //   // console.log('compatible',result);hmm
+    //   setIsBiometricSupported(compatible);
+    // };
+    // compatibilityCheck();
+
+
+    //** using rn biometric  
+    // const isBiometricSupportFunction = async () => {
+    //   const rnBiometrics = new ReactNativeBiometrics()
+
+    //   const { biometryType } = await rnBiometrics.isSensorAvailable()
+
+    //   if (biometryType === BiometryTypes.TouchID) {
+    //     console.log('TouchID is supported', biometryType);
+    //   } else if (biometryType === BiometryTypes.FaceID) {
+    //     console.log('FaceID is supported', biometryType);
+    //   } else if (biometryType === BiometryTypes.Biometrics) {
+    //     console.log('Biometrics is supported', biometryType);
+    //   } else {
+    //     console.log('Biometrics not supported', biometryType, BiometryTypes);
+    //   }
+    //   console.log('test')
+
+    //   rnBiometrics.simplePrompt({promptMessage: 'Confirm fingerprint'})
+    //     .then((resultObject) => {
+    //       const { success } = resultObject
+
+    //       console.log('test',resultObject)
+    //       if (success) {
+    //         console.log('successful biometrics provided',resultObject)
+    //       } else {
+    //         console.log('user cancelled biometric prompt')
+    //       }
+    //     })
+    //     .catch(() => {
+    //       console.log('biometrics failed')
+    //   })
+    // };
+  
+
+    // isBiometricSupportFunction();
+
     // fetchToken();
   }, []); 
 
-  const signIn = () => {
+  useEffect(() => {
+    console.log(isBiometricSupported);
+  },[isBiometricSupported])
+
+  const signIn = async () => {
 
 
   let deviceId = DeviceInfo.getUniqueIdSync();

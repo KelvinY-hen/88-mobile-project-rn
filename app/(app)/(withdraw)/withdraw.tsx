@@ -23,24 +23,44 @@ import {
   ThemedFA6,
   ThemedRow,
 } from "@/components";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BottomSheetComponent from "@/components/base/bottomSheet";
 import PinPromptBottomSheet from "@/components/base/pinPromptBottomSheet";
 import GqlQuery, {
   CREATE_WITHDRAW_REQUEST_MUTATION,
 } from "@/constants/GqlQuery";
-import { useMutationAPI } from "../../../services/api";
+import { useMutationAPI } from "@/services/api";
 import { GQL_Query } from "@/constants";
 import { handleError } from "@/utils/handleError";
+import { Route } from "expo-router/build/Route";
+import { useRoute } from "@react-navigation/native";
+import { handleWithdrawalRequest } from '@/services/withdrawal';
+import useWithdrawalRequest from '@/hooks/useWithdrawal';
+
 // TouchableOpacity
 
+import {
+  addWithdrawData,
+  addWithdrawSecurityStep,
+} from "@/redux/actions/withdraw";
+
+const dummyQuestions = [
+  { id: 1, question: "What was the name of your first pet?" },
+  { id: 2, question: "What is your favorite book?" },
+  { id: 3, question: "In what city were you born?" },
+];
+
 export default function Withdraw() {
+  const dispatch = useDispatch();
+  const { handleWithdrawalRequest } = useWithdrawalRequest();
+
   const [username, setUserName] = useState(
     useSelector((state) => state.user.user.agent_linked_code)
   );
   const { handleMutation: withdraw_mutation, loading: withdraw_loading } =
     useMutationAPI(GQL_Query.CREATE_WITHDRAW_REQUEST_MUTATION);
 
+  const route = useRoute();
   const [loading, setLoading] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
@@ -58,6 +78,15 @@ export default function Withdraw() {
   const savedAccoutSheetRef = useRef(null);
   const bankSheetRef = useRef(null);
   const pinSheetRef = useRef(null);
+
+  const [allowPin, setAllowPin] = useState(false);
+  const [allowBiometrics, setAllowBiometrics] = useState(false);
+  const [allowQnA, setAllowQnA] = useState(true);
+
+  const [biometricsStatus, setBiometricsStatus] = useState(false);
+  const [biometricsValue, setBiometricsValue] = useState("");
+
+  const [qnaData, setQnaData] = useState([]);
 
   const {
     loading: bank_loading,
@@ -89,7 +118,65 @@ export default function Withdraw() {
   useEffect(() => {
     refetch();
     user_bank_refetch();
+
+    
+    let payload = {
+      allowQnA,
+      allowBiometrics,
+      allowPin,
+    };
+
+    dispatch(addWithdrawSecurityStep(payload));
+
   }, []);
+
+  // useEffect(() => {
+  //   console.log(route.params);
+  //   if (route.params) {
+  //     // await handleWithdrawalRequest(withdrawData);
+  //     if (Object.keys(route.params).length > 0) {
+  //       const {
+  //         pin: finalPin,
+  //         accNo: finalAccNo,
+  //         bank: finalBank,
+  //         name: finalName,
+  //         amount: finalAmount,
+  //         branch: finalBranch,
+  //         allowPin: finalAllowPin,
+  //         allowBiometrics: finalBiometrics,
+  //         biometricsStatus: finalBiometricsStatus,
+  //         biometricsValue: finalBiometricsValue,
+  //         allowQnA: finalAllowQnA,
+  //         QnA: finalQNA,
+  //       } = route.params;
+
+  //       console.log(route.params);
+
+  //       setAllowBiometrics(
+  //         finalBiometrics === "true" || finalBiometrics === true
+  //       );
+  //       setAllowQnA(finalAllowQnA === "true" || finalAllowQnA === true);
+  //       setAllowPin(finalAllowPin === "true" || finalAllowPin === true);
+
+  //       setPin(finalPin);
+  //       setAccNo(finalAccNo);
+  //       setSelectedBank(finalBank);
+  //       setName(finalName);
+  //       setBranch(finalBranch);
+
+  //       setAmount(finalAmount);
+
+  //       setBiometricsStatus(finalBiometricsStatus);
+  //       setBiometricsValue(finalBiometricsValue);
+
+  //       setQnaData(JSON.parse(finalQNA));
+
+  //       submitWithdrawalRequest();
+
+  //       // setQuestions([{ question: qu/estion1, answer: answer1 }, { question: question2, answer: answer2 }]);
+  //     }
+  //   }
+  // }, [route.params]);
 
   const resetPin = () => {
     setPin(["", "", "", "", "", ""]);
@@ -97,55 +184,55 @@ export default function Withdraw() {
 
   const withdrawHandler = async () => {
     // Validate account number
-    if (!accNo) {
-      Toast.show({
-        type: "error",
-        text1: "Account number is required",
-        visibilityTime: 3000,
-      });
-      return;
-    }
+    // if (!accNo) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Account number is required",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
 
-    // Validate account name
-    if (!name) {
-      Toast.show({
-        type: "error",
-        text1: "Account name is required",
-        visibilityTime: 3000,
-      });
-      return;
-    }
+    // // Validate account name
+    // if (!name) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Account name is required",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
 
-    // Validate bank selection
-    if (!selectedBank || !selectedBank?.id) {
-      Toast.show({
-        type: "error",
-        text1: "Bank selection is required",
-        visibilityTime: 3000,
-      });
-      return;
-    }
+    // // Validate bank selection
+    // if (!selectedBank || !selectedBank?.id) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Bank selection is required",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
 
-    if (!branch) {
-      Toast.show({
-        type: "error",
-        text1: "Branch is required",
-        visibilityTime: 3000,
-      });
-      return;
-    }
+    // if (!branch) {
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Branch is required",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
 
-    // ** Amount Validation (>20)*/
-    // ** */
-    if ( !amount  || amount <= 0){
-      Toast.show({
-        type: "error",
-        text1: "Amount is required",
-        visibilityTime: 3000,
-      });
-      return;
-    }
-    // ** */
+    // // ** Amount Validation (>20)*/
+    // // ** */
+    // if ( !amount  || amount <= 0){
+    //   Toast.show({
+    //     type: "error",
+    //     text1: "Amount is required",
+    //     visibilityTime: 3000,
+    //   });
+    //   return;
+    // }
+    // // ** */
 
     // Optional: Validate account number format (example for digits only)
     // const accountNoRegex = /^[0-9]{6,20}$/; // Example: 6-20 digits
@@ -160,7 +247,72 @@ export default function Withdraw() {
 
     // const confirmed = await confirm("Do you want to proceed with request?");
 
-    handlePinPresentPress();
+    if (allowPin) {
+      handlePinPresentPress();
+    } else {
+      // alert('not allow pin');
+      submitPinHandler();
+      // submitWithdrawalRequest();
+    }
+  };
+
+  const submitPinHandler = () => {
+    if (allowPin) {
+      if (pin.join("").length != 6) {
+        return;
+      }
+
+      handlePinDismissPress();
+    }
+
+    let payload = {
+      pin,
+      selectedAccount: selectedAccount,
+      accNo,
+      bank: selectedBank,
+      name,
+      amount,
+      branch,
+    };
+    dispatch(addWithdrawData(payload));
+    if (allowBiometrics) {
+      router.push({
+        pathname: "/bioMetrics",
+        params: {
+          pin,
+          accNo,
+          selectedAccount: JSON.stringify(selectedAccount),
+          bank: JSON.stringify(selectedBank),
+          name,
+          amount,
+          branch,
+          allowQnA,
+          allowBiometrics,
+          allowPin,
+          QnA: JSON.stringify(dummyQuestions), // Use JSON.stringify instead of JSON.encode
+        },
+      });
+    } else if (allowQnA) {
+      router.push({
+        pathname: "/qna",
+        params: {
+          pin,
+          accNo,
+          selectedAccount: JSON.stringify(selectedAccount),
+          bank: JSON.stringify(selectedBank),
+          name,
+          amount,
+          branch,
+          allowQnA,
+          allowBiometrics,
+          allowPin,
+          QnA: JSON.stringify(dummyQuestions), // Use JSON.stringify instead of JSON.encode
+        },
+      });
+    } else {
+      // submitWithdrawalRequest();
+       handleTest();
+    }
   };
 
   const [createUserBankMutation] = useMutation(
@@ -172,11 +324,6 @@ export default function Withdraw() {
   );
 
   const submitWithdrawalRequest = async () => {
-    if (pin.join("").length != 6) {
-      return; 
-    }
-
-    handlePinDismissPress();
     setLoading(true);
 
     if (!selectedAccount) {
@@ -298,30 +445,11 @@ export default function Withdraw() {
         });
       }
     } else {
-
-      handleError(result.error, new Error('Outside of Scope') , { component: 'Withdraw-API', errorType :result.error, errorMessage:result?.data?.[0]?.message ?? ''});
-
-
-      // if (result.error == "graphql") {
-      //   console.log(result.data);
-      //   Toast.show({
-      //     type: "error",
-      //     text1: "Withdrawal Request failed. Please try again later",
-      //     visibilityTime: 3000,
-      //   });
-      // } else if (result.error == "network") {
-      //   Toast.show({
-      //     type: "error",
-      //     text1: "Network error. Please try again later",
-      //     visibilityTime: 3000,
-      //   });
-      // } else if (result.error == "function") {
-      //   Toast.show({
-      //     type: "error",
-      //     text1: "An Error occuered. Please try again later",
-      //     visibilityTime: 3000,
-      //   });
-      // }
+      handleError(result.error, new Error("Outside of Scope"), {
+        component: "Withdraw-API",
+        errorType: result.error,
+        errorMessage: result?.data?.[0]?.message ?? "",
+      });
     }
 
     resetPin();
@@ -402,6 +530,24 @@ export default function Withdraw() {
     </TouchableOpacity>
   );
 
+  const handleTest = async () => {
+    const result = handleWithdrawalRequest();
+
+    if((await result).success){
+      Toast.show({
+          type: 'success',
+          text1: 'Withdrawal Request Successful',
+          visibilityTime: 3000,
+        });
+    }else{
+      Toast.show({
+        type: 'error',
+        text1: (await result).message,
+        visibilityTime: 3000,
+      });
+    }
+  }
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -422,7 +568,7 @@ export default function Withdraw() {
           label="Saved Account"
           style={{ marginBottom: 15, borderBottomWidth: 1 }}
           handleFunction={handleExpandSavedAccount}
-          customChevronIcon={selectedAccount ? "circle-xmark" : ''}
+          customChevronIcon={selectedAccount ? "circle-xmark" : ""}
           // optional="Enter bank account"
         ></ThemedRow>
         <ThemedRow
@@ -464,23 +610,23 @@ export default function Withdraw() {
           style={{ borderBottomWidth: 1 }}
         ></ThemedRow>
 
-        {/* <ThemedView
+        <View
           style={{
+            marginTop: 25,
+            justifyContent: "flex-end",
+            paddingHorizontal: 10,
             display: "flex",
             flexDirection: "row",
-            alignItems: "center",
           }}
         >
-          <Checkbox
-            onPress={() => toggleSave(!save)}
-            status={save ? "checked" : "unchecked"}
-          />
-          <ThemedText>Save Account</ThemedText>
-        </ThemedView> */}
-
-
-      <View style={{ marginTop: 25, justifyContent:'flex-end', paddingHorizontal:10, display:'flex', flexDirection:'row'}}>
-        <ThemedText style={{color:'#b5b5b5', fontSize:13}}>Available:</ThemedText><ThemedText style={{fontSize:15, color:'#0051BA'}}> 100</ThemedText></View>
+          <ThemedText style={{ color: "#b5b5b5", fontSize: 13 }}>
+            Available:
+          </ThemedText>
+          <ThemedText style={{ fontSize: 15, color: "#0051BA" }}>
+            {" "}
+            100
+          </ThemedText>
+        </View>
         <ThemedRow
           type="input"
           label="𝒫"
@@ -491,13 +637,21 @@ export default function Withdraw() {
             const numericValue = text.replace(/[^0-9]/g, "");
             setAmount(numericValue);
           }}
-          style={{  marginBottom: 25,borderBottomWidth: 1 }}
+          style={{ marginBottom: 25, borderBottomWidth: 1 }}
         ></ThemedRow>
 
         <View style={styles.action}>
           <ThemedButton
             title="Submit request"
             onPress={withdrawHandler}
+            disabled={loading} // Disable button when loading
+            loading={loading}
+          ></ThemedButton>
+        </View>
+        <View style={styles.action}>
+          <ThemedButton
+            title="Tet"
+            onPress={handleTest}
             disabled={loading} // Disable button when loading
             loading={loading}
           ></ThemedButton>
@@ -532,7 +686,8 @@ export default function Withdraw() {
         pin={pin} // Pass down the current pin state
         lock={false}
         loading={loading}
-        handleSubmission={submitWithdrawalRequest}
+        // handleSubmission={submitWithdrawalRequest}
+        handleSubmission={submitPinHandler}
         onChangePin={handlePinChange} // Callback to handle changes in the pin input
         title="Enter Your PIN"
       ></PinPromptBottomSheet>

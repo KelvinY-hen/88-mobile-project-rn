@@ -97,10 +97,11 @@ export default function Register() {
               </ThemedView>
             </TouchableOpacity> */}
 
-            <TouchableOpacity onPress={() => router.push('/questionAnswerSettingVerify')}>
+            <TouchableOpacity onPress={() => router.push('/questionAnswerSetting')}>
               <ThemedView style={styles.lineBox}>
                 <ThemedView style={styles.lineBoxName}>
-                  <ThemedFA6 size={20}  name={'circle-question'}></ThemedFA6> <ThemedText style={styles.lineBoxText}>Security Question</ThemedText>
+                  <ThemedFA6 size={20}  name={'circle-question'}></ThemedFA6> 
+                  <ThemedText style={styles.lineBoxText}>Security Question</ThemedText>
                 </ThemedView>
               </ThemedView>
             </TouchableOpacity>
@@ -108,7 +109,8 @@ export default function Register() {
             <TouchableOpacity onPress={() => router.push(paymentPasswordLink)}>
               <ThemedView style={styles.lineBox}>
                 <ThemedView style={styles.lineBoxName}>
-                  <ThemedFA6 size={20}  name={'unlock-keyhole'}></ThemedFA6> <ThemedText style={styles.lineBoxText}>PIN</ThemedText>
+                   <ThemedFA6 size={20}  name={'unlock-keyhole'}> </ThemedFA6>
+                    <Text style={styles.lineBoxText}>PIN</Text>
                 </ThemedView>
               </ThemedView>
             </TouchableOpacity>
@@ -116,7 +118,8 @@ export default function Register() {
             <TouchableOpacity onPress={() => router.push('/loginPasswordSetting')}>
               <ThemedView  iew style={styles.lineBox}>
                 <ThemedView  style={styles.lineBoxName}>
-                  <ThemedFA6 size={20}  name={'key'}></ThemedFA6> <ThemedText style={styles.lineBoxText}>Password</ThemedText>
+                  <ThemedFA6 size={20}  name={'key'}></ThemedFA6>
+                  <ThemedText style={styles.lineBoxText}>Password</ThemedText>
                 </ThemedView>
             </ThemedView>
             </TouchableOpacity>

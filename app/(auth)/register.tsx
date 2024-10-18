@@ -5,7 +5,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 
 import { router } from "expo-router";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { GQL_Query } from "@/constants";
 
@@ -15,13 +15,22 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  Text,
+  ScrollView,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import { ParallaxScrollView, ThemedText, ThemedFA6 } from "@/components";
+import {
+  ParallaxScrollView,
+  ThemedText,
+  ThemedFA6,
+  BottomSheetComponent,
+} from "@/components";
 import { handleError } from "../../utils/handleError";
 import { useMutationAPI } from "@/services/api";
 import { useOTP } from "@/hooks/useOTP";
-
+import { useBottomSheet } from "@/hooks/useBottomSheet";
+import { useQuery } from "@apollo/client";
+import GqlQuery from "@/constants/GqlQuery";
 
 //** Register User Function */
 export default function Register() {
@@ -34,6 +43,129 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
+
+  const [questionList, setQuestionList] = useState([]);
+
+  //** Question and Answer */
+  const {
+    sheetRef: sheet_q1,
+    handleDismiss: handleDismiss_q1,
+    handleExpand: handleExpand_q1,
+  } = useBottomSheet();
+  const {
+    sheetRef: sheet_q2,
+    handleDismiss: handleDismiss_q2,
+    handleExpand: handleExpand_q2,
+  } = useBottomSheet();
+  const {
+    sheetRef: sheet_q3,
+    handleDismiss: handleDismiss_q3,
+    handleExpand: handleExpand_q3,
+  } = useBottomSheet();
+
+  const {
+    loading: loading_question,
+    data: data_question,
+    error: error_question,
+    refetch: refetch_question,
+  } = useQuery(GqlQuery.GET_SECURITY_QUESTION);
+
+  useEffect(() => {
+    if (data_question) {
+      setQuestionList(data_question?.securityQuestions?.data);
+    }
+  }, [data_question]);
+
+  const [question1, setQuestion1] = useState(null);
+  const [question2, setQuestion2] = useState(null);
+  const [question3, setQuestion3] = useState(null);
+
+  const [answer1, setAnswer1] = useState("");
+  const [answer2, setAnswer2] = useState("");
+  const [answer3, setAnswer3] = useState("");
+
+  const handleQuestion1Press = (item) => {
+
+
+    // Remove the new selected question from the list
+    var updatedQuestions = questionList.filter((obj) => obj.id !== item.id);
+
+
+    if (question1) {
+      // Add the previous selected question back to the list
+      updatedQuestions = [...updatedQuestions, question1];
+      updatedQuestions.sort((a, b) => a.id - b.id);
+    }
+
+    setQuestionList(updatedQuestions);
+
+    // Update the selected question1
+    setQuestion1(item); // or item.value
+
+
+    handleDismiss_q1();
+  };
+
+
+  const handleQuestion2Press = (item) => {
+    // Remove the new selected question from the list
+    var updatedQuestions = questionList.filter((obj) => obj.id !== item.id);
+
+
+    if (question2) {
+      // Add the previous selected question back to the list
+      updatedQuestions = [...updatedQuestions, question2];
+      updatedQuestions.sort((a, b) => a.id - b.id);
+    }
+
+    setQuestionList(updatedQuestions);
+
+    // Update the selected question2
+    setQuestion2(item); // or item.value
+    handleDismiss_q2();
+  };
+  const handleQuestion3Press = (item) => {
+    // Remove the new selected question from the list
+    var updatedQuestions = questionList.filter((obj) => obj.id !== item.id);
+
+
+    if (question3) {
+      // Add the previous selected question back to the list
+      updatedQuestions = [...updatedQuestions, question3];
+      updatedQuestions.sort((a, b) => a.id - b.id);
+    }
+
+    setQuestionList(updatedQuestions);
+
+    // Update the selected question3
+    setQuestion3(item); // or item.value
+    handleDismiss_q3();
+  };
+
+  const renderQuestionItem = (item) => (
+    <TouchableOpacity
+      style={{ alignItems: "left", padding: 10 }}
+      onPress={() => handleQuestion1Press(item)}
+    >
+      <Text style={{ fontSize: 16 }}>{item.question}</Text>
+    </TouchableOpacity>
+  );
+  const renderQuestion2Item = (item) => (
+    <TouchableOpacity
+      style={{ alignItems: "left", padding: 10 }}
+      onPress={() => handleQuestion2Press(item)}
+    >
+      <Text style={{ fontSize: 16 }}>{item.question}</Text>
+    </TouchableOpacity>
+  );
+  const renderQuestion3Item = (item) => (
+    <TouchableOpacity
+      style={{ alignItems: "left", padding: 10 }}
+      onPress={() => handleQuestion3Press(item)}
+    >
+      <Text style={{ fontSize: 16 }}>{item.question}</Text>
+    </TouchableOpacity>
+  );
 
   // OTP Hooks
   const { countdown, isCounting, requestOTP, showResendOptions } = useOTP();
@@ -92,6 +224,16 @@ export default function Register() {
       return;
     }
 
+    if (!question1 || !question2 || !question3 || !answer1 || !answer2 || !answer3) {
+      Toast.show({
+        type: "error",
+        text1: "Question and answer required",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+
     setLoading(true);
 
     let variables = {
@@ -100,6 +242,22 @@ export default function Register() {
         password: password,
         password_confirmation: confirmPassword,
         otp: otp,
+        security_questions: [
+          {
+              security_question_id: question1.id,
+              security_answer: answer1
+          }, 
+          {
+              security_question_id: question2.id,
+              security_answer: answer2
+          },
+          {
+              security_question_id: question3.id,
+              security_answer: answer3
+          }
+         
+      ]
+
       },
     };
 
@@ -120,8 +278,8 @@ export default function Register() {
         console.log("Register Failed", dataContainer?.errors);
         Toast.show({
           type: "error",
-          text1: dataContainer?.errors?.[0]?.message ?? 'Register Failed',
-          text2: 'Check phone number, password and ensure the OTP is correct',
+          text1: dataContainer?.errors?.[0]?.message ?? "Register Failed",
+          text2: "Check phone number, password and ensure the OTP is correct",
           visibilityTime: 3000,
         });
       }
@@ -214,7 +372,7 @@ export default function Register() {
       });
       return;
     }
-    
+
     await requestOTP(phone, deliveryType);
   };
 
@@ -223,11 +381,15 @@ export default function Register() {
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
       style={styles.container}
     >
-      <KeyboardAvoidingView behavior="padding" style={styles.formSection}>
-        {/* Input Phone Number */}
-        <View style={{ flexDirection: "row", marginVertical: 4 }}>
-          {/* Country Code */}
-          {/* <TouchableOpacity style={styles.countryCodeContainer}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Input Phone Number */}
+          <View style={{ flexDirection: "row", marginVertical: 4 }}>
+            {/* Country Code */}
+            {/* <TouchableOpacity style={styles.countryCodeContainer}>
             <View
               style={{
                 justifyContent: "center",
@@ -245,41 +407,56 @@ export default function Register() {
             </ThemedText>
           </TouchableOpacity> */}
 
-          {/* Phone Number */}
-          <ThemedInput
-            style={styles.inputPhone}
-            onChangeText={(text) => {
-              const numericValue = text.replace(/[^0-9]/g, "");
-              setPhone(numericValue);
-            }}
-            value={phone}
-            autoCapitalize="none"
-            keyboardType="phone-pad"
-            placeholder="Your Phone Number (60....)"
-          ></ThemedInput>
-        </View>
+            {/* Phone Number */}
+            <ThemedInput
+              style={styles.inputPhone}
+              onChangeText={(text) => {
+                const numericValue = text.replace(/[^0-9]/g, "");
+                setPhone(numericValue);
+              }}
+              value={phone}
+              autoCapitalize="none"
+              keyboardType="phone-pad"
+              placeholder="Your Phone Number (60....)"
+            ></ThemedInput>
+          </View>
 
-        <View style={[{ flexDirection: "row", marginVertical: 4 }]}>
-          <ThemedInput
-            style={styles.inputPhone}
-            onChangeText={setOtp}
-            value={otp}
-            autoCapitalize="none"
-            placeholder="OTP code"
-          ></ThemedInput>
+          <View style={[{ flexDirection: "row", marginVertical: 4 }]}>
+            <ThemedInput
+              style={styles.inputPhone}
+              onChangeText={setOtp}
+              value={otp}
+              autoCapitalize="none"
+              placeholder="OTP code"
+            ></ThemedInput>
 
-          {/* OTP Fuction -- show default send sms first, if failed  --> show option*/}
-          {showResendOptions ? (
-            <>
-              <TouchableOpacity
-                style={styles.option}
-                onPress={isCounting ? null : () => handleClickRequestOTP("sms")}
-                disabled={isCounting}
-              >
-                <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
-                  {isCounting ? ` ${countdown}s` : "SMS"}
-                </ThemedText>
-              </TouchableOpacity>
+            {/* OTP Fuction -- show default send sms first, if failed  --> show option*/}
+            {showResendOptions ? (
+              <>
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={
+                    isCounting ? null : () => handleClickRequestOTP("sms")
+                  }
+                  disabled={isCounting}
+                >
+                  <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
+                    {isCounting ? ` ${countdown}s` : "SMS"}
+                  </ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={
+                    isCounting ? null : () => handleClickRequestOTP("whatsapp")
+                  }
+                  disabled={isCounting}
+                >
+                  <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
+                    {isCounting ? ` ${countdown}s` : "Whatsapp"}
+                  </ThemedText>
+                </TouchableOpacity>
+              </>
+            ) : (
               <TouchableOpacity
                 style={styles.option}
                 onPress={
@@ -287,62 +464,209 @@ export default function Register() {
                 }
                 disabled={isCounting}
               >
-                <ThemedText style={[styles.code, { width: screenWidth / 4 }]}>
-                  {isCounting ? ` ${countdown}s` : "Whatsapp"}
+                <ThemedText style={[styles.code, { width: screenWidth / 2 }]}>
+                  {isCounting ? ` ${countdown}s` : "Get Code"}
                 </ThemedText>
               </TouchableOpacity>
-            </>
-          ) : (
+            )}
+          </View>
+
+          {/* Input Password */}
+          <View style={{ flexDirection: "row", marginVertical: 4 }}>
+            <ThemedInput
+              style={styles.inputPhone}
+              onChangeText={setPassword}
+              value={password}
+              autoCapitalize="none"
+              placeholder="Your Password"
+              secureTextEntry={!showPassword}
+            ></ThemedInput>
             <TouchableOpacity
-              style={styles.option}
-              onPress={isCounting ? null : () => handleClickRequestOTP("whatsapp")}
-              disabled={isCounting}
+              style={styles.eyeContainer}
+              onPress={() => setShowPassword(!showPassword)}
             >
-              <ThemedText style={[styles.code, { width: screenWidth / 2 }]}>
-                {isCounting ? ` ${countdown}s` : "Get Code"}
-              </ThemedText>
+              <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} />
             </TouchableOpacity>
-          )}
-        </View>
+          </View>
 
-        {/* Input Password */}
-        <View style={{ flexDirection: "row", marginVertical: 4 }}>
-          <ThemedInput
-            style={styles.inputPhone}
-            onChangeText={setPassword}
-            value={password}
-            autoCapitalize="none"
-            placeholder="Your Password"
-            secureTextEntry={!showPassword}
-          ></ThemedInput>
-          <TouchableOpacity
-            style={styles.eyeContainer}
-            onPress={() => setShowPassword(!showPassword)}
-          >
-            <ThemedFA6 name={showPassword ? "eye-slash" : "eye"} size={15} />
-          </TouchableOpacity>
-        </View>
+          <View style={{ flexDirection: "row", marginVertical: 4 }}>
+            <ThemedInput
+              style={styles.inputPhone}
+              onChangeText={setConfirmPassword}
+              value={confirmPassword}
+              autoCapitalize="none"
+              placeholder="Reenter Your Password"
+              secureTextEntry={true}
+            ></ThemedInput>
+          </View>
 
-        <View style={{ flexDirection: "row", marginVertical: 4 }}>
-          <ThemedInput
-            style={styles.inputPhone}
-            onChangeText={setConfirmPassword}
-            value={confirmPassword}
-            autoCapitalize="none"
-            placeholder="Reenter Your Password"
-            secureTextEntry={true}
-          ></ThemedInput>
-        </View>
+          {/* Question and Answer */}
+          <View style={{  marginTop: 50 }}>
+            <View style={{ }}>
+              <View style={{ flexDirection: "row", marginVertical: 4 }}>
+                <TouchableOpacity
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    borderBottomWidth: 1,
+                    borderTopWidth: 1,
+                  }}
+                  onPress={() => {
+                    handleExpand_q1();
+                  }}
+                >
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <ThemedText style={{}}>
+                      {question1 ? question1.question : "Question 1"}
+                    </ThemedText>
+                    <ThemedFA6
+                      name={"chevron-right"}
+                      size={20}
+                      style={{ marginRight: 3 }}
+                      color="#ababab"
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
 
-        <View style={styles.action}>
-          <ThemedButton
-            title="Sign Up"
-            onPress={signUp}
-            disabled={loading} 
-            loading={loading}
-          ></ThemedButton>
-        </View>
+              <View style={{ flexDirection: "row", marginVertical: 4 }}>
+                <ThemedInput
+                  style={styles.inputPhone}
+                  onChangeText={setAnswer1}
+                  value={answer1}
+                  autoCapitalize="none"
+                  placeholder="Answer 1"
+                ></ThemedInput>
+              </View>
+            </View>
+
+            <View>
+              <View style={{ flexDirection: "row", marginVertical: 4 }}>
+                <TouchableOpacity
+                  style={{ width: "100%", padding: 10, borderBottomWidth: 1 }}
+                  onPress={() => {
+                    handleExpand_q2();
+                  }}
+                >
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <ThemedText style={{}}>
+                      {question2 ? question2.question : "Question 2"}
+                    </ThemedText>
+                    <ThemedFA6
+                      name={"chevron-right"}
+                      size={20}
+                      style={{ marginRight: 3 }}
+                      color="#ababab"
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{ flexDirection: "row", marginVertical: 4 }}>
+                <ThemedInput
+                  style={styles.inputPhone}
+                  onChangeText={setAnswer2}
+                  value={answer2}
+                  autoCapitalize="none"
+                  placeholder="Answer 2"
+                ></ThemedInput>
+              </View>
+            </View>
+
+            <View>
+              <View style={{ flexDirection: "row", marginVertical: 4 }}>
+                <TouchableOpacity
+                  style={{ width: "100%", padding: 10, borderBottomWidth: 1 }}
+                  onPress={() => {
+                    handleExpand_q3();
+                  }}
+                >
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <ThemedText style={{}}>
+                      {question3 ? question3.question : "Question 3"}
+                    </ThemedText>
+                    <ThemedFA6
+                      name={"chevron-right"}
+                      size={20}
+                      style={{ marginRight: 3 }}
+                      color="#ababab"
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{ flexDirection: "row", marginVertical: 4 }}>
+                <ThemedInput
+                  style={styles.inputPhone}
+                  onChangeText={setAnswer3}
+                  value={answer3}
+                  autoCapitalize="none"
+                  placeholder="Answer 3"
+                ></ThemedInput>
+              </View>
+            </View>
+          </View>
+          <View style={styles.action}>
+            <ThemedButton
+              title="Sign Up"
+              onPress={signUp}
+              disabled={loading}
+              loading={loading}
+            ></ThemedButton>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
+      <BottomSheetComponent
+        data={questionList}
+        bottomSheetRef={sheet_q1}
+        onDismiss={handleDismiss_q1}
+        onItemPress={handleQuestion1Press}
+        renderCustomItem={renderQuestionItem}
+        loading={loading_question}
+        title="Select a Question"
+        multiple={false}
+        lock={false}
+      />
+      <BottomSheetComponent
+        data={questionList}
+        bottomSheetRef={sheet_q2}
+        onDismiss={handleDismiss_q2}
+        onItemPress={handleQuestion2Press}
+        renderCustomItem={renderQuestion2Item}
+        loading={loading_question}
+        title="Select a Question"
+        multiple={false}
+        lock={false}
+      />
+      <BottomSheetComponent
+        data={questionList}
+        bottomSheetRef={sheet_q3}
+        onDismiss={handleDismiss_q3}
+        onItemPress={handleQuestion3Press}
+        renderCustomItem={renderQuestion3Item}
+        loading={loading_question}
+        title="Select a Question"
+        multiple={false}
+        lock={false}
+      />
     </ParallaxScrollView>
   );
 }
@@ -358,6 +682,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: 10, // Adjust space between image and input fields
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   logo: {
     width: 120, // Set the size of the image
@@ -387,7 +714,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   action: {
-    marginTop: 20,
+    // marginTop: 20,
+    position: "absolute",
+    bottom: 0, // or 0, adjust as needed
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "flex-start", // Ensure that content starts from the top
+    paddingBottom: 100, // To ensure scrollable area extends past the submit button
   },
   option: {
     // textAlign: "center",
